@@ -292,7 +292,7 @@ class LauncherService : Service(), KoinComponent {
 
         return buildString {
             append("📊 Today's Usage Summary\n")
-            append("Total usage: ${if (hours > 0) "$h " else ""}$minutes min\n")
+            append("Total usage: ${if (hours > 0) "$hours " else ""}$minutes min\n")
             append("Unique apps used: $uniqueAppsUsed\n")
             append("Apps blocked: $blockCount\n")
             if (appDetails.isNotEmpty()) {
