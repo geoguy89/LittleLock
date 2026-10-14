@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 /**
  * Room database for LittleLock.
@@ -13,6 +14,7 @@ import androidx.room.RoomDatabase
     version = 1,
     exportSchema = true
 )
+@TypeConverters(TypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun allowedAppDao(): AllowedAppDao
