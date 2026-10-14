@@ -101,7 +101,6 @@ class MainActivity : AppCompatActivity() {
     private fun loadUsageData() {
         val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
 
-        val calendar = Calendar.getInstance()
         val startOfDay = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -115,19 +114,17 @@ class MainActivity : AppCompatActivity() {
             set(Calendar.MILLISECOND, 999)
         }
 
-        val stats = usageStatsManager.queryStats(startOfDay.timeInMillis, endOfDay.timeInMillis, UsageEvents.ALL_EVENTS)
+        val events = usageStatsManager.queryEvents(startOfDay.timeInMillis, endOfDay.timeInMillis)
 
         var totalTimeMs: Long = 0
         val appUsage = mutableMapOf<String, Long>()
 
-        val event: UsageEvents? = stats.nextEvent
-        var currentEvent: UsageEvents? = stats.nextEvent
-        while (currentEvent != null) {
-            val packageName = currentEvent.packageName
-            val time = currentEvent.timeSpentMs
+        val event = UsageEvents.Event()
+        while (events.nextEvent(event)) {
+            val packageName = event.packageName
+            val time = event.timeSpentMs
             totalTimeMs += time
             appUsage[packageName] = appUsage.getOrDefault(packageName, 0L) + time
-            currentEvent = stats.nextEvent
         }
 
         if (appUsage.isEmpty()) {
