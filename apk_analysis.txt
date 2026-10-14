@@ -1,0 +1,204 @@
+=== PACKAGE INFO ===
+Package: com.kiddoware.kidsplace
+App name: Kids Place
+Version: 3.10.13 (963)
+Target SDK: 36
+Min SDK: 29
+
+=== PERMISSIONS ===
+  android.permission.ACCESS_NETWORK_STATE
+  android.permission.ACCESS_WIFI_STATE
+  android.permission.CHANGE_NETWORK_STATE
+  android.permission.CHANGE_WIFI_STATE
+  android.permission.EXPAND_STATUS_BAR
+  android.permission.FOREGROUND_SERVICE
+  android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK
+  android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+  android.permission.GET_TASKS
+  android.permission.INTERNET
+  android.permission.KILL_BACKGROUND_PROCESSES
+  android.permission.PACKAGE_USAGE_STATS
+  android.permission.POST_NOTIFICATIONS
+  android.permission.QUERY_ALL_PACKAGES
+  android.permission.RECEIVE_BOOT_COMPLETED
+  android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+  android.permission.RESTART_PACKAGES
+  android.permission.SET_WALLPAPER
+  android.permission.SYSTEM_ALERT_WINDOW
+  android.permission.SYSTEM_OVERLAY_WINDOW
+  android.permission.USE_BIOMETRIC
+  android.permission.USE_FINGERPRINT
+  android.permission.WAKE_LOCK
+  android.permission.WRITE_SETTINGS
+  com.android.vending.BILLING
+  com.google.android.c2dm.permission.RECEIVE
+  com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE
+  com.google.android.providers.gsf.permission.READ_GSERVICES
+  com.kiddoware.kidsplace.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+  com.kiddoware.kidsplace.KPService.permission.Access
+  com.kiddoware.kidsplace.permission.CURRENT_RUNNING_APP
+  com.kiddoware.kidsvideoplayer.kidsvideoplayerprovider.READ
+  com.kiddoware.kidsvideoplayer.kidsvideoplayerprovider.READ_WRITE
+  com.kiddoware.kidsvideoplayer.permission.ACCESS_SELECT_VIDEOS
+
+=== ACTIVITIES ===
+  com.android.billingclient.api.ProxyBillingActivityV2
+  com.google.firebase.auth.internal.GenericIdpActivity
+  com.google.firebase.auth.internal.RecaptchaActivity
+  androidx.credentials.playservices.HiddenActivity
+  com.google.android.gms.auth.api.signin.internal.SignInHubActivity
+  com.google.android.gms.common.api.GoogleApiActivity
+  com.google.android.play.core.common.PlayCoreDialogWrapperActivity
+  com.kiddoware.kidsplace.LaunchActivity
+  com.kiddoware.kidsplace.activities.onboarding.OnboardingActivity
+  com.kiddoware.kidsplace.ContactActivity
+  com.kiddoware.kidsplace.AppPickerTabs
+  com.kiddoware.kidsplace.AppPicker
+  com.kiddoware.kidsplace.ChangePinActivity
+  com.kiddoware.kidsplace.SecuritySettingsActivity
+  com.kiddoware.kidsplace.PinRecoveryActivity
+  com.kiddoware.kidsplace.PermissionActivity
+  com.kiddoware.kidsplace.TimeLockActivity
+  com.kiddoware.kidsplace.WallPaperManagerActivity
+  com.kiddoware.kidsplace.PluginActivity
+  com.kiddoware.kidsplace.LockActivity
+  com.kiddoware.kidsplace.LockActivityWithGrownUpMode
+  com.kiddoware.kidsplace.LockEnableActivity
+  com.kiddoware.kidsplace.KidsPlacePrefsActivity
+  com.kiddoware.kidsplace.activities.launcher.LauncherActivity
+  com.kiddoware.kidsplace.activities.LoginActivity
+  com.kiddoware.kidsplace.activities.SettingsActivity
+  com.kiddoware.kidsplace.activities.CategoryListActivity
+  com.kiddoware.kidsplace.activities.CategoryGridActivity
+  com.kiddoware.kidsplace.wallpaper.CropWallpaper
+  com.kiddoware.kidsplace.activities.KPCloudPluginsActivity
+  com.kiddoware.kidsplace.activities.WhiteListActivity
+  com.kiddoware.kidsplace.activities.TimerIntimationActivity
+  com.kiddoware.kidsplace.activities.PremiumFeatureExplainActivity
+  com.kiddoware.kidsplace.inapp.InAppStartUpActivity
+  com.kiddoware.kidsplace.inapp.LicenseStatusActivity
+  com.kiddoware.kidsplace.activities.IntimationOverlayActivity
+  com.kiddoware.kidsplace.inapp.PurchaseLicenseActivity
+  com.kiddoware.kidsplace.activities.KidsPlaceNowActivity
+  com.kiddoware.kidsplace.activities.WebViewActivity
+  com.kiddoware.kidsplace.activities.onboarding.RemoteControlWebViewActivity
+  com.kiddoware.kidsplace.activities.ParseDeepLinkActivity
+  com.kiddoware.kidsplace.scheduler.calendar.CalendarActivity
+  com.kiddoware.kidsplace.scheduler.calendar.CalendarActivityOld
+  com.kiddoware.kidsplace.scheduler.calendar.ManageScheduleActivity
+  com.kiddoware.kidsplace.scheduler.MainActivity
+  com.kiddoware.kidsplace.scheduler.timeprofile.TimeProfilesActivity
+  com.kiddoware.kidsplace.scheduler.usage_details.UsageDetailsActivity
+  com.kiddoware.kidsplace.scheduler.NotificationActivity
+  com.kiddoware.kidsplace.scheduler.usage_details.HelpDialogActivity
+  com.kiddoware.kidsplace.backup.CloudBackupActivity
+  com.kiddoware.kidsplace.RateKPActivity
+  com.kiddoware.kidsplace.activities.manage.ManageAppsActivity
+  com.kiddoware.kidsplace.activities.KidsPlaceKidsTaskActivity
+  com.kiddoware.kidsplace.tasks.TasksParentActivity
+  com.kiddoware.kidsplace.activities.KPStoriesActivity
+  com.kiddoware.kidsplace.activities.AccountSetupActivity
+  com.kiddoware.kidsplace.activities.SetupAppsActivity
+  com.kiddoware.library.singlesignon.SingleSignOnActivity
+  com.kiddoware.kidsplace.activities.RemoteLockActivity
+  com.kiddoware.kidsplace.activities.FirebaseWebViewActivity
+  com.kiddoware.kidsplace.activities.FirebaseDialogActivity
+  com.kiddoware.kidsplace.activities.WarningResolverActivity
+  com.kiddoware.kidsplace.inapp.PurchaseAllActivity
+  com.kiddoware.kidsplace.remotecontrol.DialogMessageActivity
+  com.kiddoware.kidsplace.remotecontrol.KPRemoteControlActivity
+  com.kiddoware.kidsplace.remotecontrol.StopSoundActivity
+  com.kiddoware.kidsplace.remotecontrol.KPRCSettingsActivity
+  com.kiddoware.kidsplace.remotecontrol.onboarding_wizard.WizardActivity
+  com.firebase.ui.auth.KickoffActivity
+  com.firebase.ui.auth.ui.idp.SingleSignInActivity
+  com.firebase.ui.auth.ui.credentials.CredentialSaveActivity
+  com.firebase.ui.auth.ui.email.RecoverPasswordActivity
+  com.firebase.ui.auth.ui.email.EmailActivity
+  com.firebase.ui.auth.ui.phone.PhoneActivity
+  com.firebase.ui.auth.ui.idp.WelcomeBackIdpPrompt
+  com.firebase.ui.auth.ui.email.WelcomeBackPasswordPrompt
+  com.firebase.ui.auth.ui.email.WelcomeBackEmailLinkPrompt
+  com.firebase.ui.auth.ui.email.EmailLinkCatcherActivity
+  com.firebase.ui.auth.ui.email.EmailLinkErrorRecoveryActivity
+  com.firebase.ui.auth.ui.idp.AuthMethodPickerActivity
+  com.facebook.FacebookActivity
+  com.facebook.CustomTabActivity
+  com.android.billingclient.api.ProxyBillingActivity
+
+=== SERVICES ===
+  com.google.firebase.sessions.SessionLifecycleService
+  com.google.android.datatransport.runtime.backends.TransportBackendDiscovery
+  androidx.credentials.playservices.CredentialProviderMetadataHolder
+  com.kiddoware.kidsplace.remotecontrol.ReportingService
+  com.google.android.gms.auth.api.signin.RevocationBoundService
+  com.google.android.gms.analytics.AnalyticsService
+  com.kiddoware.kidsplace.KidsPlaceService
+  com.google.android.gms.analytics.AnalyticsJobService
+  com.kiddoware.kidsplace.KidsPlaceAccessibilityService
+  com.google.android.gms.measurement.AppMeasurementService
+  com.google.android.gms.measurement.AppMeasurementJobService
+  androidx.work.impl.background.systemjob.SystemJobService
+  androidx.work.impl.foreground.SystemForegroundService
+  androidx.room.MultiInstanceInvalidationService
+  com.evernote.android.job.v21.PlatformJobService
+  com.evernote.android.job.v14.PlatformAlarmService
+  com.evernote.android.job.v14.PlatformAlarmServiceExact
+  com.evernote.android.job.gcm.PlatformGcmService
+  com.evernote.android.job.JobRescheduleService
+  com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService
+  com.kiddoware.kidsplace.activities.ApplicationWatcherService
+  com.kiddoware.kidsplace.backup.LocalBackupService
+  com.kiddoware.kidsplace.backup.LocalRestoreService
+  com.kiddoware.kidsplace.firebase.FirestoreBackupIntentService
+  com.kiddoware.kidsplace.firebase.FirestoreRestoreIntentService
+  com.kiddoware.kidsplace.activities.RemoteLockIntentService
+  com.kiddoware.kidsplace.firebase.KPFirebaseMessagingService
+  com.kiddoware.kidsplace.remotecontrol.SoundService
+  com.kiddoware.dnsblockvpn.vpn.DnsVpnService
+  com.google.firebase.components.ComponentDiscoveryService
+  com.google.firebase.messaging.FirebaseMessagingService
+
+=== RECEIVERS ===
+  com.kiddoware.kidsplace.AutoStartKpServiceReceiver
+  com.kiddoware.kidsplace.Alarm
+  androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver
+  androidx.work.impl.diagnostics.DiagnosticsReceiver
+  com.kiddoware.kidsplace.AutoStartKpReceiver
+  com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver
+  com.kiddoware.kidsplace.scheduler.AutoStartSkipForTodayReceiver
+  com.kiddoware.kidsplace.remotecontrol.SynchronizationReceiver
+  com.google.firebase.iid.FirebaseInstanceIdReceiver
+  com.google.android.gms.measurement.AppMeasurementReceiver
+  androidx.profileinstaller.ProfileInstallReceiver
+  com.kiddoware.kidsplace.StartupReceiver
+  com.google.android.gms.analytics.AnalyticsReceiver
+  androidx.work.impl.background.systemalarm.RescheduleReceiver
+  com.evernote.android.job.v14.PlatformAlarmReceiver
+  com.kiddoware.kidsplace.admin.KPDeviceAdminReceiver
+  com.kiddoware.kidsplace.RateBroadcastReceiver
+  com.evernote.android.job.JobBootReceiver
+
+=== PROVIDERS ===
+  com.kiddoware.kidsplace.providers.AuthenticationProvider
+  com.kiddoware.kidsplace.providers.AppDataProvider
+  com.kiddoware.kidsplace.providers.UserDataProvider
+  com.kiddoware.kidsplace.providers.PreferenceDataProvider
+  com.kiddoware.kidsplace.providers.AppLaunchesProvider
+  com.kiddoware.kidsplace.scheduler.db.TimesContentProvider
+  androidx.startup.InitializationProvider
+  com.firebase.ui.auth.data.client.AuthUiInitProvider
+  com.google.firebase.provider.FirebaseInitProvider
+  com.kiddoware.kidsplace.providers.CategoryDataProvider
+
+=== MAIN ACTIVITY ===
+  com.kiddoware.kidsplace.LaunchActivity
+
+=== APK SIZE ===
+  26.7 MB
+
+=== INTENT FILTERS ===
+
+=== SERVICE INTENT FILTERS ===
+
+=== RECEIVER INTENT FILTERS ===

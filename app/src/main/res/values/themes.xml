@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.LittleLock" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/littlelock_primary</item>
+        <item name="colorPrimaryVariant">@color/littlelock_primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/littlelock_accent</item>
+        <item name="colorSecondaryVariant">@color/littlelock_accent</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:colorBackground">@color/littlelock_background</item>
+        <item name="colorSurface">@color/littlelock_surface</item>
+        <item name="android:textColor">@color/littlelock_text</item>
+    </style>
+
+    <style name="Theme.LittleLock.Splash" parent="Theme.LittleLock">
+        <item name="android:windowBackground">@color/littlelock_primary</item>
+        <item name="android:statusBarColor">@color/littlelock_primary_dark</item>
+    </style>
+
+    <style name="Theme.LittleLock.Kids" parent="Theme.LittleLock">
+        <item name="android:colorBackground">@color/littlelock_kids_bg</item>
+        <item name="colorPrimary">@color/littlelock_kids_accent</item>
+        <item name="android:statusBarColor">@color/littlelock_kids_accent</item>
+    </style>
+</resources>

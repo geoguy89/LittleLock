@@ -52,7 +52,7 @@ results.append(f'  {os.path.getsize(apk_path) / (1024*1024):.1f} MB')
 results.append('')
 results.append('=== INTENT FILTERS ===')
 for activity in a.get_activities():
-    filters = a.get_intent_filters(activity)
+    filters = a.get_intent_filters(activity, 'activity')
     if filters:
         results.append(f'  Activity: {activity}')
         if 'activity' in filters:
@@ -64,7 +64,7 @@ for activity in a.get_activities():
 results.append('')
 results.append('=== SERVICE INTENT FILTERS ===')
 for service in a.get_services():
-    filters = a.get_intent_filters(service)
+    filters = a.get_intent_filters(service, 'service')
     if filters:
         results.append(f'  Service: {service}')
         if 'service' in filters:
@@ -76,7 +76,7 @@ for service in a.get_services():
 results.append('')
 results.append('=== RECEIVER INTENT FILTERS ===')
 for receiver in a.get_receivers():
-    filters = a.get_intent_filters(receiver)
+    filters = a.get_intent_filters(receiver, 'receiver')
     if filters:
         results.append(f'  Receiver: {receiver}')
         if 'receiver' in filters:

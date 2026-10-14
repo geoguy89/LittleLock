@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="littlelock_primary">#FF1B5E20</color>
+    <color name="littlelock_primary_dark">#FF003300</color>
+    <color name="littlelock_primary_light">#FF4CAF50</color>
+    <color name="littlelock_accent">#FF8BC34A</color>
+    <color name="littlelock_background">#FFF5F5F5</color>
+    <color name="littlelock_surface">#FFFFFFFF</color>
+    <color name="littlelock_text">#FF212121</color>
+    <color name="littlelock_text_secondary">#FF757575</color>
+    <color name="littlelock_kids_bg">#FFFDE7</color>
+    <color name="littlelock_kids_accent">#FFFF9800</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
