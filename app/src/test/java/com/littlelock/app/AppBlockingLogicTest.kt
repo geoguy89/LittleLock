@@ -1,6 +1,6 @@
 package com.littlelock.app
 
-import com.littlelock.app.data.model.AllowedAppEntity
+import com.littlelock.app.data.local.AllowedAppEntity
 import org.junit.Assert.*
 import org.junit.Test
 import org.robolectric.annotation.Config
