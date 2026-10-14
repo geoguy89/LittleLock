@@ -5,9 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import com.littlelock.app.data.AppDatabase
+import com.littlelock.app.data.local.AppDatabase
 import com.littlelock.app.di.AppModule
-import org.koin.android.KoinAndroidContext
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.component.KoinComponent

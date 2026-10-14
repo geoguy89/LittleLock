@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -17,8 +18,6 @@ import com.littlelock.app.data.local.AllowedAppDao
 import com.littlelock.app.data.local.SettingsRepository
 import com.littlelock.app.ui.main.MainActivity
 import org.koin.android.ext.android.inject
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +28,7 @@ import kotlinx.coroutines.flow.collectLatest
  * Shows only allowed apps in a grid layout.
  * Long press triggers parent authentication to exit.
  */
-class KidsLauncherActivity : AppCompatActivity(), KoinComponent {
+class KidsLauncherActivity : AppCompatActivity() {
 
     private val allowedAppDao: AllowedAppDao by inject()
     private val settingsRepository: SettingsRepository by inject()

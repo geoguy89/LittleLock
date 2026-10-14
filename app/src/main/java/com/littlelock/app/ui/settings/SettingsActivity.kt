@@ -38,7 +38,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun loadSettings() {
         // Load current settings from repository
-        binding.editTimeLimit.setText(settingsRepository.dailyTimeLimitMinutes.toString())
+        binding.editTimeLimit.setText(settingsRepository.dailyLimitMinutes.toString())
         binding.switchScreenTime.isChecked = settingsRepository.screenTimeEnabled
         binding.switchAppRestrictions.isChecked = settingsRepository.appRestrictionsEnabled
         binding.switchWallpaper.isChecked = settingsRepository.wallpaperEnabled
@@ -87,7 +87,7 @@ class SettingsActivity : AppCompatActivity() {
         // Save time limit
         val timeLimitText = binding.editTimeLimit.text.toString()
         val timeLimit = timeLimitText.toIntOrNull() ?: 120
-        settingsRepository.dailyTimeLimitMinutes = timeLimit
+        settingsRepository.dailyLimitMinutes = timeLimit
 
         // Save toggles
         settingsRepository.screenTimeEnabled = binding.switchScreenTime.isChecked
