@@ -38,4 +38,16 @@ class SettingsRepository(private val context: Context) {
     var isFirstLaunch: Boolean
         get() = prefs.getBoolean(KEY_FIRST_LAUNCH, true)
         set(value) = prefs.edit().putBoolean(KEY_FIRST_LAUNCH, value).apply()
+
+    var screenTimeEnabled: Boolean
+        get() = prefs.getBoolean("screen_time_enabled", true)
+        set(value) = prefs.edit().putBoolean("screen_time_enabled", value).apply()
+
+    var appRestrictionsEnabled: Boolean
+        get() = prefs.getBoolean("app_restrictions_enabled", true)
+        set(value) = prefs.edit().putBoolean("app_restrictions_enabled", value).apply()
+
+    var wallpaperEnabled: Boolean
+        get() = prefs.getBoolean("wallpaper_enabled", false)
+        set(value) = prefs.edit().putBoolean("wallpaper_enabled", value).apply()
 }
