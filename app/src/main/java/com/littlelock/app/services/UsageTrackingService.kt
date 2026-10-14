@@ -15,7 +15,6 @@ import com.littlelock.app.data.local.SettingsRepository
 import org.koin.android.ext.android.inject
 import org.koin.core.component.KoinComponent
 import kotlinx.coroutines.*
-import java.time.LocalDateTime
 
 /**
  * Service that tracks app usage statistics.
@@ -29,7 +28,7 @@ class UsageTrackingService : Service(), KoinComponent {
 
     private var trackingJob: Job? = null
     private var currentApp: String? = null
-    private var currentAppStartTime: LocalDateTime? = null
+    private var currentAppStartTime: Long? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -66,7 +65,7 @@ class UsageTrackingService : Service(), KoinComponent {
 
             // Start tracking new app
             currentApp = currentAppPackage
-            currentAppStartTime = LocalDateTime.now()
+            currentAppStartTime = System.currentTimeMillis()
         }
     }
 
@@ -82,21 +81,23 @@ class UsageTrackingService : Service(), KoinComponent {
         }
     }
 
-    private fun saveUsageSession(packageName: String, startTime: LocalDateTime) {
-        val endTime = LocalDateTime.now()
-        val durationSeconds = java.time.Duration.between(startTime, endTime).seconds
+    private fun saveUsageSession(packageName: String, startTimeMillis: Long) {
+        val endTimeMillis = System.currentTimeMillis()
+        val durationSeconds = (endTimeMillis - startTimeMillis) / 1000
 
         if (durationSeconds < 10) {
             return // Ignore very short sessions
         }
 
         val session = UsageSessionEntity(
+            packageName = packageName,
             appName = packageName,
-            durationSeconds = durationSeconds.toInt(),
-            timestamp = startTime.toString()
+            startTimeMillis = startTimeMillis,
+            endTimeMillis = endTimeMillis,
+            durationSeconds = durationSeconds
         )
 
-        lifecycleScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 usageSessionDao.insertSession(session)
                 Log.d("UsageTrackingService", "Saved session: $packageName for ${durationSeconds}s")

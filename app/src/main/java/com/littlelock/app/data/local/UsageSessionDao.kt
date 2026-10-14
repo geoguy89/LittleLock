@@ -1,7 +1,6 @@
 package com.littlelock.app.data.local
 
 import androidx.room.*
-import java.time.LocalDateTime
 
 /**
  * DAO for usage sessions.
@@ -9,14 +8,14 @@ import java.time.LocalDateTime
 @Dao
 interface UsageSessionDao {
 
-    @Query("SELECT * FROM usage_sessions WHERE startTime >= :since ORDER BY startTime DESC")
-    suspend fun getSessionsSince(since: LocalDateTime): List<UsageSessionEntity>
+    @Query("SELECT * FROM usage_sessions WHERE startTimeMillis >= :since ORDER BY startTimeMillis DESC")
+    suspend fun getSessionsSince(since: Long): List<UsageSessionEntity>
 
-    @Query("SELECT * FROM usage_sessions ORDER BY startTime DESC LIMIT :limit")
+    @Query("SELECT * FROM usage_sessions ORDER BY startTimeMillis DESC LIMIT :limit")
     suspend fun getRecentSessions(limit: Int = 50): List<UsageSessionEntity>
 
-    @Query("DELETE FROM usage_sessions WHERE startTime < :before")
-    suspend fun deleteOldSessions(before: LocalDateTime)
+    @Query("DELETE FROM usage_sessions WHERE startTimeMillis < :before")
+    suspend fun deleteOldSessions(before: Long)
 
     @Insert
     suspend fun insertSession(session: UsageSessionEntity): Long

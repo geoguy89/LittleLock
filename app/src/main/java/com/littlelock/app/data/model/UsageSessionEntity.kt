@@ -2,7 +2,6 @@ package com.littlelock.app.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
 
 /**
  * Entity representing a usage session for a child app.
@@ -13,7 +12,7 @@ data class UsageSessionEntity(
     val id: Long = 0,
     val packageName: String,
     val appName: String,
-    val startTime: LocalDateTime,
-    val endTime: LocalDateTime,
+    val startTimeMillis: Long,
+    val endTimeMillis: Long,
     val durationSeconds: Long
 )
