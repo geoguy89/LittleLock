@@ -52,35 +52,38 @@ results.append(f'  {os.path.getsize(apk_path) / (1024*1024):.1f} MB')
 results.append('')
 results.append('=== INTENT FILTERS ===')
 for activity in a.get_activities():
-    filters = a.get_activity_intent_filters(activity)
+    filters = a.get_intent_filters(activity)
     if filters:
         results.append(f'  Activity: {activity}')
-        for f in filters:
-            results.append(f'    Action: {f.get("action", [])}')
-            results.append(f'    Category: {f.get("category", [])}')
-            results.append(f'    Data: {f.get("data", [])}')
+        if 'activity' in filters:
+            for f in filters['activity']:
+                results.append(f'    Action: {f.get("action", [])}')
+                results.append(f'    Category: {f.get("category", [])}')
+                results.append(f'    Data: {f.get("data", [])}')
 
 results.append('')
 results.append('=== SERVICE INTENT FILTERS ===')
 for service in a.get_services():
-    filters = a.get_service_intent_filters(service)
+    filters = a.get_intent_filters(service)
     if filters:
         results.append(f'  Service: {service}')
-        for f in filters:
-            results.append(f'    Action: {f.get("action", [])}')
-            results.append(f'    Category: {f.get("category", [])}')
-            results.append(f'    Data: {f.get("data", [])}')
+        if 'service' in filters:
+            for f in filters['service']:
+                results.append(f'    Action: {f.get("action", [])}')
+                results.append(f'    Category: {f.get("category", [])}')
+                results.append(f'    Data: {f.get("data", [])}')
 
 results.append('')
 results.append('=== RECEIVER INTENT FILTERS ===')
 for receiver in a.get_receivers():
-    filters = a.get_receiver_intent_filters(receiver)
+    filters = a.get_intent_filters(receiver)
     if filters:
         results.append(f'  Receiver: {receiver}')
-        for f in filters:
-            results.append(f'    Action: {f.get("action", [])}')
-            results.append(f'    Category: {f.get("category", [])}')
-            results.append(f'    Data: {f.get("data", [])}')
+        if 'receiver' in filters:
+            for f in filters['receiver']:
+                results.append(f'    Action: {f.get("action", [])}')
+                results.append(f'    Category: {f.get("category", [])}')
+                results.append(f'    Data: {f.get("data", [])}')
 
 # Write to file
 with open(r'C:\Projects\LittleLock\apk_analysis.txt', 'w', encoding='utf-8') as f:
