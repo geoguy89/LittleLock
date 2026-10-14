@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.littlelock.app.data.local.SettingsRepository
+import com.littlelock.app.util.MessageFormatter
 import org.koin.android.ext.android.inject
 import org.koin.core.component.KoinComponent
 import kotlinx.coroutines.*
@@ -96,7 +97,7 @@ class DiscordWebhookService : Service(), KoinComponent {
             append("📊 Daily Usage Summary\n")
             append("Apps used: $totalAppsUsed\n")
             append("Apps blocked: $totalBlocked\n")
-            append("Total usage: ${formatDuration(totalUsageSeconds)}")
+            append("Total usage: ${MessageFormatter.formatDuration(totalUsageSeconds)}")
         }
 
         sendWebhookMessage(webhookUrl, message)
