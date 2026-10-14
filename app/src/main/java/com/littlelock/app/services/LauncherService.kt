@@ -255,7 +255,7 @@ class LauncherService : Service(), KoinComponent {
         // Send Discord alert
         try {
             val message = "⏰ Daily time limit reached! ${settingsRepository.dailyLimitMinutes} minutes of screen time used. All apps are now blocked until tomorrow."
-            discordService.sendWebhookMessage(message)
+            discordService.sendWebhookMessage(settingsRepository.webhookUrlOrDefault, message)
         } catch (e: Exception) {
             Log.e("LauncherService", "Failed to send time limit Discord alert", e)
         }
