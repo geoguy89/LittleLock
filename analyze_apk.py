@@ -1,85 +1,89 @@
 from androguard.core.apk import APK
-import os, sys
+import os, sys, logging
+
+# Suppress debug output
+logging.getLogger('androguard').setLevel(logging.ERROR)
 
 apk_path = r'C:\Projects\LittleLock\base.apk'
 a = APK(apk_path)
 
-print('=== PACKAGE INFO ===')
-print(f'Package: {a.get_package()}')
-print(f'App name: {a.get_app_name()}')
-print(f'Version: {a.get_androidversion_name()} ({a.get_androidversion_code()})')
-print(f'Target SDK: {a.get_target_sdk_version()}')
-print(f'Min SDK: {a.get_min_sdk_version()}')
-print(f'Type: {a.get_androidversion_type()}')
+results = []
 
-print()
-print('=== PERMISSIONS ===')
+results.append('=== PACKAGE INFO ===')
+results.append(f'Package: {a.get_package()}')
+results.append(f'App name: {a.get_app_name()}')
+results.append(f'Version: {a.get_androidversion_name()} ({a.get_androidversion_code()})')
+results.append(f'Target SDK: {a.get_target_sdk_version()}')
+results.append(f'Min SDK: {a.get_min_sdk_version()}')
+
+results.append('')
+results.append('=== PERMISSIONS ===')
 for perm in sorted(a.get_permissions()):
-    print(f'  {perm}')
+    results.append(f'  {perm}')
 
-print()
-print('=== ACTIVITIES ===')
+results.append('')
+results.append('=== ACTIVITIES ===')
 for activity in a.get_activities():
-    print(f'  {activity}')
+    results.append(f'  {activity}')
 
-print()
-print('=== SERVICES ===')
+results.append('')
+results.append('=== SERVICES ===')
 for service in a.get_services():
-    print(f'  {service}')
+    results.append(f'  {service}')
 
-print()
-print('=== RECEIVERS ===')
+results.append('')
+results.append('=== RECEIVERS ===')
 for receiver in a.get_receivers():
-    print(f'  {receiver}')
+    results.append(f'  {receiver}')
 
-print()
-print('=== PROVIDERS ===')
+results.append('')
+results.append('=== PROVIDERS ===')
 for provider in a.get_providers():
-    print(f'  {provider}')
+    results.append(f'  {provider}')
 
-print()
-print('=== MAIN ACTIVITY ===')
-print(f'  {a.get_main_activity()}')
+results.append('')
+results.append('=== MAIN ACTIVITY ===')
+results.append(f'  {a.get_main_activity()}')
 
-print()
-print('=== NATIVE LIBS ===')
-for lib in a.get_files():
-    if lib.startswith('lib/'):
-        print(f'  {lib}')
+results.append('')
+results.append('=== APK SIZE ===')
+results.append(f'  {os.path.getsize(apk_path) / (1024*1024):.1f} MB')
 
-print()
-print('=== APK SIZE ===')
-print(f'  {os.path.getsize(apk_path) / (1024*1024):.1f} MB')
-
-print()
-print('=== INTENT FILTERS ===')
+results.append('')
+results.append('=== INTENT FILTERS ===')
 for activity in a.get_activities():
     filters = a.get_activity_intent_filters(activity)
     if filters:
-        print(f'  Activity: {activity}')
+        results.append(f'  Activity: {activity}')
         for f in filters:
-            print(f'    Action: {f.get("action", [])}')
-            print(f'    Category: {f.get("category", [])}')
-            print(f'    Data: {f.get("data", [])}')
+            results.append(f'    Action: {f.get("action", [])}')
+            results.append(f'    Category: {f.get("category", [])}')
+            results.append(f'    Data: {f.get("data", [])}')
 
-print()
-print('=== SERVICE INTENT FILTERS ===')
+results.append('')
+results.append('=== SERVICE INTENT FILTERS ===')
 for service in a.get_services():
     filters = a.get_service_intent_filters(service)
     if filters:
-        print(f'  Service: {service}')
+        results.append(f'  Service: {service}')
         for f in filters:
-            print(f'    Action: {f.get("action", [])}')
-            print(f'    Category: {f.get("category", [])}')
-            print(f'    Data: {f.get("data", [])}')
+            results.append(f'    Action: {f.get("action", [])}')
+            results.append(f'    Category: {f.get("category", [])}')
+            results.append(f'    Data: {f.get("data", [])}')
 
-print()
-print('=== RECEIVER INTENT FILTERS ===')
+results.append('')
+results.append('=== RECEIVER INTENT FILTERS ===')
 for receiver in a.get_receivers():
     filters = a.get_receiver_intent_filters(receiver)
     if filters:
-        print(f'  Receiver: {receiver}')
+        results.append(f'  Receiver: {receiver}')
         for f in filters:
-            print(f'    Action: {f.get("action", [])}')
-            print(f'    Category: {f.get("category", [])}')
-            print(f'    Data: {f.get("data", [])}')
+            results.append(f'    Action: {f.get("action", [])}')
+            results.append(f'    Category: {f.get("category", [])}')
+            results.append(f'    Data: {f.get("data", [])}')
+
+# Write to file
+with open(r'C:\Projects\LittleLock\apk_analysis.txt', 'w', encoding='utf-8') as f:
+    f.write('\n'.join(results))
+
+print('\n'.join(results))
