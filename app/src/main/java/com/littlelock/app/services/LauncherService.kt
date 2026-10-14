@@ -49,6 +49,7 @@ class LauncherService : Service(), KoinComponent {
     private var lastAppTimestamp: Long = 0
     private var lastTrackedApp: String? = null
     private var lastDayOfMonth: Int = 0
+    private var timeLimitReached: Boolean = false
 
     private val discordService by inject<DiscordWebhookService>()
 
@@ -126,6 +127,7 @@ class LauncherService : Service(), KoinComponent {
                     totalUsageSeconds = 0
                     uniqueAppsUsed = 0
                     appUsageMap.clear()
+                    timeLimitReached = false
                     lastDayOfMonth = currentDay
                 }
 
@@ -143,6 +145,15 @@ class LauncherService : Service(), KoinComponent {
         // Update tracking state
         lastTrackedApp = currentApp
         lastAppTimestamp = now
+
+        // Check daily time limit
+        if (settingsRepository.screenTimeEnabled && settingsRepository.dailyLimitMinutes > 0 && !timeLimitReached) {
+            val limitSeconds = settingsRepository.dailyLimitMinutes * 60
+            if (totalUsageSeconds >= limitSeconds) {
+                timeLimitReached = true
+                blockAllApps()
+            }
+        }
 
         if (currentApp != lastPackageName) {
             lastPackageName = currentApp
@@ -235,6 +246,38 @@ class LauncherService : Service(), KoinComponent {
     }
 
     /**
+     * Block all apps when daily time limit is reached.
+     */
+    private fun blockAllApps() {
+        // Force re-check by clearing tracked app
+        lastTrackedApp = null
+
+        // Send Discord alert
+        try {
+            val message = "⏰ Daily time limit reached! ${settingsRepository.dailyLimitMinutes} minutes of screen time used. All apps are now blocked until tomorrow."
+            discordService.sendWebhookMessage(message)
+        } catch (e: Exception) {
+            Log.e("LauncherService", "Failed to send time limit Discord alert", e)
+        }
+
+        // Bring KidsLauncher to front
+        try {
+            val intent = Intent(this, KidsLauncherActivity::class.java).apply {
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
+            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("LauncherService", "Failed to bring launcher to front on time limit", e)
+        }
+
+        Log.w("LauncherService", "Daily time limit reached — all apps blocked")
+    }
+
+    /**
      * Check if a daily summary should be sent (once per day).
      */
     private fun checkDailySummary() {
@@ -244,6 +287,7 @@ class LauncherService : Service(), KoinComponent {
 
         if (lastDate.day != currentDate.day || lastDate.month != currentDate.month) {
             lastSummaryDate = now
+            timeLimitReached = false
             sendDailySummary()
         }
     }

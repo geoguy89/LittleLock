@@ -118,13 +118,24 @@ class MainActivity : AppCompatActivity() {
 
         var totalTimeMs: Long = 0
         val appUsage = mutableMapOf<String, Long>()
+        val foregroundStart = mutableMapOf<String, Long>()
 
         val event = UsageEvents.Event()
-        while (events.nextEvent(event)) {
-            val packageName = event.packageName
-            val time = event.timeSpentMs
-            totalTimeMs += time
-            appUsage[packageName] = appUsage.getOrDefault(packageName, 0L) + time
+        while (events.hasNextEvent()) {
+            events.getNextEvent(event)
+            val packageName = event.packageName ?: continue
+            when (event.eventType) {
+                UsageEvents.Event.ACTIVITY_RESUMED -> {
+                    foregroundStart[packageName] = event.timeStamp
+                }
+                UsageEvents.Event.ACTIVITY_PAUSED -> {
+                    foregroundStart[packageName]?.let { start ->
+                        val duration = event.timeStamp - start
+                        totalTimeMs += duration
+                        appUsage[packageName] = appUsage.getOrDefault(packageName, 0L) + duration
+                    }
+                }
+            }
         }
 
         if (appUsage.isEmpty()) {

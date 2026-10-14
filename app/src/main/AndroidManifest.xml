@@ -66,12 +66,19 @@
             android:exported="false"
             android:theme="@style/Theme.LittleLock" />
 
-        <!-- Child-facing Launcher -->
-        <activity
-            android:name=".ui.launcher.KidsLauncherActivity"
-            android:exported="false"
-            android:theme="@style/Theme.LittleLock.Kids"
-            android:screenOrientation="portrait" />
+          <!-- Child-facing Launcher -->
+          <activity
+              android:name=".ui.launcher.KidsLauncherActivity"
+              android:exported="true"
+              android:theme="@style/Theme.LittleLock.Kids"
+              android:screenOrientation="portrait">
+              <intent-filter>
+                  <action android:name="android.intent.action.HOME" />
+                  <category android:name="android.intent.category.DEFAULT" />
+                  <category android:name="android.intent.category.HOME" />
+                  <category android:name="android.intent.category.MONKEY" />
+              </intent-filter>
+          </activity>
 
         <!-- Settings -->
         <activity
