@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">LittleLock</string>
+    <string name="pin_dialog_title">Enter Parent PIN</string>
+    <string name="pin_dialog_hint">Enter PIN</string>
+    <string name="pin_dialog_verify">Verify</string>
+    <string name="pin_dialog_biometric">Use Biometric</string>
+    <string name="pin_error_wrong">Wrong PIN. Try again.</string>
+    <string name="pin_error_locked">Too many attempts. Try again in %1$d seconds.</string>
+    <string name="pin_error_no_pin">No PIN is set. Please configure in settings.</string>
+    <string name="biometric_title">Authenticate</string>
+    <string name="biometric_subtitle">Use your fingerprint or face to exit</string>
+    <string name="biometric_negative">Cancel</string>
 </resources>

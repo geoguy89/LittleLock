@@ -5,13 +5,23 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
+import android.widget.EditText
 import android.widget.GridView
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.biometric.BiometricPrompt
+import androidx.biometric.BiometricPrompt.AuthenticationCallback
+import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.littlelock.app.R
 import com.littlelock.app.data.local.AllowedAppEntity
@@ -23,6 +33,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import java.security.MessageDigest
 
 /**
  * Child-facing launcher activity.
@@ -41,6 +52,12 @@ class KidsLauncherActivity : AppCompatActivity() {
     // For detecting long press to exit
     private var longPressHandler: Handler? = null
     private var longPressRunnable: Runnable? = null
+
+    // Lockout state
+    private var failedAttempts = 0
+    private var lockoutEndTime: Long = 0
+    private val maxAttempts = 3
+    private val lockoutDurationMs = 30_000L // 30 seconds
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,8 +110,171 @@ class KidsLauncherActivity : AppCompatActivity() {
     }
 
     private fun exitWithAuthentication() {
-        // In a full implementation, this would show a PIN dialog
-        // For now, navigate back to main activity
+        // Check if currently locked out
+        if (isLockedOut()) {
+            val remainingSeconds = ((lockoutEndTime - System.currentTimeMillis()) / 1000).toInt().coerceAtLeast(1)
+            showPinDialog(null, "Too many attempts. Try again in $remainingSeconds seconds.")
+            return
+        }
+
+        // Check if a PIN is set
+        val storedPinHash = settingsRepository.pinHash
+        if (storedPinHash == null) {
+            showPinDialog(null, getString(R.string.pin_error_no_pin))
+            return
+        }
+
+        // Check if biometric is available
+        val biometricManager = BiometricManager.from(this)
+        val canAuthenticate = biometricManager.canAuthenticate(
+            BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+        ) == BiometricManager.BIOMETRIC_SUCCESS
+
+        showPinDialog(storedPinHash, biometricAvailable = canAuthenticate)
+    }
+
+    private fun isLockedOut(): Boolean {
+        if (lockoutEndTime == 0L) return false
+        if (System.currentTimeMillis() < lockoutEndTime) return true
+        // Lockout expired, reset
+        failedAttempts = 0
+        lockoutEndTime = 0
+        return false
+    }
+
+    private fun recordFailedAttempt() {
+        failedAttempts++
+        if (failedAttempts >= maxAttempts) {
+            lockoutEndTime = System.currentTimeMillis() + lockoutDurationMs
+        }
+    }
+
+    private fun resetAttempts() {
+        failedAttempts = 0
+        lockoutEndTime = 0
+    }
+
+    private fun hashPin(pin: String): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(pin.toByteArray())
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun showPinDialog(
+        storedPinHash: String?,
+        prefillError: String? = null,
+        biometricAvailable: Boolean = false
+    ) {
+        // Inflate the custom dialog layout
+        val dialogView = layoutInflater.inflate(R.layout.dialog_pin_entry, null)
+
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
+        val etPin = dialogView.findViewById<EditText>(R.id.etPinInput)
+        val tvError = dialogView.findViewById<TextView>(R.id.tvError)
+        val btnVerify = dialogView.findViewById<Button>(R.id.btnVerify)
+        val btnBiometric = dialogView.findViewById<Button>(R.id.btnBiometric)
+
+        // Show error if prefilled
+        if (!prefillError.isNullOrEmpty()) {
+            tvError.text = prefillError
+            tvError.visibility = View.VISIBLE
+        }
+
+        // Show biometric button only if available
+        btnBiometric.visibility = if (biometricAvailable) View.VISIBLE else View.GONE
+
+        // Build and show the dialog
+        val dialog = android.app.AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        btnVerify.setOnClickListener {
+            val enteredPin = etPin.text.toString().trim()
+            if (enteredPin.isEmpty()) {
+                tvError.text = getString(R.string.pin_dialog_hint)
+                tvError.visibility = View.VISIBLE
+                return@setOnClickListener
+            }
+
+            if (storedPinHash == null) {
+                tvError.text = getString(R.string.pin_error_no_pin)
+                tvError.visibility = View.VISIBLE
+                return@setOnClickListener
+            }
+
+            val enteredHash = hashPin(enteredPin)
+            if (enteredHash == storedPinHash) {
+                // PIN correct - exit
+                resetAttempts()
+                dialog.dismiss()
+                navigateToMainActivity()
+            } else {
+                // PIN wrong
+                recordFailedAttempt()
+                if (isLockedOut()) {
+                    val remainingSeconds = ((lockoutEndTime - System.currentTimeMillis()) / 1000).toInt().coerceAtLeast(1)
+                    tvError.text = getString(R.string.pin_error_locked, remainingSeconds)
+                } else {
+                    tvError.text = getString(R.string.pin_error_wrong)
+                }
+                tvError.visibility = View.VISIBLE
+                etPin.text.clear()
+                etPin.requestFocus()
+            }
+        }
+
+        btnBiometric.setOnClickListener {
+            dialog.dismiss()
+            promptBiometric(storedPinHash)
+        }
+
+        dialog.show()
+    }
+
+    private fun promptBiometric(storedPinHash: String) {
+        val biometricManager = BiometricManager.from(this)
+        if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) != BiometricManager.BIOMETRIC_SUCCESS) {
+            // Biometric not available, fall back to PIN
+            showPinDialog(storedPinHash, "Biometric not available")
+            return
+        }
+
+        val biometricPrompt = BiometricPrompt(this, object : AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                // Biometric succeeded - verify PIN hash is set
+                if (settingsRepository.pinHash != null) {
+                    navigateToMainActivity()
+                } else {
+                    showPinDialog(null, getString(R.string.pin_error_no_pin))
+                }
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                // Biometric failed - fall back to PIN
+                showPinDialog(storedPinHash, "Biometric failed. Enter PIN instead.")
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errMsg: CharSequence) {
+                super.onAuthenticationError(errorCode, errMsg)
+                // User cancelled or error - fall back to PIN
+                showPinDialog(storedPinHash, errMsg.toString())
+            }
+        })
+
+        val promptInfo = PromptInfo.Builder()
+            .setTitle(getString(R.string.biometric_title))
+            .setSubtitle(getString(R.string.biometric_subtitle))
+            .setNegativeButtonText(getString(R.string.biometric_negative))
+            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
+    }
+
+    private fun navigateToMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }

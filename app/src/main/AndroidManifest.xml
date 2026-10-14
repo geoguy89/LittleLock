@@ -81,24 +81,24 @@
 
         <!-- Launcher Service (foreground) -->
         <service
-            android:name=".service.LauncherService"
+            android:name=".services.LauncherService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 
         <!-- Usage Tracking Service -->
         <service
-            android:name=".service.UsageTrackingService"
+            android:name=".services.UsageTrackingService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 
         <!-- Discord Webhook Service -->
         <service
-            android:name=".service.DiscordWebhookService"
+            android:name=".services.DiscordWebhookService"
             android:exported="false" />
 
         <!-- Boot receiver to restart services -->
         <receiver
-            android:name=".receiver.BootReceiver"
+            android:name=".receivers.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

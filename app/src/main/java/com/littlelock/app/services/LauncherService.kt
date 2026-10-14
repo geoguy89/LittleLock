@@ -5,12 +5,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.app.ActivityManager
+import android.app.usage.UsageEvents
+import android.app.usage.UsageStatsManager
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.IBinder
-import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.littlelock.app.R
 import com.littlelock.app.data.local.AllowedAppDao
@@ -23,11 +22,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.TimerTask
+import java.util.concurrent.TimeUnit
 
 /**
  * Foreground service that maintains the launcher overlay.
- * Monitors app usage and blocks unauthorized apps.
- * Runs continuously while protection is enabled.
+ * Uses UsageStatsManager for reliable foreground app detection
+ * and blocks unauthorized apps by bringing the KidsLauncher to front.
  */
 class LauncherService : Service(), KoinComponent {
 
@@ -40,11 +40,15 @@ class LauncherService : Service(), KoinComponent {
     private var monitorTimer: Timer? = null
     private var lastPackageName: String? = null
     private var blockCount: Int = 0
+    private var lastSummaryDate: Long = 0
+
+    private val discordService by inject<DiscordWebhookService>()
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
+        lastSummaryDate = System.currentTimeMillis()
         startAppMonitoring()
     }
 
@@ -91,6 +95,7 @@ class LauncherService : Service(), KoinComponent {
         monitorTimer?.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 checkCurrentApp()
+                checkDailySummary()
             }
         }, 0, 1000) // Check every second
     }
@@ -109,46 +114,119 @@ class LauncherService : Service(), KoinComponent {
         }
     }
 
+    /**
+     * Get the current foreground app package name using UsageStatsManager.
+     * Falls back to null if permission is not granted.
+     */
     private fun getCurrentPackageName(): String? {
-        // Get the currently running app's package
-        return try {
-            val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
-            val processes = activityManager.runningAppProcesses
-            if (processes.isNotEmpty()) {
-                processes[0].importanceRank
-                processes[0].processName
-            } else null
-        } catch (e: SecurityException) {
-            null
-        } catch (e: Exception) {
-            null
+        val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as? UsageStatsManager
+            ?: return null
+
+        val endTime = System.currentTimeMillis()
+        val startTime = endTime - TimeUnit.SECONDS.toMillis(2)
+
+        val events: UsageEvents = usageStatsManager.queryEvents(startTime, endTime)
+        if (events == null) return null
+
+        var lastEventTime = 0L
+        var lastEventPackage: String? = null
+
+        val event = UsageEvents.Event()
+        while (events.hasNextEvent()) {
+            events.getNextEvent(event)
+            if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED
+                && event.timeStamp > lastEventTime) {
+                lastEventTime = event.timeStamp
+                lastEventPackage = event.packageName
+            }
         }
+
+        return lastEventPackage
     }
 
     private fun isAppAllowed(packageName: String): Boolean {
-        var result = false
-        CoroutineScope(Dispatchers.IO).launch {
+        return kotlinx.coroutines.runBlocking {
             val allowedApps = allowedAppDao.getAllowedApps()
-            result = allowedApps.any { it.packageName == packageName }
-        }.join()
-        return result
+            allowedApps.any { it.packageName == packageName }
+        }
     }
 
     private fun blockApp(packageName: String) {
         blockCount++
 
-        // Bring launcher to front
+        // Get app name for Discord alert
+        val appName = try {
+            val pm = packageManager
+            val info = pm.getApplicationInfo(packageName, 0)
+            pm.getApplicationLabel(info).toString()
+        } catch (e: Exception) {
+            packageName
+        }
+
+        // Bring launcher to front with required flags
         try {
             val intent = Intent(this, KidsLauncherActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
             }
             startActivity(intent)
         } catch (e: Exception) {
-            // Ignore
+            Log.e("LauncherService", "Failed to bring launcher to front", e)
         }
 
-        // Log blocked app
-        android.util.Log.w("LauncherService", "Blocked app: $packageName (count: $blockCount)")
+        // Kill the blocked app's process
+        try {
+            val activityManager = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
+            activityManager.killBackgroundProcesses(packageName)
+            Log.d("LauncherService", "Killed background process: $packageName")
+        } catch (e: Exception) {
+            Log.e("LauncherService", "Failed to kill process: $packageName", e)
+        }
+
+        // Send Discord webhook alert
+        try {
+            discordService.sendBlockedAppAlert(packageName, appName)
+        } catch (e: Exception) {
+            Log.e("LauncherService", "Failed to send Discord alert", e)
+        }
+
+        Log.w("LauncherService", "Blocked app: $appName ($packageName) (count: $blockCount)")
+    }
+
+    /**
+     * Check if a daily summary should be sent (once per day).
+     */
+    private fun checkDailySummary() {
+        val now = System.currentTimeMillis()
+        val lastDate = java.util.Date(lastSummaryDate)
+        val currentDate = java.util.Date(now)
+
+        if (lastDate.day != currentDate.day || lastDate.month != currentDate.month) {
+            lastSummaryDate = now
+            sendDailySummary()
+        }
+    }
+
+    private fun sendDailySummary() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val webhookUrl = settingsRepository.webhookUrlOrDefault
+                if (webhookUrl.isBlank()) return@launch
+
+                val message = buildString {
+                    append("📊 Daily Usage Summary\n")
+                    append("Apps blocked today: $blockCount")
+                }
+
+                discordService.sendWebhookMessage(webhookUrl, message)
+                Log.d("LauncherService", "Daily summary sent (blocked: $blockCount)")
+            } catch (e: Exception) {
+                Log.e("LauncherService", "Failed to send daily summary", e)
+            }
+        }
     }
 
     override fun onDestroy() {
