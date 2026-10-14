@@ -12,6 +12,7 @@ import android.widget.GridView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.littlelock.app.R
 import com.littlelock.app.data.local.AllowedAppEntity
 import com.littlelock.app.data.local.AllowedAppDao

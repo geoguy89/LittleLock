@@ -32,7 +32,7 @@ class UsageTrackingService : Service(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
-        usageSessionDao = AppDatabase.getDatabase(this).usageSessionDao()
+        usageSessionDao = AppDatabase.getInstance(this).usageSessionDao()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -72,9 +72,9 @@ class UsageTrackingService : Service(), KoinComponent {
     private fun getCurrentAppPackage(): String? {
         return try {
             val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
-            val tasks = activityManager.runningTasks
-            if (tasks.isNotEmpty()) {
-                tasks[0].topActivity?.packageName
+            val processes = activityManager.runningAppProcesses
+            if (processes.isNotEmpty()) {
+                processes[0].processName
             } else null
         } catch (e: Exception) {
             null

@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.ActivityManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
@@ -17,6 +18,9 @@ import com.littlelock.app.data.local.SettingsRepository
 import com.littlelock.app.ui.launcher.KidsLauncherActivity
 import org.koin.android.ext.android.inject
 import org.koin.core.component.KoinComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Timer
 import java.util.TimerTask
 
@@ -106,12 +110,13 @@ class LauncherService : Service(), KoinComponent {
     }
 
     private fun getCurrentPackageName(): String? {
-        // Get the currently running task's package
+        // Get the currently running app's package
         return try {
-            val activityManager = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
-            val tasks = activityManager.runningTasks
-            if (tasks.isNotEmpty()) {
-                tasks[0].topActivity?.packageName
+            val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+            val processes = activityManager.runningAppProcesses
+            if (processes.isNotEmpty()) {
+                processes[0].importanceRank
+                processes[0].processName
             } else null
         } catch (e: SecurityException) {
             null
@@ -121,12 +126,12 @@ class LauncherService : Service(), KoinComponent {
     }
 
     private fun isAppAllowed(packageName: String): Boolean {
-        return try {
+        var result = false
+        CoroutineScope(Dispatchers.IO).launch {
             val allowedApps = allowedAppDao.getAllowedApps()
-            allowedApps.any { it.packageName == packageName }
-        } catch (e: Exception) {
-            false
-        }
+            result = allowedApps.any { it.packageName == packageName }
+        }.join()
+        return result
     }
 
     private fun blockApp(packageName: String) {
