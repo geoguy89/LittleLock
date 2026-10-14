@@ -232,7 +232,7 @@ class KidsLauncherActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun promptBiometric(storedPinHash: String) {
+    private fun promptBiometric(storedPinHash: String?) {
         val biometricManager = BiometricManager.from(this)
         if (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) != BiometricManager.BIOMETRIC_SUCCESS) {
             // Biometric not available, fall back to PIN
@@ -260,7 +260,7 @@ class KidsLauncherActivity : AppCompatActivity() {
             override fun onAuthenticationError(errorCode: Int, errMsg: CharSequence) {
                 super.onAuthenticationError(errorCode, errMsg)
                 // User cancelled or error - fall back to PIN
-                showPinDialog(storedPinHash, errMsg.toString())
+                showPinDialog(storedPinHash, errMsg.toString(), biometricAvailable = false)
             }
         })
 

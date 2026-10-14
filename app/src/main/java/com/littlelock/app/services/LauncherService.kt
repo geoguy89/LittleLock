@@ -42,6 +42,14 @@ class LauncherService : Service(), KoinComponent {
     private var blockCount: Int = 0
     private var lastSummaryDate: Long = 0
 
+    // Usage tracking fields
+    private var totalUsageSeconds: Int = 0
+    private var uniqueAppsUsed: Int = 0
+    private val appUsageMap = mutableMapOf<String, Long>() // packageName -> seconds
+    private var lastAppTimestamp: Long = 0
+    private var lastTrackedApp: String? = null
+    private var lastDayOfMonth: Int = 0
+
     private val discordService by inject<DiscordWebhookService>()
 
     override fun onCreate() {
@@ -49,6 +57,7 @@ class LauncherService : Service(), KoinComponent {
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
         lastSummaryDate = System.currentTimeMillis()
+        lastDayOfMonth = java.util.Date().day
         startAppMonitoring()
     }
 
@@ -105,6 +114,35 @@ class LauncherService : Service(), KoinComponent {
         if (currentApp == null || currentApp == packageName) {
             return
         }
+
+        // Usage tracking: record duration for previous app when app changes
+        val now = System.currentTimeMillis()
+        if (lastAppTimestamp > 0 && lastTrackedApp != null) {
+            val elapsed = ((now - lastAppTimestamp) / 1000).toInt()
+            if (elapsed > 0 && lastTrackedApp != currentApp) {
+                // Reset counters if day changed
+                val currentDay = java.util.Date().day
+                if (currentDay != lastDayOfMonth) {
+                    totalUsageSeconds = 0
+                    uniqueAppsUsed = 0
+                    appUsageMap.clear()
+                    lastDayOfMonth = currentDay
+                }
+
+                // Record duration for the previous app
+                val prevApp = lastTrackedApp!!
+                appUsageMap[prevApp] = appUsageMap.getOrDefault(prevApp, 0L) + elapsed
+                totalUsageSeconds += elapsed
+                if (!appUsageMap.containsKey(prevApp) || appUsageMap[prevApp]!! == elapsed.toLong()) {
+                    // First time tracking this app today
+                    uniqueAppsUsed++
+                }
+            }
+        }
+
+        // Update tracking state
+        lastTrackedApp = currentApp
+        lastAppTimestamp = now
 
         if (currentApp != lastPackageName) {
             lastPackageName = currentApp
@@ -218,13 +256,47 @@ class LauncherService : Service(), KoinComponent {
 
                 val message = buildString {
                     append("📊 Daily Usage Summary\n")
+                    append("Total usage: $totalUsageSeconds seconds\n")
+                    append("Unique apps used: $uniqueAppsUsed\n")
                     append("Apps blocked today: $blockCount")
                 }
 
                 discordService.sendWebhookMessage(webhookUrl, message)
-                Log.d("LauncherService", "Daily summary sent (blocked: $blockCount)")
+                Log.d("LauncherService", "Daily summary sent (blocked: $blockCount, usage: $totalUsageSeconds s, apps: $uniqueAppsUsed)")
             } catch (e: Exception) {
                 Log.e("LauncherService", "Failed to send daily summary", e)
+            }
+        }
+    }
+
+    /**
+     * Returns a formatted string with today's usage summary.
+     */
+    fun getTodayUsageSummary(): String {
+        val hours = totalUsageSeconds / 3600
+        val minutes = (totalUsageSeconds % 3600) / 60
+        val blockedApps = appUsageMap.size - uniqueAppsUsed + blockCount
+
+        val appDetails = appUsageMap.entries.joinToString("\n") { (pkg, secs) ->
+            val h = secs / 3600
+            val m = (secs % 3600) / 60
+            val label = try {
+                packageManager.getApplicationLabel(
+                    packageManager.getApplicationInfo(pkg, 0)
+                ).toString()
+            } catch (e: Exception) {
+                pkg
+            }
+            "- $label: ${if (h > 0) "$h h " else ""}$m min"
+        }
+
+        return buildString {
+            append("📊 Today's Usage Summary\n")
+            append("Total usage: ${if (hours > 0) "$h " else ""}$minutes min\n")
+            append("Unique apps used: $uniqueAppsUsed\n")
+            append("Apps blocked: $blockCount\n")
+            if (appDetails.isNotEmpty()) {
+                append("\nApp breakdown:\n$appDetails")
             }
         }
     }

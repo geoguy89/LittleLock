@@ -42,12 +42,20 @@ class SettingsActivity : AppCompatActivity() {
         binding.switchScreenTime.isChecked = settingsRepository.screenTimeEnabled
         binding.switchAppRestrictions.isChecked = settingsRepository.appRestrictionsEnabled
         binding.switchWallpaper.isChecked = settingsRepository.wallpaperEnabled
+        binding.etWebhookUrl.setText(settingsRepository.webhookUrl ?: "")
     }
 
     private fun setupListeners() {
         // Save button
         binding.btnSave.setOnClickListener {
             saveSettings()
+        }
+
+        // Save webhook URL button
+        binding.btnSaveWebhook.setOnClickListener {
+            val url = binding.etWebhookUrl.text.toString().trim()
+            settingsRepository.webhookUrl = if (url.isEmpty()) null else url
+            Toast.makeText(this, "Webhook URL saved", Toast.LENGTH_SHORT).show()
         }
 
         // Usage access settings
@@ -93,6 +101,10 @@ class SettingsActivity : AppCompatActivity() {
         settingsRepository.screenTimeEnabled = binding.switchScreenTime.isChecked
         settingsRepository.appRestrictionsEnabled = binding.switchAppRestrictions.isChecked
         settingsRepository.wallpaperEnabled = binding.switchWallpaper.isChecked
+
+        // Save webhook URL
+        val webhookUrl = binding.etWebhookUrl.text.toString().trim()
+        settingsRepository.webhookUrl = if (webhookUrl.isEmpty()) null else webhookUrl
 
         Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show()
     }
