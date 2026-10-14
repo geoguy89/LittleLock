@@ -5,12 +5,15 @@ import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
  * Tests for SettingsRepository - verifies that settings persist correctly
  * via SharedPreferences using Robolectric.
  */
+@RunWith(RobolectricTestRunner::class)
 @Config(sdk = [30])
 class SettingsRepositoryTest {
 

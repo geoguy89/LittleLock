@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "Running LittleLock unit tests..." -ForegroundColor Cyan
 
-& ./gradlew testDebugUnitTest
+& ./gradlew testDebugUnitTest --rerun-tasks
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Tests failed!" -ForegroundColor Red
