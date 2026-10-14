@@ -34,7 +34,7 @@ class DiscordWebhookService : Service(), KoinComponent {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Check if webhook URL is configured
-        val webhookUrl = settingsRepository.webhookUrl
+        val webhookUrl = settingsRepository.webhookUrlOrDefault
         if (webhookUrl.isBlank()) {
             Log.w("DiscordWebhookService", "No Discord webhook URL configured")
             stopSelf()
@@ -89,7 +89,7 @@ class DiscordWebhookService : Service(), KoinComponent {
      * Send a usage summary report.
      */
     fun sendUsageSummary(totalAppsUsed: Int, totalBlocked: Int, totalUsageSeconds: Int) {
-        val webhookUrl = settingsRepository.webhookUrl
+        val webhookUrl = settingsRepository.webhookUrlOrDefault
         if (webhookUrl.isBlank()) return
 
         val message = buildString {
@@ -106,7 +106,7 @@ class DiscordWebhookService : Service(), KoinComponent {
      * Send an alert for a blocked app attempt.
      */
     fun sendBlockedAppAlert(packageName: String, appName: String) {
-        val webhookUrl = settingsRepository.webhookUrl
+        val webhookUrl = settingsRepository.webhookUrlOrDefault
         if (webhookUrl.isBlank()) return
 
         val message = buildString {

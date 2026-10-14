@@ -31,6 +31,9 @@ class SettingsRepository(private val context: Context) {
         get() = prefs.getString(KEY_WEBHOOK_URL, null)
         set(value) = prefs.edit().putString(KEY_WEBHOOK_URL, value).apply()
 
+    val webhookUrlOrDefault: String
+        get() = prefs.getString(KEY_WEBHOOK_URL, "") ?: ""
+
     var dailyLimitMinutes: Int
         get() = prefs.getInt(KEY_DAILY_LIMIT_MINUTES, 0)
         set(value) = prefs.edit().putInt(KEY_DAILY_LIMIT_MINUTES, value).apply()
