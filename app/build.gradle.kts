@@ -52,6 +52,12 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    applicationVariants.all {
+        if (name == "release") {
+            outputFileName = "LittleLock-release.apk"
+        }
+    }
 }
 
 dependencies {
