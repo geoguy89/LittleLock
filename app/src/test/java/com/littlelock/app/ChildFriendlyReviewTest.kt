@@ -26,15 +26,15 @@ class ChildFriendlyReviewTest {
         )
 
         // Verify large touch targets (64dp icons - easy for children to tap)
-        assertTrue(
-            "App icons should have large touch targets (64dp)",
-            layoutContent.contains("64dp")
-        )
-
-        // Verify item layout exists for app icons
         val itemLayout = File(srcMain, "res/layout/item_app.xml")
         assertTrue("item_app.xml should exist", itemLayout.exists())
         val itemContent = itemLayout.readText()
+        assertTrue(
+            "App icons should have large touch targets (64dp)",
+            itemContent.contains("64dp")
+        )
+
+        // Verify item layout exists for app icons
         assertTrue(
             "App items should have ImageView for icons",
             itemContent.contains("ImageView")
