@@ -10,7 +10,7 @@ import java.io.File
  */
 class ChildFriendlyReviewTest {
 
-    private val srcMain = File("app/src/main")
+    private val srcMain = File("src/main")
 
     @Test
     fun the_user_interface_is_intuitive_for_children() {

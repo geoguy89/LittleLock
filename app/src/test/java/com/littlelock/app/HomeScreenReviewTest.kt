@@ -10,7 +10,7 @@ import java.io.File
  */
 class HomeScreenReviewTest {
 
-    private val srcMain = File("app/src/main")
+    private val srcMain = File("src/main")
 
     @Test
     fun the_home_screen_layout_and_app_drawer_functionality() {

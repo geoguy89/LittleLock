@@ -10,7 +10,7 @@ import java.io.File
  */
 class BrandingReviewTest {
 
-    private val srcMain = File("app/src/main")
+    private val srcMain = File("src/main")
 
     @Test
     fun the_app_launches_and_displays_a_custom_LittleLock_branding() {
