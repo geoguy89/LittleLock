@@ -10,7 +10,7 @@ import java.io.File
  */
 class BrandingTest {
 
-    private val srcMain = File("app/src/main")
+    private val srcMain = File("src/main")
 
     /**
      * Verify that strings.xml contains "LittleLock" as app_name.

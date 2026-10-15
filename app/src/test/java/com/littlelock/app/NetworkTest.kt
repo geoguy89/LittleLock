@@ -10,7 +10,7 @@ import java.io.File
  */
 class NetworkTest {
 
-    private val srcMain = File("app/src/main")
+    private val srcMain = File("src/main")
 
     /**
      * Verify that only DiscordWebhookService.kt makes HTTP connections

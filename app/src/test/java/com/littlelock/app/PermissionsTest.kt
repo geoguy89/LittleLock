@@ -10,7 +10,7 @@ import java.io.File
  */
 class PermissionsTest {
 
-    private val manifestPath = File("app/src/main/AndroidManifest.xml")
+    private val manifestPath = File("src/main/AndroidManifest.xml")
 
     /**
      * Verify required permissions are present and dangerous ones are absent.
