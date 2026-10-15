@@ -16,7 +16,7 @@ class PaywallTest {
      * Verify that no paywall/subscription code exists in source files.
      */
     @Test
-    fun testNoPaywallCode() {
+    fun the_app_has_no_paywall_prompts() {
         val forbiddenPatterns = listOf(
             "paywall",
             "subscription",

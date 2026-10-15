@@ -20,7 +20,7 @@ class SigningTest {
      * Verify the release APK exists and passes apksigner verification.
      */
     @Test
-    fun testApkExistsAndSignsValid() {
+    fun the_generated_apk_is_signed_and_verifiable() {
         val apkFile = java.io.File(apkPath)
         assertTrue(
             "Release APK should exist at $apkPath",

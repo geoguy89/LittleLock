@@ -16,7 +16,7 @@ class PermissionsTest {
      * Verify required permissions are present and dangerous ones are absent.
      */
     @Test
-    fun testPermissions() {
+    fun the_app_respects_system_permissions() {
         assertTrue("AndroidManifest.xml should exist", manifestPath.exists())
 
         val content = manifestPath.readText()

@@ -17,7 +17,7 @@ class DataCollectionTest {
      * Verify that no unauthorized data collection code exists.
      */
     @Test
-    fun testNoUnauthorizedDataCollection() {
+    fun the_app_collects_no_unauthorized_personal_data() {
         val forbiddenPatterns = listOf(
             "firebase",
             "analytics",

@@ -17,7 +17,7 @@ class NetworkTest {
      * and no hardcoded non-Discord URLs exist.
      */
     @Test
-    fun testNoExternalServerConnections() {
+    fun the_app_makes_no_external_network_requests_to_original_servers() {
         val javaDir = File(srcMain, "java")
         if (!javaDir.exists()) {
             fail("java directory not found")
