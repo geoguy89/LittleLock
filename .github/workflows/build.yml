@@ -24,6 +24,16 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
+      - name: Generate Release Keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore littlelock-release.keystore \
+            -storepass littlelock123 \
+            -keypass littlelock123 \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias littlelock \
+            -dname "CN=LittlesLock, OU=Dev, O=LittlesLock, L=City, ST=State, C=US"
+
       - name: Run Tests
         run: ./gradlew test
 

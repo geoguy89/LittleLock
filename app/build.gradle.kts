@@ -9,10 +9,19 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("../littlelock-release.keystore")
-            storePassword = "littlelock123"
-            keyAlias = "littlelock"
-            keyPassword = "littlelock123"
+            val keystoreFile = file("../littlelock-release.keystore")
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = "littlelock123"
+                keyAlias = "littlelock"
+                keyPassword = "littlelock123"
+            } else {
+                // Fallback to debug signing when keystore is not present
+                storeFile = file("../debug.keystore")
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            }
         }
     }
 
