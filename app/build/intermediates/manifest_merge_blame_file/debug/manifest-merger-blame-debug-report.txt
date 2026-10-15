@@ -55,7 +55,7 @@
 28-->[androidx.core:core:1.12.0] C:\Users\Travis\.gradle\caches\transforms-3\d1e4a685b1001794fbcfe4ee9c157a7e\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
 29
 30    <application
-30-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:22:5-120:21
+30-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:22:5-119:21
 31        android:allowBackup="true"
 31-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:23:9-35
 32        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
@@ -81,244 +81,242 @@
 43
 44        <!-- Main Launcher Activity - acts as custom home screen -->
 45        <activity
-45-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:34:11-48:20
+45-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:34:11-47:20
 46            android:name="com.littlelock.app.LauncherActivity"
 46-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:35:15-47
 47            android:alwaysRetainTaskState="true"
-47-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:42:13-49
+47-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:41:13-49
 48            android:enabled="true"
 48-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:37:15-37
 49            android:excludeFromRecents="true"
-49-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:38:15-48
+49-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:38:17-50
 50            android:exported="true"
 50-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:36:15-38
 51            android:launchMode="singleTask"
-51-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:41:15-46
-52            android:noHistory="true"
-52-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:39:15-39
-53            android:taskAffinity="" >
-53-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:40:15-38
-54            <intent-filter>
-54-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:43:13-47:29
-55                <action android:name="android.intent.action.MAIN" />
-55-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:17-69
-55-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:25-66
-56
-57                <category android:name="android.intent.category.HOME" />
-57-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:17-73
-57-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:27-70
-58                <category android:name="android.intent.category.DEFAULT" />
-58-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:46:17-76
-58-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:46:27-73
-59            </intent-filter>
-60        </activity>
-61
-62        <!-- Settings Activity -->
-63        <activity
-63-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:51:9-55:64
-64            android:name="com.littlelock.app.SettingsActivity"
-64-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:52:13-45
-65            android:exported="false"
-65-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:53:13-37
-66            android:label="@string/settings_title"
-66-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:54:13-51
-67            android:theme="@style/Theme.LittleLock.Settings" />
-67-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:55:13-61
-68
-69        <!-- PIN Lock Activity -->
-70        <activity
-70-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:58:9-64:49
-71            android:name="com.littlelock.app.PinLockActivity"
-71-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:59:13-44
-72            android:excludeFromRecents="true"
-72-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:64:13-46
-73            android:exported="false"
-73-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:60:13-37
-74            android:label="@string/pin_enter_title"
-74-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:61:13-52
-75            android:launchMode="singleTask"
-75-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:63:13-44
-76            android:theme="@style/Theme.LittleLock.PinLock" />
-76-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:62:13-60
-77
-78        <!-- Launcher Foreground Service -->
-79        <service
-79-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:67:9-71:60
-80            android:name="com.littlelock.app.LauncherService"
-80-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:68:13-44
-81            android:enabled="true"
-81-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:69:13-35
-82            android:exported="false"
-82-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:70:13-37
-83            android:foregroundServiceType="shortService" />
-83-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:71:13-57
-84
-85        <!-- Accessibility Service -->
-86        <service
-86-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:74:9-86:19
-87            android:name="com.littlelock.app.AccessibilityMonitorService"
-87-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:75:13-56
-88            android:enabled="true"
-88-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:76:13-35
-89            android:exported="true"
-89-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:77:13-36
-90            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-90-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:78:13-79
-91            android:process=":accessibility" >
-91-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:79:13-45
-92            <intent-filter>
-92-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:80:13-82:29
-93                <action android:name="android.accessibilityservice.AccessibilityService" />
-93-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:81:17-92
-93-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:81:25-89
-94            </intent-filter>
-95
-96            <meta-data
-96-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:83:13-85:72
-97                android:name="android.accessibilityservice"
-97-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:84:17-60
-98                android:resource="@xml/accessibility_service_config" />
-98-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:85:17-69
-99        </service>
-100
-101        <!-- Device Admin Receiver -->
-102        <receiver
-102-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:89:9-100:20
-103            android:name="com.littlelock.app.DeviceAdminReceiver"
-103-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:90:13-48
-104            android:enabled="true"
-104-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:91:13-35
-105            android:exported="false"
-105-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:92:13-37
-106            android:permission="android.permission.BIND_DEVICE_ADMIN" >
-106-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:93:13-70
-107            <meta-data
-107-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:94:13-96:65
-108                android:name="android.app.device_admin"
-108-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:95:17-56
-109                android:resource="@xml/device_admin_receiver" />
-109-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:96:17-62
-110
-111            <intent-filter>
-111-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:97:13-99:29
-112                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-112-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:98:17-82
-112-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:98:25-79
-113            </intent-filter>
-114        </receiver>
-115
-116        <!-- Boot Receiver -->
-117        <receiver
-117-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:103:11-112:22
-118            android:name="com.littlelock.app.BootReceiver"
-118-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:104:15-43
-119            android:enabled="true"
-119-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:105:15-37
-120            android:exported="true" >
-120-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:106:15-38
-121            <intent-filter>
-121-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:107:15-111:31
-122                <action android:name="android.intent.action.BOOT_COMPLETED" />
-122-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:19-81
-122-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:27-78
-123                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-123-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:109:19-84
-123-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:109:27-81
-124
-125                <category android:name="android.intent.category.DEFAULT" />
-125-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:46:17-76
-125-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:46:27-73
-126            </intent-filter>
-127        </receiver>
-128
-129        <!-- Daily Summary Receiver -->
-130        <receiver
-130-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:115:11-118:42
-131            android:name="com.littlelock.app.DailySummaryReceiver"
-131-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:116:15-51
-132            android:enabled="true"
-132-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:117:15-37
-133            android:exported="false" />
-133-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:118:15-39
-134
-135        <provider
-135-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
-136            android:name="androidx.startup.InitializationProvider"
-136-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
-137            android:authorities="com.littlelock.app.androidx-startup"
-137-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
-138            android:exported="false" >
-138-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
-139            <meta-data
-139-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
-140                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-140-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
-141                android:value="androidx.startup" />
-141-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
-142            <meta-data
-142-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Travis\.gradle\caches\transforms-3\f96262b739e7235dd07a97d871a1b1da\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:29:13-31:52
-143                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-143-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Travis\.gradle\caches\transforms-3\f96262b739e7235dd07a97d871a1b1da\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:30:17-78
-144                android:value="androidx.startup" />
-144-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Travis\.gradle\caches\transforms-3\f96262b739e7235dd07a97d871a1b1da\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:31:17-49
-145            <meta-data
-145-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
-146                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-146-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
-147                android:value="androidx.startup" />
-147-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
-148        </provider>
-149
-150        <uses-library
-150-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:25:9-27:40
-151            android:name="androidx.window.extensions"
-151-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:26:13-54
-152            android:required="false" />
-152-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:27:13-37
-153        <uses-library
-153-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:28:9-30:40
-154            android:name="androidx.window.sidecar"
-154-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:29:13-51
-155            android:required="false" />
-155-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:30:13-37
-156
-157        <receiver
-157-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
-158            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-158-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
-159            android:directBootAware="false"
-159-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
-160            android:enabled="true"
-160-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
-161            android:exported="true"
-161-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
-162            android:permission="android.permission.DUMP" >
-162-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
-163            <intent-filter>
-163-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
-164                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-164-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
-164-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
-165            </intent-filter>
-166            <intent-filter>
-166-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
-167                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-167-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
-167-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
-168            </intent-filter>
-169            <intent-filter>
-169-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
-170                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-170-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
-170-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
-171            </intent-filter>
-172            <intent-filter>
-172-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
-173                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-173-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
-173-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
-174            </intent-filter>
-175        </receiver>
-176    </application>
-177
-178</manifest>
+51-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:40:15-46
+52            android:taskAffinity="" >
+52-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:39:17-40
+53            <intent-filter>
+53-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:42:13-46:29
+54                <action android:name="android.intent.action.MAIN" />
+54-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:43:17-69
+54-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:43:25-66
+55
+56                <category android:name="android.intent.category.HOME" />
+56-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:17-73
+56-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:27-70
+57                <category android:name="android.intent.category.DEFAULT" />
+57-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:17-76
+57-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:27-73
+58            </intent-filter>
+59        </activity>
+60
+61        <!-- Settings Activity -->
+62        <activity
+62-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:50:9-54:64
+63            android:name="com.littlelock.app.SettingsActivity"
+63-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:51:13-45
+64            android:exported="false"
+64-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:52:13-37
+65            android:label="@string/settings_title"
+65-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:53:13-51
+66            android:theme="@style/Theme.LittleLock.Settings" />
+66-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:54:13-61
+67
+68        <!-- PIN Lock Activity -->
+69        <activity
+69-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:57:9-63:49
+70            android:name="com.littlelock.app.PinLockActivity"
+70-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:58:13-44
+71            android:excludeFromRecents="true"
+71-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:63:13-46
+72            android:exported="false"
+72-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:59:13-37
+73            android:label="@string/pin_enter_title"
+73-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:60:13-52
+74            android:launchMode="singleTask"
+74-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:62:13-44
+75            android:theme="@style/Theme.LittleLock.PinLock" />
+75-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:61:13-60
+76
+77        <!-- Launcher Foreground Service -->
+78        <service
+78-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:66:9-70:60
+79            android:name="com.littlelock.app.LauncherService"
+79-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:67:13-44
+80            android:enabled="true"
+80-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:68:13-35
+81            android:exported="false"
+81-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:69:13-37
+82            android:foregroundServiceType="shortService" />
+82-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:70:13-57
+83
+84        <!-- Accessibility Service -->
+85        <service
+85-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:73:9-85:19
+86            android:name="com.littlelock.app.AccessibilityMonitorService"
+86-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:74:13-56
+87            android:enabled="true"
+87-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:75:13-35
+88            android:exported="true"
+88-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:76:13-36
+89            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+89-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:77:13-79
+90            android:process=":accessibility" >
+90-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:78:13-45
+91            <intent-filter>
+91-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:79:13-81:29
+92                <action android:name="android.accessibilityservice.AccessibilityService" />
+92-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:80:17-92
+92-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:80:25-89
+93            </intent-filter>
+94
+95            <meta-data
+95-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:82:13-84:72
+96                android:name="android.accessibilityservice"
+96-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:83:17-60
+97                android:resource="@xml/accessibility_service_config" />
+97-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:84:17-69
+98        </service>
+99
+100        <!-- Device Admin Receiver -->
+101        <receiver
+101-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:88:9-99:20
+102            android:name="com.littlelock.app.DeviceAdminReceiver"
+102-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:89:13-48
+103            android:enabled="true"
+103-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:90:13-35
+104            android:exported="false"
+104-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:91:13-37
+105            android:permission="android.permission.BIND_DEVICE_ADMIN" >
+105-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:92:13-70
+106            <meta-data
+106-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:93:13-95:65
+107                android:name="android.app.device_admin"
+107-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:94:17-56
+108                android:resource="@xml/device_admin_receiver" />
+108-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:95:17-62
+109
+110            <intent-filter>
+110-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:96:13-98:29
+111                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+111-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:97:17-82
+111-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:97:25-79
+112            </intent-filter>
+113        </receiver>
+114
+115        <!-- Boot Receiver -->
+116        <receiver
+116-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:102:11-111:22
+117            android:name="com.littlelock.app.BootReceiver"
+117-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:103:15-43
+118            android:enabled="true"
+118-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:104:15-37
+119            android:exported="true" >
+119-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:105:15-38
+120            <intent-filter>
+120-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:106:15-110:31
+121                <action android:name="android.intent.action.BOOT_COMPLETED" />
+121-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:107:19-81
+121-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:107:27-78
+122                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+122-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:19-84
+122-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:27-81
+123
+124                <category android:name="android.intent.category.DEFAULT" />
+124-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:17-76
+124-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:27-73
+125            </intent-filter>
+126        </receiver>
+127
+128        <!-- Daily Summary Receiver -->
+129        <receiver
+129-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:114:11-117:42
+130            android:name="com.littlelock.app.DailySummaryReceiver"
+130-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:115:15-51
+131            android:enabled="true"
+131-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:116:15-37
+132            android:exported="false" />
+132-->C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:117:15-39
+133
+134        <provider
+134-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+135            android:name="androidx.startup.InitializationProvider"
+135-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
+136            android:authorities="com.littlelock.app.androidx-startup"
+136-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
+137            android:exported="false" >
+137-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
+138            <meta-data
+138-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+139                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+139-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
+140                android:value="androidx.startup" />
+140-->[androidx.emoji2:emoji2:1.2.0] C:\Users\Travis\.gradle\caches\transforms-3\9dba3473c2e7ab91e493b9371a42d8d3\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
+141            <meta-data
+141-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Travis\.gradle\caches\transforms-3\f96262b739e7235dd07a97d871a1b1da\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:29:13-31:52
+142                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+142-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Travis\.gradle\caches\transforms-3\f96262b739e7235dd07a97d871a1b1da\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:30:17-78
+143                android:value="androidx.startup" />
+143-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Travis\.gradle\caches\transforms-3\f96262b739e7235dd07a97d871a1b1da\transformed\lifecycle-process-2.6.1\AndroidManifest.xml:31:17-49
+144            <meta-data
+144-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+145                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+145-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+146                android:value="androidx.startup" />
+146-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+147        </provider>
+148
+149        <uses-library
+149-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:25:9-27:40
+150            android:name="androidx.window.extensions"
+150-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:26:13-54
+151            android:required="false" />
+151-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:27:13-37
+152        <uses-library
+152-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:28:9-30:40
+153            android:name="androidx.window.sidecar"
+153-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:29:13-51
+154            android:required="false" />
+154-->[androidx.window:window:1.0.0] C:\Users\Travis\.gradle\caches\transforms-3\108abe6471b017e5481657b16c1015d6\transformed\window-1.0.0\AndroidManifest.xml:30:13-37
+155
+156        <receiver
+156-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+157            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+157-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+158            android:directBootAware="false"
+158-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+159            android:enabled="true"
+159-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+160            android:exported="true"
+160-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+161            android:permission="android.permission.DUMP" >
+161-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+162            <intent-filter>
+162-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+163                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+163-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+163-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+164            </intent-filter>
+165            <intent-filter>
+165-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+166                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+166-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+166-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+167            </intent-filter>
+168            <intent-filter>
+168-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+169                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+169-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+169-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+170            </intent-filter>
+171            <intent-filter>
+171-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+172                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+172-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+172-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\Travis\.gradle\caches\transforms-3\ee77c6148e535550acd02ec4a55fcb7f\transformed\profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+173            </intent-filter>
+174        </receiver>
+175    </application>
+176
+177</manifest>

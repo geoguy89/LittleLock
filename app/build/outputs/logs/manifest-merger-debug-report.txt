@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-122:12
-INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-122:12
-INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-122:12
-INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-122:12
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-121:12
+INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-121:12
+INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-121:12
+INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:2:1-121:12
 MERGED from [androidx.databinding:viewbinding:8.2.2] C:\Users\Travis\.gradle\caches\transforms-3\d64262d30dfd028fefb0db007e75e64f\transformed\viewbinding-8.2.2\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\Travis\.gradle\caches\transforms-3\56af212e940d1f2bde023f0cf7bfa9c5\transformed\material-1.11.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Travis\.gradle\caches\transforms-3\a1c5e08825da8b3508fd7a457a086ebc\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
@@ -123,8 +123,8 @@ ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:19:5-20:47
 	android:name
 		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:19:22-75
 application
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:22:5-120:21
-INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:22:5-120:21
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:22:5-119:21
+INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:22:5-119:21
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\Travis\.gradle\caches\transforms-3\56af212e940d1f2bde023f0cf7bfa9c5\transformed\material-1.11.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\Travis\.gradle\caches\transforms-3\56af212e940d1f2bde023f0cf7bfa9c5\transformed\material-1.11.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\Travis\.gradle\caches\transforms-3\a1c5e08825da8b3508fd7a457a086ebc\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -166,143 +166,141 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Travis\.gradle\cac
 	android:usesCleartextTraffic
 		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:31:9-44
 activity#com.littlelock.app.LauncherActivity
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:34:11-48:20
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:34:11-47:20
 	android:enabled
 		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:37:15-37
 	android:excludeFromRecents
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:38:15-48
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:38:17-50
 	android:launchMode
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:41:15-46
-	android:noHistory
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:39:15-39
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:40:15-46
 	android:exported
 		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:36:15-38
 	android:alwaysRetainTaskState
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:42:13-49
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:41:13-49
 	android:taskAffinity
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:40:15-38
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:39:17-40
 	android:name
 		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:35:15-47
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.DEFAULT+category:name:android.intent.category.HOME
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:43:13-47:29
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:42:13-46:29
 action#android.intent.action.MAIN
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:17-69
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:43:17-69
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:25-66
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:43:25-66
 category#android.intent.category.HOME
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:17-73
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:17-73
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:27-70
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:44:27-70
 category#android.intent.category.DEFAULT
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:46:17-76
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:17-76
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:46:27-73
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:45:27-73
 activity#com.littlelock.app.SettingsActivity
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:51:9-55:64
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:50:9-54:64
 	android:label
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:54:13-51
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:53:13-51
 	android:exported
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:53:13-37
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:52:13-37
 	android:theme
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:55:13-61
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:54:13-61
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:52:13-45
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:51:13-45
 activity#com.littlelock.app.PinLockActivity
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:58:9-64:49
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:57:9-63:49
 	android:label
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:61:13-52
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:60:13-52
 	android:excludeFromRecents
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:64:13-46
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:63:13-46
 	android:launchMode
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:63:13-44
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:62:13-44
 	android:exported
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:60:13-37
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:59:13-37
 	android:theme
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:62:13-60
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:61:13-60
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:59:13-44
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:58:13-44
 service#com.littlelock.app.LauncherService
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:67:9-71:60
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:66:9-70:60
 	android:enabled
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:69:13-35
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:68:13-35
 	android:exported
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:70:13-37
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:69:13-37
 	android:foregroundServiceType
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:71:13-57
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:70:13-57
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:68:13-44
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:67:13-44
 service#com.littlelock.app.AccessibilityMonitorService
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:74:9-86:19
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:73:9-85:19
 	android:process
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:79:13-45
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:78:13-45
 	android:enabled
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:76:13-35
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:75:13-35
 	android:exported
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:77:13-36
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:76:13-36
 	android:permission
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:78:13-79
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:77:13-79
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:75:13-56
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:74:13-56
 intent-filter#action:name:android.accessibilityservice.AccessibilityService
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:80:13-82:29
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:79:13-81:29
 action#android.accessibilityservice.AccessibilityService
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:81:17-92
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:80:17-92
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:81:25-89
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:80:25-89
 meta-data#android.accessibilityservice
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:83:13-85:72
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:82:13-84:72
 	android:resource
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:85:17-69
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:84:17-69
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:84:17-60
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:83:17-60
 receiver#com.littlelock.app.DeviceAdminReceiver
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:89:9-100:20
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:88:9-99:20
 	android:enabled
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:91:13-35
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:90:13-35
 	android:exported
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:92:13-37
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:91:13-37
 	android:permission
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:93:13-70
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:92:13-70
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:90:13-48
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:89:13-48
 meta-data#android.app.device_admin
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:94:13-96:65
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:93:13-95:65
 	android:resource
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:96:17-62
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:95:17-62
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:95:17-56
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:94:17-56
 intent-filter#action:name:android.app.action.DEVICE_ADMIN_ENABLED
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:97:13-99:29
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:96:13-98:29
 action#android.app.action.DEVICE_ADMIN_ENABLED
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:98:17-82
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:97:17-82
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:98:25-79
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:97:25-79
 receiver#com.littlelock.app.BootReceiver
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:103:11-112:22
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:102:11-111:22
 	android:enabled
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:105:15-37
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:104:15-37
 	android:exported
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:106:15-38
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:105:15-38
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:104:15-43
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:103:15-43
 intent-filter#action:name:android.intent.action.BOOT_COMPLETED+action:name:android.intent.action.QUICKBOOT_POWERON+category:name:android.intent.category.DEFAULT
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:107:15-111:31
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:106:15-110:31
 action#android.intent.action.BOOT_COMPLETED
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:19-81
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:107:19-81
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:27-78
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:107:27-78
 action#android.intent.action.QUICKBOOT_POWERON
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:109:19-84
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:19-84
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:109:27-81
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:108:27-81
 receiver#com.littlelock.app.DailySummaryReceiver
-ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:115:11-118:42
+ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:114:11-117:42
 	android:enabled
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:117:15-37
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:116:15-37
 	android:exported
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:118:15-39
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:117:15-39
 	android:name
-		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:116:15-51
+		ADDED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml:115:15-51
 uses-sdk
 INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Projects\LittlesLock\app\src\main\AndroidManifest.xml
