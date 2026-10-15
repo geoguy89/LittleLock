@@ -65,14 +65,26 @@ class HomeScreenReviewTest {
         if (resDir.exists()) filesToCheck.addAll(collectFiles(resDir, ".xml"))
 
         val forbiddenPatterns = listOf(
-            "ad",
+            "com.google.android.gms.ads",
+            "com.google.firebase.analytics",
+            "com.facebook.android",
+            "admob",
             "advertisement",
             "promot",
             "sponsor",
-            "banner",
             "interstitial",
             "rewarded",
-            "native ad"
+            "native ad",
+            "applovin",
+            "unityads",
+            "ironsource",
+            "startapp",
+            "tapjoy",
+            "chartboost",
+            "mobfox",
+            "inmobi",
+            "smaato",
+            "openx"
         )
 
         for (file in filesToCheck) {
