@@ -25,7 +25,7 @@ class ApkInstallTest {
         // APK files start with PK (zip magic bytes 0x50 0x4B)
         assertTrue(
             "APK should have valid zip header (PK signature)",
-            bytes.size >= 4 && bytes[0].toInt() == 0x50.toByte() && bytes[1].toInt() == 0x4B.toByte()
+            bytes.size >= 4 && bytes[0].toInt() == 0x50 && bytes[1].toInt() == 0x4B
         )
     }
 }
