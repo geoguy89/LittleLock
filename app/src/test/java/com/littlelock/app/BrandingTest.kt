@@ -10,10 +10,7 @@ import java.io.File
  */
 class BrandingTest {
 
-    private val projectRoot = File(javaClass.classLoader.getResource(".")?.file?.path ?: "app/src/main")
-        .parentFile.parentFile.parentFile.parentFile
-
-    private val srcMain = File(projectRoot, "app/src/main")
+    private val srcMain = File("app/src/main")
 
     /**
      * Verify that strings.xml contains "LittleLock" as app_name.
@@ -59,9 +56,14 @@ class BrandingTest {
 
         for (file in filesToCheck) {
             val content = file.readText().lowercase()
+            val relPath = try {
+                file.relativeTo(srcMain).toString()
+            } catch (_: IllegalArgumentException) {
+                file.name
+            }
             for (pattern in forbiddenPatterns) {
                 assertFalse(
-                    "Found '$pattern' in ${file.relativeTo(srcMain)}",
+                    "Found '$pattern' in $relPath",
                     content.contains(pattern.lowercase())
                 )
             }
