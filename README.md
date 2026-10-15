@@ -1,4 +1,5 @@
 # LittleLock
+<!-- Updated for v1.0.0 release -->
 
 **Kids parental control launcher with Discord webhook notifications.**
 
