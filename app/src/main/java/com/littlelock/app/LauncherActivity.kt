@@ -40,6 +40,13 @@ class LauncherActivity : AppCompatActivity() {
         appAdapter = AppAdapter(this, installedApps)
         binding.gridApps.adapter = appAdapter
         binding.gridApps.onItemClickListener = null // we handle clicks manually
+        binding.gridApps.setOnItemClickListener { parent, view, position, id ->
+            val app = parent.getItemAtPosition(position) as AppInfo
+            val launchIntent = packageManager.getLaunchIntentForPackage(app.packageName)
+            if (launchIntent != null) {
+                startActivity(launchIntent)
+            }
+        }
         binding.gridApps.setOnTouchListener { _, _ -> true }
     }
 
@@ -118,5 +125,42 @@ class LauncherActivity : AppCompatActivity() {
             gestureDetector.onTouchEvent(event)
         }
         return super.onTouchEvent(event)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        // Re-launch as home: reload apps and stay on top
+        setTaskToHome()
+        loadApps()
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        // When user navigates away, immediately return to launcher
+        setTaskToHome()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        // If we lose focus (user swiped away), force back to launcher
+        if (!hasFocus) {
+            setTaskToHome()
+        }
+    }
+
+    private fun setTaskToHome() {
+        // Bring our task to front and ensure we act as home launcher
+        val intent = Intent(this, javaClass)
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_TASK_ON_HOME or
+            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        )
+        startActivity(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadApps()
     }
 }

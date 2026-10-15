@@ -1,6 +1,8 @@
 package com.littlelock.app
 
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.ByteString
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -100,7 +102,7 @@ object DiscordWebhookService {
 
         val request = Request.Builder()
             .url(webhookUrl)
-            .post(RequestBody.create(MediaType.get("application/json"), bodyJson))
+            .post(bodyJson.toRequestBody("application/json".toMediaType()))
             .build()
 
         client.newCall(request).enqueue(object : Callback {

@@ -78,4 +78,9 @@
     <string name="usage_today">Today\'s Usage</string>
     <string name="usage_apps_launched">%d apps launched</string>
     <string name="usage_time_spent">Time spent: %s</string>
+
+    <!-- Settings messages -->
+    <string name="device_admin_updated">Device Admin status updated</string>
+    <string name="accessibility_updated">Accessibility Service status updated</string>
+    <string name="settings_saved">Settings saved!</string>
 </resources>

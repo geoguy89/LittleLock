@@ -19,6 +19,9 @@ class BootReceiver : BroadcastReceiver() {
             } else {
                 context.startService(serviceIntent)
             }
+
+            // Schedule daily summary alarm on boot
+            DailySummaryScheduler.scheduleDailySummary(context)
         }
     }
 }
