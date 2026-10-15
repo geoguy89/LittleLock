@@ -7,6 +7,15 @@ android {
     namespace = "com.littlelock.app"
     compileSdk = 36
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../littlelock-release.keystore")
+            storePassword = "littlelock123"
+            keyAlias = "littlelock"
+            keyPassword = "littlelock123"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.littlelock.app"
         minSdk = 29
@@ -20,6 +29,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

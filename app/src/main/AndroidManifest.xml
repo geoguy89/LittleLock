@@ -35,9 +35,8 @@
               android:name=".LauncherActivity"
               android:exported="true"
               android:enabled="true"
-              android:excludeFromRecents="true"
-              android:noHistory="true"
-              android:taskAffinity=""
+                android:excludeFromRecents="true"
+                android:taskAffinity=""
               android:launchMode="singleTask"
             android:alwaysRetainTaskState="true">
             <intent-filter>
