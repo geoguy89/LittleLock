@@ -28,11 +28,13 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFFFF</color>
+    <string name="accessibility_updated">Accessibility Service status updated</string>
     <string name="app_info_launch_count">Launch Count</string>
     <string name="app_info_name">App Name</string>
     <string name="app_info_package">Package Name</string>
     <string name="app_info_title">App Info</string>
     <string name="app_name">LittleLock</string>
+    <string name="device_admin_updated">Device Admin status updated</string>
     <string name="gesture_hint">4-finger swipe up to access settings</string>
     <string name="launcher_empty">No apps available</string>
     <string name="launcher_title">My Apps</string>
@@ -80,6 +82,7 @@
     <string name="settings_notif_blocked_apps">Notify on blocked app attempts</string>
     <string name="settings_notif_daily_summary">Daily usage summary</string>
     <string name="settings_notifications">Notification Settings</string>
+    <string name="settings_saved">Settings saved!</string>
     <string name="settings_title">Parent Settings</string>
     <string name="settings_version">Version %s</string>
     <string name="usage_apps_launched">%d apps launched</string>

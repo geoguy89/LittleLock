@@ -3319,6 +3319,7 @@ id btn6
 id btn7
 id btn8
 id btn9
+id btnBack
 id btnClear
 id btnEnableAccessibility
 id btnEnableDeviceAdmin
@@ -4000,6 +4001,7 @@ string abc_searchview_description_voice
 string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
+string accessibility_updated
 string androidx_startup
 string app_info_launch_count
 string app_info_name
@@ -4025,6 +4027,7 @@ string character_counter_overflowed_content_description
 string character_counter_pattern
 string clear_text_end_icon_content_description
 string copy
+string device_admin_updated
 string error_a11y_label
 string error_icon_content_description
 string expand_button_title
@@ -4192,6 +4195,7 @@ string settings_notif_app_launch
 string settings_notif_blocked_apps
 string settings_notif_daily_summary
 string settings_notifications
+string settings_saved
 string settings_title
 string settings_version
 string side_sheet_accessibility_pane_title

@@ -48,6 +48,7 @@ id btn6
 id btn7
 id btn8
 id btn9
+id btnBack
 id btnClear
 id btnEnableAccessibility
 id btnEnableDeviceAdmin
@@ -76,11 +77,13 @@ layout activity_settings
 layout item_app
 mipmap ic_launcher
 mipmap ic_launcher_round
+string accessibility_updated
 string app_info_launch_count
 string app_info_name
 string app_info_package
 string app_info_title
 string app_name
+string device_admin_updated
 string gesture_hint
 string launcher_empty
 string launcher_title
@@ -128,6 +131,7 @@ string settings_notif_app_launch
 string settings_notif_blocked_apps
 string settings_notif_daily_summary
 string settings_notifications
+string settings_saved
 string settings_title
 string settings_version
 string usage_apps_launched

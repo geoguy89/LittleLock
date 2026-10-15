@@ -44,10 +44,12 @@
         <!-- Main Launcher Activity - acts as custom home screen -->
         <activity
             android:name="com.littlelock.app.LauncherActivity"
+            android:alwaysRetainTaskState="true"
             android:enabled="true"
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask"
+            android:noHistory="true"
             android:taskAffinity="" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -123,6 +125,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
+        <!-- Daily Summary Receiver -->
+        <receiver
+            android:name="com.littlelock.app.DailySummaryReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

@@ -2015,6 +2015,7 @@
     <string name="abc_shareactionprovider_share_with">Share with</string>
     <string name="abc_shareactionprovider_share_with_application">Share with <ns2:g example="Mail" id="application_name">%s</ns2:g></string>
     <string name="abc_toolbar_collapse_description">Collapse</string>
+    <string name="accessibility_updated">Accessibility Service status updated</string>
     <string name="androidx_startup" translatable="false">androidx.startup</string>
     <string name="app_info_launch_count">Launch Count</string>
     <string name="app_info_name">App Name</string>
@@ -2040,6 +2041,7 @@
     <string name="character_counter_pattern" translatable="false">%1$d/%2$d</string>
     <string name="clear_text_end_icon_content_description">Clear text</string>
     <string name="copy">Copy</string>
+    <string name="device_admin_updated">Device Admin status updated</string>
     <string description="Screen reader announcement for when a checkbox is on error. [CHAR LIMIT=NONE]" name="error_a11y_label">
     Error: invalid
   </string>
@@ -2219,6 +2221,7 @@
     <string name="settings_notif_blocked_apps">Notify on blocked app attempts</string>
     <string name="settings_notif_daily_summary">Daily usage summary</string>
     <string name="settings_notifications">Notification Settings</string>
+    <string name="settings_saved">Settings saved!</string>
     <string name="settings_title">Parent Settings</string>
     <string name="settings_version">Version %s</string>
     <string description="Title of the side sheet&apos;s accessibility pane that is spoken by TalkBack when the side sheet appears on screen. [CHAR_LIMIT=NONE]" name="side_sheet_accessibility_pane_title">Side Sheet</string>

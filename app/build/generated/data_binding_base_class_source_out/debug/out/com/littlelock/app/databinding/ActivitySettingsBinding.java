@@ -23,6 +23,9 @@ public final class ActivitySettingsBinding implements ViewBinding {
   private final ScrollView rootView;
 
   @NonNull
+  public final Button btnBack;
+
+  @NonNull
   public final Button btnEnableAccessibility;
 
   @NonNull
@@ -52,13 +55,14 @@ public final class ActivitySettingsBinding implements ViewBinding {
   @NonNull
   public final TextView tvVersion;
 
-  private ActivitySettingsBinding(@NonNull ScrollView rootView,
+  private ActivitySettingsBinding(@NonNull ScrollView rootView, @NonNull Button btnBack,
       @NonNull Button btnEnableAccessibility, @NonNull Button btnEnableDeviceAdmin,
       @NonNull Button btnSaveWebhook, @NonNull Button btnVerifyPin,
       @NonNull MaterialCheckBox cbNotifAppLaunch, @NonNull MaterialCheckBox cbNotifBlockedApps,
       @NonNull MaterialCheckBox cbNotifDailySummary, @NonNull TextInputEditText etPin,
       @NonNull TextInputEditText etWebhookUrl, @NonNull TextView tvVersion) {
     this.rootView = rootView;
+    this.btnBack = btnBack;
     this.btnEnableAccessibility = btnEnableAccessibility;
     this.btnEnableDeviceAdmin = btnEnableDeviceAdmin;
     this.btnSaveWebhook = btnSaveWebhook;
@@ -98,6 +102,12 @@ public final class ActivitySettingsBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnBack;
+      Button btnBack = ViewBindings.findChildViewById(rootView, id);
+      if (btnBack == null) {
+        break missingId;
+      }
+
       id = R.id.btnEnableAccessibility;
       Button btnEnableAccessibility = ViewBindings.findChildViewById(rootView, id);
       if (btnEnableAccessibility == null) {
@@ -158,7 +168,7 @@ public final class ActivitySettingsBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivitySettingsBinding((ScrollView) rootView, btnEnableAccessibility,
+      return new ActivitySettingsBinding((ScrollView) rootView, btnBack, btnEnableAccessibility,
           btnEnableDeviceAdmin, btnSaveWebhook, btnVerifyPin, cbNotifAppLaunch, cbNotifBlockedApps,
           cbNotifDailySummary, etPin, etWebhookUrl, tvVersion);
     }

@@ -5,13 +5,22 @@
     android:layout_height="match_parent"
     android:background="@color/littlelock_background">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:padding="16dp">
 
-        <!-- General Section -->
+          <!-- Back Button -->
+          <Button
+              android:id="@+id/btnBack"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="end"
+              android:layout_marginBottom="12dp"
+              android:text="← Back" />
+
+          <!-- General Section -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

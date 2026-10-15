@@ -31,13 +31,15 @@
         android:usesCleartextTraffic="true">
 
         <!-- Main Launcher Activity - acts as custom home screen -->
-        <activity
-            android:name=".LauncherActivity"
-            android:exported="true"
-            android:enabled="true"
-            android:excludeFromRecents="true"
-            android:taskAffinity=""
-            android:launchMode="singleTask">
+          <activity
+              android:name=".LauncherActivity"
+              android:exported="true"
+              android:enabled="true"
+              android:excludeFromRecents="true"
+              android:noHistory="true"
+              android:taskAffinity=""
+              android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
@@ -97,18 +99,24 @@
             </intent-filter>
         </receiver>
 
-        <!-- Boot Receiver -->
-        <receiver
-            android:name=".BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
+          <!-- Boot Receiver -->
+          <receiver
+              android:name=".BootReceiver"
+              android:enabled="true"
+              android:exported="true">
+              <intent-filter>
+                  <action android:name="android.intent.action.BOOT_COMPLETED" />
+                  <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                  <category android:name="android.intent.category.DEFAULT" />
+              </intent-filter>
+          </receiver>
 
-    </application>
+          <!-- Daily Summary Receiver -->
+          <receiver
+              android:name=".DailySummaryReceiver"
+              android:enabled="true"
+              android:exported="false" />
+
+      </application>
 
 </manifest>
