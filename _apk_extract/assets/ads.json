@@ -1,0 +1,41 @@
+{
+  "error": false, 
+  "show_ad_banner": true,
+  "play_automatically": true,
+  "slide_duration_seconds": 10,
+  "ads": [ 
+  	{
+  	"sponsored":0,
+	"ad_type":"native",
+	"ad_icon":"http://kiddoware.com/android/app_icons/kpsb_96.png",
+	"ad_title":"Kids Place - Safe Browser Plugin: Block Inappropriate Web Sites",
+	"ad_body":"Browser to control what web sites kids can use while in Kids Place. Create personal white list or block by categories.",
+	"ad_cta_title":"Install Plugin",
+	"ad_cta_url":"https://play.google.com/store/apps/details?id=com.kiddoware.kidsafebrowser&referrer=utm_source%3Dkidsplace_app%26utm_medium%3Dandroid_app%26utm_term%3Dplugin_ad%26utm_campaign%3Dplugin_ad",
+	"ad_payload": "",
+	"ad_app_package": "com.kiddoware.kidsafebrowser"
+	},
+	{
+	"sponsored":0,
+	"ad_type":"native",
+	"ad_icon":"http://kiddoware.com/android/app_icons/kvp_96.png",
+	"ad_title":"Kids Place - Video Player Plugin: Block Inappropriate YouTube videos",
+	"ad_body":"Video Player to control what videos on YouTube videos or device kids can watch. Safe YouTube Search.",
+	"ad_cta_title":"Install Plugin",
+	"ad_cta_url":"https://play.google.com/store/apps/details?id=com.kiddoware.kidsvideoplayer&referrer=utm_source%3Dkidsplace_app%26utm_medium%3Dandroid_app%26utm_term%3Dplugin_ad%26utm_campaign%3Dplugin_ad",
+	"ad_payload": "",
+	"ad_app_package": "com.kiddoware.kidsvideoplayer"
+	},
+    {
+    "sponsored":0,
+    "ad_type":"native",
+    "ad_icon":"http://kiddoware.com/android/app_icons/kpv_96.png",
+    "ad_title":"Kids Place - Safe Picture Viewer Plugin",
+    "ad_body":"Install Kids Picture Viewer to control what pictures kids can see.",
+    "ad_cta_title":"Install Plugin",
+    "ad_cta_url":"https://play.google.com/store/apps/details?id=com.kiddoware.kidspictureviewer&referrer=utm_source%3Dkidsplace_app%26utm_medium%3Dandroid_app%26utm_term%3Dplugin_ad%26utm_campaign%3Dplugin_ad",
+    "ad_payload": "",
+	"ad_app_package": "com.kiddoware.kidspictureviewer"
+    }
+  ]
+}

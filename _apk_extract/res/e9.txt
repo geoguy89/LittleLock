@@ -1,0 +1,727 @@
+<html>
+  <head>
+    <style type='text/css'>
+      a            { color:#a0a0e0 }
+      div.title    {
+          color:#C0F0C0;
+          font-size:1.2em;
+          font-weight:bold;
+          margin-top:1em;
+          margin-bottom:0.5em;
+          text-align:center }
+      div.subtitle {
+          color:#C0F0C0;
+          font-size:0.8em;
+          margin-bottom:1em;
+          text-align:center }
+      div.freetext { color:#F0F0F0 }
+      div.list     { color:#C0C0F0 }
+    </style>
+  </head>
+  <body>
+    % Version 3.10.10
+                             _ 2026-08-29
+                             * New feature in Kids Place to block internet access at App level
+
+  % Version 3.10.08
+                           _ 2026-07-28
+                           * New feature in Kids Place admin mode to remotely approve or add additional screen time to apps temporarily
+     % Version 3.10.06
+                           _ 2026-07-23
+                           * New feature for parents/admin to remotely approve or add additional screen time to apps temporarily
+     % Version 3.9.94
+                           _ 2026-05-29
+                           * Added a new option to auto approve newly installed app
+     % Version 3.9.94
+                             _ 2026-05-21
+                             * Performance Improvements
+      % Version 3.9.93
+                            _ 2026-05-18
+                            * Added option to flag story content by admin
+                            * Added option to change stories language
+      % Version 3.9.92
+                            _ 2026-05-10
+                            * Improved Kids Story content and engine/UI.
+      % Version 3.9.88
+                            _ 2026-04-02
+                            * Updates library to 0.0.3 to meet compliance obligations for age verification
+                              and signal processing under Brazil's new Digital Child and Adolescent Statute.
+      % Version 3.9.86
+                            _ 2026-01-06
+                            * Implelemented Google Play Age Signal API
+                            * Updtaed onboarding text.
+      % Version 3.9.84
+                            _ 2025-12-23
+                             * Migrated API to new backend
+      % Version 3.9.83
+                            _ 2025-12-15
+                             * API security improvements
+      % Version 3.9.81
+                            _ 2025-11-01
+                             * Added encryption for settings storing sensitive data.
+                             * Removed Location Permission and location and geo fencing feature.
+                             * Updated Analytics
+      % Version 3.9.80
+                            _ 2025-10-15
+                             * Added location feature removal notice.
+                             * Disabled gallery wallpaper selection in kids mode.
+                             * Force clear password on timer lock screen
+    % Version 3.9.76
+                      _ 2025-09-20
+                       * Android API 35 support.
+                       * Added setting for log.
+    % Version 3.9.71
+                        _ 2025-08-04
+                         * Changed "Lifetime" license as "One Time".
+                         * Removed ads.
+    % Version 3.9.70
+                        _ 2025-07-27
+                         * Updated in app billing support as per Google requirement.
+    % Version 3.9.33
+                      _ 2024-04-05
+                       * Improved Screen Time Limits UI
+                       * Renamed Advanced timer to Screen Time Control
+    % Version 3.9.29
+                      _ 2024-03-27
+                       * Backup Deletion by Long Press
+                       * Improved Onboarding.
+    % Version 3.9.24
+                     _ 2024-03-08
+                      * Updated wallpapers.
+   % Version 3.8.92
+                   _ 2023-05-01
+                    * Added option to delete account per Google Play Store Policy.
+   % Version 3.8.75
+                   _ 2023-02-14
+                    * Transitioning Free Version to Ad Supported version to support operating and development cost. Ad enabled version will only start after explicit consent of parents and ads will only be shown to kids. No ads will be shown on kids place home screen or any place accessible to kids.
+   % Version 3.8.68
+                   _ 2023-02-06
+                    * Improved Remote Management Feature.
+   % Version 3.8.67
+                   _ 2023-01-29
+                    * Fixed websites shortcuts overlapping with apps on home screen issue.
+   % Version 3.8.64
+                   _ 2023-01-23
+                    * Improved Onboarding Feature
+   % Version 3.8.48
+                   _ 2022-07-31
+                    * Added Task Feature
+   % Version 3.8.45
+                   _ 2022-07-31
+                    * Stability improvements
+  % Version 3.8.43
+                 _ 2022-07-15
+                  * Stability improvements
+  % Version 3.8.41
+               _ 2022-06-27
+                * Stability improvements
+  % Version 3.8.36
+               _ 2022-05-20
+                * Stability improvements
+   % Version 3.8.34
+             _ 2022-05-10
+              * Stability improvements
+  % Version 3.8.25
+           _ 2022-02-06
+            * Improvements to Grown up Mode
+  % Version 3.8.19
+                     _ 2021-10-29
+                      * Improvements to location tracking
+                      * Improvements to in-app purchase flows
+  % Version 3.8.18
+                   _ 2021-10-06
+                    * Improving in-app experience
+  % Version 3.8.16
+                 _ 2021-08-01
+                  * Added sorting/filtering in manager apps views
+                  * Added support for newer Android version
+  % Version 3.8.14
+                   _ 2021-07-04
+                    * Integrated Remote Control Features in Kids Place. No Need for remote conrtol plugin to be installed on Kids Place now.
+  % Version 3.8.12
+                   _ 2021-06-26
+                    * Timer improvements
+  % Version 3.8.11
+                 _ 2021-05-30
+                  * Startup improvements
+    % Version 3.8.10
+               _ 2021-04-18
+                * Privacy improvements
+    % Version 3.8.2
+                 _ 2020-11-22
+                  * Onboarding Improvments
+                  * UI/UX improvements
+  % Version 3.8.1
+               _ 2020-09-27
+                * Improved support for budget phones
+                * Pin protection now with Kiddoware account
+                * Stability improvements
+  % Version 3.7.9
+             _ 2020-08-23
+              * Stability improvements
+              * Onboarding updates
+  % Version 3.7.7
+             _ 2020-07-06
+              * Added Biometrics support for PIN prompt
+  % Version 3.7.5
+           _ 2020-05-23
+             * Added Remote Reporting Dashboard functionality in Kids Place
+ % Version 3.7.0
+          _ 2020-04-15
+            * Added Kiddoware suite license option for both safe browser and remote control plugin
+            * Minor bug fixes
+ % Version 3.6.7
+          _ 2020-03-01
+            * Performance improvements
+            * Minor bug fixes
+ % Version 3.6.6
+          _ 2020-02-01
+            * Fixed android 10 home button lock issue
+            *Improved onboarding
+            * Minor bug fixes
+ % Version 3.6.4
+          _ 2020-01-27
+            * Fixed bug in onboarding that allowed some users to set > 4 digit PIN.
+            * Added logic to truncate > 4 digits in PIN to 4 digits for above users.
+ % Version 3.6.3
+          _ 2020-01-17
+            * Improved onboarding
+            * Improved screen time service
+ % Version 3.5.9
+          _ 2019-11-06
+            * Updated UI
+            * Integrated Safe Browser UI in KP
+ % Version 3.5.5
+          _ 2019-08-19
+            * Minor improvements
+ % Version 3.5.4
+        _ 2019-07-29
+          * Security Fixes
+          * Email Verification fix
+          * Newly download apps (when KP running) not showing in manage apps fix
+ % Version 3.5.2
+        _ 2019-07-25
+          * Bug fixes in start on reboot feature
+% Version 3.5.1
+      _ 2019-06-18
+        * Improved launcher performance
+        * UI Improvements
+        * Bug fixes
+% Version 3.4.9
+        _ 2019-05-04
+          * Fixed some bugs in temporary timer
+% Version 3.4.8
+        _ 2019-04-14
+          * Introduced warnings section for managing device configuration
+% Version 3.4.7
+          _ 2019-04-01
+            * Added option to manage privacy settings
+            * Improved Remote Control features
+% Version 3.4.6
+            _ 2019-03-14
+              * Added option to connect to kiddoware account for PIN retrieval
+% Version 3.4.5
+            _ 2019-02-07
+              * Added option to change UI to have more icons
+              * Added option to increase blocking apps sensitivity
+              * Fixed rating prompt notification bu
+% Version 3.4.4
+            _ 2019-01-25
+              * Fixed missing apps issue
+% Version 3.4.3
+              _ 2019-01-10
+                * Fixed minor bugs
+  % Version 3.4.1
+                _ 2018-12-24
+                  * Fix apps on SD card removal on restart issue.
+                  * Removed READ_PHONE_STATE permission and updated logic allow phone calls.
+  % Version 3.4.0
+              _ 2018-12-01
+                * Home Screen Design Update
+                * Technical desgin changes.
+  % Version 3.3.2
+              _ 2018-09-26
+                * Fixed notification bar bug
+  % Version 3.3.1
+              _ 2018-09-17
+                  * Updated manage apps screen.
+                  * Bug fixes for Kids Place Remote Control.
+ % Version 3.1.9
+            _ 2018-06-19
+                * Added Cloud Back up and Restore feature.
+                * Added logic to display an overlay of time remaining for 3rd party apps.
+                * Fixed add user bug on 4.4 device.
+   % Version 3.1.7
+              _ 2018-05-18
+                  * Added logic to toggle wifi if state is different than what we need it to be.
+                  * Added logic to increment brute force PIN by multiple of 2 mins.
+  % Version 3.1.6
+            _ 2018-05-17
+                * Added logic to block recent apps button. Please go to whitelist and remove system.ui entry to block recent apps.
+                * Added support for remote locking/unlocking of kids place from remote control.
+                * Updated settings and advance timer screen.
+  % Version 3.1.4
+            _ 2018-03-07
+                * Android 8.0 notification bar lock issue fix.
+  % Version 3.0.9
+              _ 2018-03-07
+                  * Fixed notification bar lock issue.
+  % Version 3.0.8
+              _ 2018-02-01
+                  * Added new setting for kids to manage wifi.
+  % Version 3.0.6
+              _ 2018-01-21
+                  * Fixed timer bug where time blocked app can be started from recent task menu.
+  % Version 3.0.3
+              _ 2017-12-25
+                  * Fixed Remote Control bugs.
+   % Version 3.0.1
+                _ 2017-11-24
+                    * Fixed advance timer app category change bug.
+                -   * Close PIN dialog on incorrect entry.
+                -   * Kids Place Remote Control bug fixes.
+                -   * Fixed font size for time hours slots in advance timer.
+
+  % Version 2.9.9
+              _ 2017-10-18
+                  * Fixed the logic to auto validate PIN so that user don't have hit enter upon correct PIN entry.
+  % Version 2.9.8
+            _ 2017-09-15
+                * Added logic to auto validate PIN so that user don't have hit enter upon correct PIN entry.
+                * Added localization for Poland, Indonesia and Viet Nam
+  % Version 2.9.7
+            _ 2017-08-30
+                * Fixed app usage prompt issue.
+                * Added logic to block apps to start when now allowed because of timer.
+  % Version 2.9.6
+              _ 2017-08-22
+                  *  Change the clock format in daily time limit for advacnce timer.
+  % Version 2.9.5
+             _ 2017-08-15
+                 *  Added device admin permission disclosure per Google Play Store policy.
+  % Version 2.9.4
+             _ 2017-08-07
+                 *  Fixed Advance timer notification
+  % Version 2.9.3
+            _ 2017-07-20
+                 *  Fixed tempoary timer bug when used when advance timer is active
+    % Version 2.9.2
+               _ 2017-06-30
+                   * Updated Kids Place app icon
+                   * Prelim work for updating kids place for KP AI Bot.
+    % Version 2.9.1
+                 _ 2017-05-20
+                     * Prelim work for updating kids place app icon.
+     % Version 2.9.0
+               _ 2017-04-22
+                   * Fixed space in timer profile bug.
+   % Version 2.8.9
+             _ 2017-04-13
+                 * Firebase remote config related changes.
+   % Version 2.8.7
+           _ 2017-03-13
+               * Fixed the app icon issue.
+   % Version 2.8.7
+           _ 2017-03-06
+               * Fixed the bug where Kids Palce was being crashed when an object was dragged to notification bar.
+               * Fixed Out of Memory error.
+               * Added anlytics for settings usage
+   % Version 2.8.5
+           _ 2017-01-16
+               * Fixed advance timer daily time limit set bug
+   % Version 2.8.4
+         _ 2017-01-03
+             * Minor bug fixes
+   % Version 2.8.3
+         _ 2016-12-19
+             * Fixed Timer Screen bug
+   % Version 2.8.2
+         _ 2016-12-18
+             * Updated for upcoming Kids Place Remote Control Release
+   % Version 2.8.1
+         _ 2016-11-30
+             * Updated for upcoming Kids Place Remote Control Release
+  % Version 2.8.0
+        _ 2016-11-18
+            * Fixed set PIN bug.
+            * Fixed some technical errors.
+  % Version 2.7.8
+        _ 2016-11-1
+            * Fixed volume lock issue.
+            * Fixed Kids Place App Crashing Issue
+            * Fixed bug related to Keep Kids Place Alive premium feature where app was not recovering from OOM crash.
+   % Version 2.7.7
+        _ 2016-10-27
+            * Added option to not display Kids Place Settings in blocked message when app is running in background mode.
+            * Added option to copy daily time limit to each day of the week in advance timer.
+   % Version 2.7.6
+        _ 2016-10-17
+            * Fixed Android N related issues.
+            * Added app text color setting
+   % Version 2.7.5
+        _ 2016-09-07
+            * Fix for blacklist for Pokemon Go app.
+            * Fix the logic to auto start advance timer (if it was enabled) when temporary timer expires.
+   % Version 2.7.4
+      _ 2016-08-24
+          * Added option to show apps time usage, in background mode,  if settings is enabled in advance timer.
+          * Fix for LG; Lenovo; Huawei and few other Android 5.0 firmware security fix/update API Level 21
+    % Version 2.7.3
+        _ 2016-08-17
+        * Added support for Android N ( Nougat )
+    % Version 2.7.2
+      _ 2016-08-04
+      * Prep work for Android Nougat
+      * Fixed some technical errors.
+   % Version 2.7.0
+     _ 2016-07-15
+     * Fixed remove app bug when KP running in background mode.
+    % Version 2.6.9
+     _ 2016-06-30
+     * Added new grown up view on exit to show recently apps used to parents and one place to change all setting.
+    % Version 2.6.7
+    _ 2016-06-17
+    * Fixed minor UI Issues
+    % Version 2.6.6
+    _ 2016-06-12
+    * Fixed minor UI Issues
+   % Version 2.5.9
+   _ 2016-05-20
+   * Updated User Interface
+  % Version 2.5.8
+  _ 2016-05-09
+  * Fixed add app as approved app issue when KP running in background mode.
+  % Version 2.5.7
+  _ 2016-04-29
+  * Fixed home category time expired issue when running in background mode.
+  * Fixed the switch user bug from time lock screen.
+  % Version 2.5.6
+  _ 2016-04-09
+  * Made Keep Home Screen on setting to be default to false to save battery consumption.
+  % Version 2.5.5
+  _ 2016-03-15
+  * Fixed timer lock screen continuous reloading issue.
+  % Version 2.5.4
+  _ 2016-03-09
+  * Added option to display remaining time left for Kids Place for advance timer.
+  * Added option to show app usage details to kids by adding new menu item. This can be enabled from timer screen.
+    % Version 2.5.1
+  _ 2016-02-19
+  * Fixed advance timer bug where lock was only enforced after starting another app.
+  * Added link to privacy policy under contact us section.
+    % Version 2.5.0
+  _ 2016-02-10
+  * Added an option to prompt parents add a blocked app as whitelist when its blocked by Kids Place
+  * Fixed Phone/Contacts app getting removed issue.
+    % Version 2.4.9
+  _ 2016-01-10
+  * Added advanced timer as part of KP premium feature instead of plugin.
+    % Version 2.4.5
+  _ 2016-01-05
+  * Fixed minor bugs
+    % Version 2.4.4
+  _ 2015-12-12
+  * Fixed wallpaper bug
+  * Added option to select users when running in background mode
+  * Added short cut to manage videos and websites in parents dashboard
+     % Version 2.4.3
+  _ 2015-11-23
+  * Fixed Kids Place Screen Time Bug.
+  * Fixed error logging
+  * Added Nexus 7 camera app package to whitelist by default.
+  * Fixed issue related to approved apps getting block on starting from Kids Place.
+    % Version 2.4.2
+  _ 2015-11-12
+  * Minor bug fixes.
+    % Version 2.4.1
+  _ 2015-10-24
+  * Added new keep alive setting.
+  * Fixed the bug where timer lock screen was refreshing in Lollipop onwards version.
+    % Version 2.4.0
+  _ 2015-10-04
+  * Fix but to start advance timer when KP is running in background mode.
+  * Fix whitelist not loading on device reboot when running in background mode.
+    % Version 2.3.9
+  _ 2015-09-15
+  * Added restore in-app option.
+    % Version 2.3.8
+  _ 2015-09-01
+  * Fixed timer issue.
+    % Version 2.3.6
+  _ 2015-08-29
+  * Fixed timer issue.
+     % Version 2.3.5
+  _ 2015-07-29
+  * Added in-app purchase option for following advance settings option:
+  * Run in background mode. Kids Place will not be used as a launcher or home screen. Suitable for older kids or on employees device.
+  * Added option to always start on reboot.
+  * Added option to enable device admin to block app uninstall.
+  * Customize App Title
+    % Version 2.3.2
+  _ 2015-07-18
+  * Added billing permission in preparation for upcoming new premium features.
+   % Version 2.3.1
+  _ 2015-07-09
+  * Fixed user PIN issue.
+   % Version 2.3.0
+  _ 2015-06-29
+  * Minor Bug Fixes.
+  % Version 2.2.9
+  _ 2015-06-25
+  * Added plugin bar
+  % Version 2.2.6
+  _ 2015-04-30
+  * Updated ACRA reporting
+  * Made start on reboot setting to be turned on by default
+     % Version 2.2.5
+  _ 2015-04-25
+  * Added warning message when basic timer is about to expire.
+  * Fixed full screen (immersive mode) bug on some Samsung/HTC devices.
+     % Version 2.2.4
+  _ 2015-03-26
+  * Fixed android 2.2 bug.
+     % Version 2.2.3
+  _ 2015-03-22
+  * Added Advanced timer option.
+     % Version 2.2.2
+  _ 2015-03-15
+  * Added support for android 5.1
+     % Version 2.2.1
+  _ 2015-02-26
+  * Consolidated all menu option in a dashboard activity protected by PIN.
+  * Added option to select user on timer lock screen if switching user is enabled in Kids Place settings.
+  * Bug fix related to multiple user profiles
+    % Version 2.1.7
+  _ 2014-11-26
+  * Bug fixes for Android Lolliop.
+   % Version 2.1.6
+  _ 2014-11-14
+  * Added support for Android Lolliop.
+  * Updated translations for various languages.
+  * KP Services now displays on notification bar.
+  % Version 2.1.5
+  _ 2014-09-30
+  * Added new feature to disable wifi at each app level when internet connection is allowed in Kids Place setting..
+  % Version 2.1.4
+  _ 2014-07-30
+  * Fixed timer issue related to Japanese locale.
+  % Version 2.1.3
+  _ 2014-05-30
+  * Fixed minor issues related to 2.1.2 updates.
+  % Version 2.1.2
+  _ 2014-05-17
+  * Fixed the issue with app icon loading when device has lot of apps
+  * Added new setting for kids to switch User.
+  * Added new feature to set up PIN for each User.
+  * Added new setting to display Kids Place plugin bar on home screen.
+  * Added new setting to select default category view.
+  * Added Full-Screen mode (available on Kit Kat verison).
+   % Version 2.1.0
+  _ 2014-03-06
+  * Fixed issue where Phone and Contact apps were getting removed.
+   % Version 2.0.9
+  _ 2014-01-31
+  * Fixed issue with device not going to sleep when timer lock screen is dispalyed.
+  * Fixed SD card apps not loading some time issue
+  * Fixed refreshing home screen from refresh menu option.
+  * Added new setting to block unapproved apps opened from approved apps.
+   % Version 2.0.8
+  _ 2013-12-25
+  * Added internet connection setting enforcement if wifi setting is change while Kids Place is running.
+    % Version 2.0.7
+  _ 2013-11-22
+  * Fixed app looping bug when a blocked app is started again.
+  % Version 2.0.6
+  _ 2013-11-14
+ * Added support for Android 4.4
+  % Version 2.0.5
+  _ 2013-11-02
+ * Fixed app crashing on some Samsung devices bug.
+ % Version 2.0.4
+  _ 2013-10-02
+ * Fixed performance issue regarding initial loading of app.
+ % Version 2.0.2
+  _ 2013-09-07
+    * <b>PLEASE NOTE:</b> <strong>Its a major update. If you experience any issue, please uninstall and do a fresh new install.<strong>
+    * New feature: Multiple profile support.
+    * New feature: App categorization in groups.
+    * New feature: New home screen with horizontal scrolling.
+    * Complete roll.
+    * Bug fixes from 2.0.1 version
+ % Version 2.0.1
+  _ 2013-08-31
+    * <b>PLEASE NOTE:</b> <strong>Its a major update. If you experience any issue, please uninstall and do a fresh new install.<strong>
+    * New feature: Multiple profile support.
+    * New feature: App categorization in groups.
+    * New feature: New home screen with horizontal scrolling.
+    * Staged roll
+
+ % Version 1.9.9
+  _ 2013-08-17
+    * Fixed the apps getting removed on auto update issue.
+    $ 1.9.8
+  % Version 1.9.8
+  _ 2013-08-04
+    * Added support for Android 4.3.
+
+   $ 1.9.7
+  % Version 1.9.7
+  _ 2013-06-15
+    * Updated Privacy Policy. Please note that Kids Place does NOT collect any personal information from children.
+    * Please contact us at support@kiddoware.com if you would like to beta test the latest release.
+    It has following features: support for user profiles; app categorization and improved UI.
+    * Please go here to download the Kids Place 2.0 to test: https://kiddoware.com/kids-place-2-0-beta-application/
+
+    $ 1.9.6
+  % Version 1.9.6
+  _ 2013-05-07
+    * Final prep work for Kids Place 2.0
+    * Please contact us at support@kiddoware.com if you would like to beta test the latest release.
+    It has following features: support for user profiles; app categorization and improved UI.
+    * Please go here to download the Kids Place 2.0 to test: https://kiddoware.com/kids-place-2-0-beta-application/
+
+   $ 1.9.5
+  % Version 1.9.5
+  _ 2013-04-09
+    * Fixed the apps getting removed from Kids Place on apps auto update issue.
+  $ 1.9.4
+  % Version 1.9.4
+  _ 2013-03-15
+    * Use new timer app scheduler plugin to set up timer lock settings.
+   $ 1.9.3
+  % Version 1.9.3
+  _ 2013-02-26
+    * Prep work for upcoming UI and plugin updates
+   $ 1.9.2
+  % Version 1.9.2
+  _ 2013-01-26
+    * Added Italian translation.
+  $ 1.9.1
+  % Version 1.9.1
+  _ 2013-01-01
+    * Improved German translation thanks to Oliver Mann.
+    * Fixed the bugs where apps were disappearing from Kids Place on device reboot.
+    * Added new menu items to refresh home screen. This can be used if apps installed on SD cards do not appear immediately after device reboot.
+    * Fixed the bug to bypass Kids Place timer lock on restart when app is on timer lock.
+    * Added new setting to turn off wifi connection.
+    * Fixed the bug where custom wallpaper was getting replaced on device reboot.
+
+  $ 1.9.0
+  % Version 1.9.0
+  _ 2012-12-19
+    * Added setting to lock volume control
+    * Added setting to change app name text size on home screen.
+    * Added tip on exit on how to auto start Kids Place on device reboot.
+  $ 1.8.9
+  % Version 1.8.9
+  _ 2012-11-16
+    * Added support for Android 4.2
+     $ 1.8.8
+  % Version 1.8.8
+  _ 2012-11-04
+    * Fixed the bugs from last release caused by conflict with Kindle Parental Control settings. Now Kids Place can work along with Kindle Parental control settings.
+    * Removed explicit internet connection off setting because of a bug. Please use airplane mode setting to turn off internet connection while Kids Place is running.
+    $ 1.8.6
+  % Version 1.8.6
+  _ 2012-10-06
+    * Added setting to change application title displayed on home screen. You can now call the app whatever you or your kid like :-).
+    * Added setting to display status/notification bar on home screen.
+
+   $ 1.8.5
+  % Version 1.8.5
+  _ 2012-09-14
+    * Fixed the bug when kids can access approved apps from task bar when timer lock is enforced.
+  $ 1.8.4
+  % Version 1.8.4
+  _ 2012-08-18
+    * Fixed the bug for the scenario where user has to enter PIN multiple time to exit.
+
+ $ 1.8.3
+  % Version 1.8.3
+  _ 2012-07-21
+    * Removed leading "." from the title. App will now appear under letter "K" apps listing on your device.
+    * Added new timer feature to lock at a specific time or after specified minutes.
+$ 1.8.2
+  % Version 1.8.2
+  _ 2012-06-29
+    * Fixed bug related to apps on SD card disappearing on reboot.
+$ 1.8.1
+  % Version 1.8.1
+  _ 2012-06-02
+    * Added 6 new kids theme based wallpaper for home screen.
+    * Home screen now hides system bar
+$ 1.8
+  % Version 1.8
+  _ 2012-05-15
+    * Added support for Ice Cream Sandwich (Android 4.3 +).
+    * Changed Home screen UI to use action bar instead of menu for Android 3.0 and higher devices.
+    * Added new setting to enable locking on restart for phones. This will prevent users getting out of Kids Place if they power off and start the device while Kids Place is running.
+
+$ 1.7.6
+  % Version 1.7.6
+  _ 2012-04-15
+    * Added support for Ice Cream Sandwich (Android 4.0 +).
+$ 1.7.4
+  % Version 1.7.4
+  _ 2012-03-02
+    * Added support for landscape mode on main screen.
+    * Apps on main screen are now displayed in alphabetical instead of chronological order.
+    * Enabled locking on restart for all non-phone devices.
+
+$ 1.7.3
+  % Version 1.7.3
+  _ 2012-02-03
+    * new application icon
+    * Added new setting to enable locking on restart for tablets only. This will prevent users getting out of Kids Place if they power off and start the device while Kids Place is running.
+
+$ 1.7.2
+  % Version 1.7.2
+  _ 2012-01-06
+    * Added timer feature to lock Kids Place after specified amount of time. From menu tap timer icon to access this feature.
+$ 1.7.1
+  % Version 1.7.1
+  _ 2011-12-23
+    * Minor bug fixes
+$ 1.7
+  % Version 1.7
+  _ 2011-12-09
+    * Added changeable wallpaper capability. From menu tap wallpaper icon and choose picture from gallery.
+    * Improved icon size for Kindle Fire and other tablets
+    * Added ability to share via Facebook or other methods
+    * Improved marketplace block capability
+    * Icons of apps no longer on device are now removed
+    * Fixed minor bugs
+$ 1.6
+  % Version 1.6
+  _ 2011-11-11
+    * Added background color to the home screen.
+    * Fixed minor bugs
+$ 1.5
+  % Version 1.5
+  _ 2011-11-11
+    * Added feature to remove uninstalled apps from Kids Place. Just tap on the uninstalled app on Kids Place home screen and it will prompt to remove the app.
+    * Fixed minor bugs
+$ 1.4
+  % Version 1.4
+  _ 2011-11-03
+    * Added new setting to lock Home Button. Makes child lock more secure.
+    * Added new setting to block Marketplace access from apps
+    * Requested new permission "KILL_BACKGROUND_PROCESSES" to stop the app if it access Marketplace
+    * Fixed minor bugs
+$ 1.2
+  % Version 1.2
+  _ 2011-10-21
+    * Fixed minor bugs
+
+$ 1.1
+  % Version 1.1
+  _ 2011-10-19
+    * Fixed minor bugs
+$ 1.0
+  % Version 1.0
+  _ 2011-10-16
+  * Initial release
+
+$ END_OF_CHANGE_LOG
+  </body>
+</html>

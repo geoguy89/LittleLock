@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.littlelock.app-mergeDebugResources-3:/layout/item_app.xml",
+        "source": "com.littlelock.app-main-6:/layout/item_app.xml"
+    },
+    {
+        "merged": "com.littlelock.app-mergeDebugResources-3:/layout/activity_pin_lock.xml",
+        "source": "com.littlelock.app-main-6:/layout/activity_pin_lock.xml"
+    },
+    {
+        "merged": "com.littlelock.app-mergeDebugResources-3:/layout/activity_settings.xml",
+        "source": "com.littlelock.app-main-6:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "com.littlelock.app-mergeDebugResources-3:/layout/activity_launcher.xml",
+        "source": "com.littlelock.app-main-6:/layout/activity_launcher.xml"
+    }
+]
