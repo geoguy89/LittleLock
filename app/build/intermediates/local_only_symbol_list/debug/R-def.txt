@@ -99,10 +99,16 @@ string pin_confirm_title
 string pin_enter
 string pin_enter_hint
 string pin_enter_title
+string pin_error_short
+string pin_error_wrong
 string pin_mismatch
 string pin_set_hint
+string pin_set_success
 string pin_set_title
 string pin_wrong
+string service_channel_desc
+string service_channel_name
+string service_running_text
 string settings_about
 string settings_accessibility
 string settings_accessibility_enable

@@ -100,7 +100,7 @@ object DiscordWebhookService {
 
         val request = Request.Builder()
             .url(webhookUrl)
-            .post(RequestBody.create(MediaType.parse("application/json"), bodyJson))
+            .post(RequestBody.create(MediaType.get("application/json"), bodyJson))
             .build()
 
         client.newCall(request).enqueue(object : Callback {

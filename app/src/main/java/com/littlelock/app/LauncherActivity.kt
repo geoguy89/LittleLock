@@ -40,7 +40,7 @@ class LauncherActivity : AppCompatActivity() {
         appAdapter = AppAdapter(this, installedApps)
         binding.gridApps.adapter = appAdapter
         binding.gridApps.onItemClickListener = null // we handle clicks manually
-        binding.gridApps.onTouchListener = View.OnTouchListener { _, _ -> true }
+        binding.gridApps.setOnTouchListener { _, _ -> true }
     }
 
     private fun setupGestureDetector() {
