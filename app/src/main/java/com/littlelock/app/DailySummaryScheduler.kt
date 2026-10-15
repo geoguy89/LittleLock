@@ -20,7 +20,7 @@ object DailySummaryScheduler {
     private const val DEFAULT_HOUR = 23
     private const val DEFAULT_MINUTE = 59
 
-    private const val ALARM_ACTION = "com.littlelock.app.DAILY_SUMMARY_ALARM"
+    const val ALARM_ACTION = "com.littlelock.app.DAILY_SUMMARY_ALARM"
 
     /**
      * Schedule the daily summary alarm for the configured time (default 23:59).

@@ -95,19 +95,14 @@ class LauncherActivity : AppCompatActivity() {
     }
 
     private fun getAppIconResId(label: String): Int {
-        val colorResIds = intArrayOf(
-            R.drawable.ic_app_icon_1,
-            R.drawable.ic_app_icon_2,
-            R.drawable.ic_app_icon_3,
-            R.drawable.ic_app_icon_4,
-            R.drawable.ic_app_icon_5,
-            R.drawable.ic_app_icon_6,
-            R.drawable.ic_app_icon_7,
-            R.drawable.ic_app_icon_8
-        )
-        var hash = label.hashCode()
-        if (hash < 0) hash = -hash
-        return colorResIds[hash % colorResIds.size]
+        try {
+            val pm: PackageManager = packageManager
+            val appInfo = pm.getApplicationInfo(label, PackageManager.MATCH_ALL)
+            pm.getApplicationIcon(appInfo)
+            return appInfo.icon
+        } catch (e: Exception) {
+            return R.drawable.ic_app_icon_1
+        }
     }
 
     private fun openSettings() {

@@ -1,0 +1,82 @@
+# Gradle
+.gradle/
+/build/
+/local.properties/
+/.idea/
+*.iml
+*.log
+
+# Android Studio
+/.android/
+/captures/
+/externalNativeBuild/
+/.externalNativeBuild/
+/dlls/
+/*.so
+
+# Android Build / APK
+/app/build/
+/app/release/
+*.apk
+*.ap_
+*.aab
+
+# Keystore / signing
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.keystore.bak
+.keystore/
+
+# Build artifacts
+*.dex
+*.dex*
+*.odex
+*.ap_.
+
+# Kotlin
+/kotlin/
+*.kotlin_metadata
+*.kotlin_builtins
+
+# Native libs
+/obj/
+/libs/
+/*.so
+/**/*.so
+
+# Gradle wrapper (keep but ignore local changes)
+# gradle/wrapper/gradle-wrapper.jar
+
+# Android test coverage
+coverage/
+*.ec
+*.emma
+
+# Android Profiler
+*.hprof
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Extracted / decompiled files
+_apk_extract/
+apk_extract/
+docs/*.txt
+
+# Firebase / Google services config
+google-services.json
+local.properties
+
+# Release APK (keep in repo for distribution, but not build artifacts)
+# app/build/outputs/apk/release/*.apk
