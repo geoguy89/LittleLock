@@ -43,7 +43,7 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
    ```
    The signed release APK will be at:
    ```
-   app/build/outputs/apk/release/app-release.apk
+   app/build/outputs/apk/release/LittleLock-release.apk
    ```
 
 ### Installing the APK

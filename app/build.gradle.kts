@@ -55,7 +55,9 @@ android {
 
     applicationVariants.all {
         if (name == "release") {
-            outputFileName = "LittleLock-release.apk"
+            outputs.forEach { output ->
+                (output as com.android.build.gradle.internal.api.ApkVariantOutputImpl).outputFileName = "LittleLock-release.apk"
+            }
         }
     }
 }
