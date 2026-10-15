@@ -69,7 +69,8 @@ foreach ($f in $results) {
     }
 }
 foreach ($n in $names) {                                   # a test a step is about has to have really run
-    if (-not ($cases | Where-Object { $_ -like "*$n*" })) { $problems += "TEST FAILED: $n - it didn't run (no such test yet, or the build failed first)" }
+    $found = ($cases | Where-Object { $_ -like "*$n*" }) -or ($results | Where-Object { $_.Name -like "*$n*" })
+    if (-not $found) { $problems += "TEST FAILED: $n - it didn't run (no such test yet, or the build failed first)" }
 }
 if (-not $cases -and -not $problems) { $problems += "ERROR: the tests didn't run - $why" }
 if ($code -ne 0 -and -not $problems) { $problems += "ERROR: the build failed (exit $code) - $why" }
