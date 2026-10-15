@@ -1,5 +1,6 @@
 # Gradle
 .gradle/
+gradle/build/
 /build/
 /local.properties/
 /.idea/
@@ -34,6 +35,7 @@
 *.dex*
 *.odex
 *.ap_.
+*.class
 
 # Kotlin
 /kotlin/
@@ -80,3 +82,9 @@ local.properties
 
 # Release APK (keep in repo for distribution, but not build artifacts)
 # app/build/outputs/apk/release/*.apk
+
+# Gradle distribution
+gradle-8.2-bin.zip
+
+# APK signature sidecar
+LittleLock-release.apk.idsig
