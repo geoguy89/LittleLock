@@ -75,12 +75,17 @@ foreach ($n in $names) {                                   # a test a step is ab
 if (-not $cases -and -not $problems) { $problems += "ERROR: the tests didn't run - $why" }
 if ($code -ne 0 -and -not $problems) { $problems += "ERROR: the build failed (exit $code) - $why" }
 
-$problems = $problems | Sort-Object -Unique
-if ($problems.Count) {
+  $problems = $problems | Sort-Object -Unique
+  if ($problems.Count) {
     $problems | ForEach-Object { Write-Output $_ }
     Write-Output "CHECK FAILED: $($problems.Count) problem(s)"
     exit 1
-}
-if ($names) { Write-Output "CHECK PASSED (only: $($names -join ', '); $($cases.Count) test(s) ran) - run tools\check.ps1 with no -Test for everything"; exit 0 }
-Write-Output "CHECK PASSED: it builds and all $($cases.Count) tests ran and passed"
-exit 0
+  }
+  if ($names) {
+    foreach ($c in $cases) { Write-Output "TEST PASSED: $c" }
+    Write-Output "CHECK PASSED (only: $($names -join ', '); $($cases.Count) test(s) ran) - run tools\check.ps1 with no -Test for everything"
+    exit 0
+  }
+  foreach ($c in $cases) { Write-Output "TEST PASSED: $c" }
+  Write-Output "CHECK PASSED: it builds and all $($cases.Count) tests ran and passed"
+  exit 0
