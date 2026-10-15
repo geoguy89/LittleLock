@@ -61,6 +61,16 @@
     <string name="msg_webhook_failed">Failed to send notification</string>
     <string name="msg_no_webhook">No webhook URL configured</string>
 
+    <!-- Service -->
+    <string name="service_channel_name">LittleLock Service</string>
+    <string name="service_channel_desc">LittleLock launcher monitoring service</string>
+    <string name="service_running_text">LittleLock is running</string>
+
+    <!-- PIN errors -->
+    <string name="pin_error_short">PIN must be 4 digits</string>
+    <string name="pin_set_success">PIN set successfully!</string>
+    <string name="pin_error_wrong">Wrong PIN. Try again.</string>
+
     <!-- Gesture -->
     <string name="gesture_hint">4-finger swipe up to access settings</string>
 
