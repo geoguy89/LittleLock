@@ -84,7 +84,7 @@ class LauncherActivity : AppCompatActivity() {
             .map { resolveInfo ->
                 val label = resolveInfo.loadLabel(pm).toString()
                 val packageName = resolveInfo.activityInfo.packageName
-                val iconResId = getAppIconResId(label)
+                  val iconResId = getAppIconResId(packageName)
                 AppInfo(label, packageName, iconResId)
             }
             .sortedBy { it.label.lowercase() }
@@ -94,10 +94,10 @@ class LauncherActivity : AppCompatActivity() {
         binding.gridApps.adapter = appAdapter
     }
 
-    private fun getAppIconResId(label: String): Int {
+    private fun getAppIconResId(packageName: String): Int {
         try {
             val pm: PackageManager = packageManager
-            val appInfo = pm.getApplicationInfo(label, PackageManager.MATCH_ALL)
+            val appInfo = pm.getApplicationInfo(packageName, PackageManager.MATCH_ALL)
             pm.getApplicationIcon(appInfo)
             return appInfo.icon
         } catch (e: Exception) {
@@ -124,23 +124,18 @@ class LauncherActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        // Re-launch as home: reload apps and stay on top
-        setTaskToHome()
+        // Re-launch as home: reload apps
         loadApps()
     }
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        // When user navigates away, immediately return to launcher
-        setTaskToHome()
+        // No-op: setTaskToHome() caused activity restart loops
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        // If we lose focus (user swiped away), force back to launcher
-        if (!hasFocus) {
-            setTaskToHome()
-        }
+        // No-op: setTaskToHome() caused activity restart loops
     }
 
     private fun setTaskToHome() {
