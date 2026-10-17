@@ -92,3 +92,11 @@ gradle_*.txt
 
 # APK signature sidecar
 LittleLock-release.apk.idsig
+
+# Never commit signing keys or built APKs
+*.keystore
+*.jks
+*.apk
+*.idsig
+_apk_extract/
+apk_extract/
