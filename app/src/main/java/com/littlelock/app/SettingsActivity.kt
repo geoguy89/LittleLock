@@ -1,18 +1,18 @@
 package com.littlelock.app
 
+import android.content.ComponentName
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.littlelock.app.databinding.ActivitySettingsBinding
 
 /**
- * Settings activity for parental controls.
- * Protected by PIN entry.
+ * Parent settings. Only reachable through the parent PIN: opened without an unlocked [ParentSession] it sends the
+ * parent to the PIN pad instead. Leaving it (Done / Back) locks again.
  */
 class SettingsActivity : AppCompatActivity() {
 
@@ -27,7 +27,7 @@ class SettingsActivity : AppCompatActivity() {
     private val accessibilityResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        Toast.makeText(this, R.string.accessibility_updated, Toast.LENGTH_SHORT).show()
+        showStatus()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +37,22 @@ class SettingsActivity : AppCompatActivity() {
 
         loadSettings()
         setupListeners()
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = leave()
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!ParentSession.isUnlocked()) {
+            startActivity(Intent(this, PinLockActivity::class.java)
+                .putExtra(PinLockActivity.EXTRA_MODE, PinLockActivity.MODE_ENTER)
+                .putExtra(PinLockActivity.EXTRA_NEXT, PinLockActivity.NEXT_SETTINGS))
+            finish()
+            return
+        }
+        ParentSession.unlock() // still here: keep the parent signed in
+        showStatus()
     }
 
     private fun loadSettings() {
@@ -45,61 +61,81 @@ class SettingsActivity : AppCompatActivity() {
         binding.cbNotifDailySummary.isChecked = Preferences.isDailySummaryEnabled(this)
         binding.cbNotifBlockedApps.isChecked = Preferences.isBlockedAppsNotifEnabled(this)
 
-        // Show version
-        try {
-            val pm = packageManager
-            val info = pm.getPackageInfo(packageName, 0)
-            binding.tvVersion.text = getString(R.string.settings_version, info.versionName ?: "1.0")
+        val version = try {
+            packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
         } catch (e: Exception) {
-            binding.tvVersion.text = getString(R.string.settings_version, "1.0")
+            "?"
         }
+        binding.tvVersion.text = getString(R.string.settings_version, version)
+    }
+
+    private fun showStatus() {
+        val kidMode = Preferences.isKidMode(this)
+        val allowed = Preferences.getAllowedApps(this).size
+        binding.tvKidModeStatus.text = if (kidMode) {
+            resources.getQuantityString(R.plurals.settings_kid_mode_on_status, allowed, allowed)
+        } else {
+            getString(R.string.settings_kid_mode_off_status)
+        }
+        binding.btnKidMode.setText(if (kidMode) R.string.settings_kid_mode_off else R.string.settings_kid_mode_on)
+        binding.tvAccessibilityStatus.setText(
+            if (isBlockingServiceOn()) R.string.settings_accessibility_on else R.string.settings_accessibility_explain
+        )
     }
 
     private fun setupListeners() {
+        binding.btnAllowedApps.setOnClickListener {
+            startActivity(Intent(this, AllowedAppsActivity::class.java))
+        }
+        binding.btnSetHome.setOnClickListener { openHomeSettings() }
+        binding.btnKidMode.setOnClickListener {
+            val turnOn = !Preferences.isKidMode(this)
+            Preferences.setKidMode(this, turnOn)
+            if (turnOn) {
+                Toast.makeText(this, R.string.settings_kid_mode_now_on, Toast.LENGTH_SHORT).show()
+            } else {
+                // leaving kid mode: let the parent pick their usual home app
+                Toast.makeText(this, R.string.settings_kid_mode_now_off, Toast.LENGTH_LONG).show()
+                openHomeSettings()
+            }
+            showStatus()
+        }
+        binding.btnChangePin.setOnClickListener {
+            startActivity(Intent(this, PinLockActivity::class.java)
+                .putExtra(PinLockActivity.EXTRA_MODE, PinLockActivity.MODE_SET)
+                .putExtra(PinLockActivity.EXTRA_NEXT, PinLockActivity.NEXT_NONE))
+        }
         binding.btnSaveWebhook.setOnClickListener {
             saveSettings()
             Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show()
         }
-
-        binding.btnVerifyPin.setOnClickListener {
-            val pin = binding.etPin.text?.toString()?.trim()
-            if (pin.isNullOrEmpty()) {
-                Toast.makeText(this, R.string.pin_error_short, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (Preferences.getPin(this) == pin) {
-                // PIN verified - allow changing
-                val newPin = promptNewPin()
-                if (newPin != null) {
-                    Preferences.setPin(this, newPin)
-                    Toast.makeText(this, R.string.pin_set_success, Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, R.string.pin_error_wrong, Toast.LENGTH_SHORT).show()
-            }
-        }
-
         binding.btnEnableDeviceAdmin.setOnClickListener {
-            val adminIntent = Intent(DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLE)
-            deviceAdminResult.launch(adminIntent)
+            deviceAdminResult.launch(Intent(DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLE))
         }
-
         binding.btnEnableAccessibility.setOnClickListener {
-            val accessibilityIntent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            accessibilityResult.launch(accessibilityIntent)
+            accessibilityResult.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
+        binding.btnBack.setOnClickListener { leave() }
+    }
 
-        binding.btnBack.setOnClickListener {
-            finish()
+    private fun leave() {
+        saveSettings()
+        ParentSession.lock()
+        finish()
+    }
+
+    private fun openHomeSettings() {
+        try {
+            startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+        } catch (e: Exception) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 
-    private fun promptNewPin(): String? {
-        // Simple approach: open PinLockActivity in set mode
-        val intent = Intent(this, PinLockActivity::class.java)
-        intent.putExtra("mode", "set")
-        startActivity(intent)
-        return null // Will be set via PinLockActivity
+    private fun isBlockingServiceOn(): Boolean {
+        val enabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES) ?: return false
+        val me = ComponentName(this, AccessibilityMonitorService::class.java)
+        return enabled.split(':').any { ComponentName.unflattenFromString(it) == me }
     }
 
     private fun saveSettings() {

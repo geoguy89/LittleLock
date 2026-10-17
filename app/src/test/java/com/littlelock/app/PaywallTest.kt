@@ -10,7 +10,7 @@ import java.io.File
  */
 class PaywallTest {
 
-    private val srcMain = File("app/src/main")
+    private val srcMain = File("src/main")
 
     /**
      * Verify that no paywall/subscription code exists in source files.
@@ -48,9 +48,10 @@ class PaywallTest {
         for (file in filesToCheck) {
             val content = file.readText().lowercase()
             for (pattern in forbiddenPatterns) {
+                // whole words only: "ads" must not match "padStart", "buy" not "buyer's guide" in a variable name
                 assertFalse(
                     "Found '$pattern' in ${file.relativeTo(srcMain)}",
-                    content.contains(pattern.lowercase())
+                    Regex("\\b" + Regex.escape(pattern.lowercase()) + "\\b").containsMatchIn(content)
                 )
             }
         }

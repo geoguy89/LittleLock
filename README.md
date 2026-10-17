@@ -77,24 +77,25 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
 4. Open LittleLock → **Settings** → paste the webhook URL
 5. Toggle notifications on for the events you want to track
 
-### Setting the PIN
+### First run: PIN, allowed apps, home screen
 
-1. Open LittleLock → **Settings**
-2. Enter a 4-digit PIN (digits 0–9)
-3. Confirm the PIN
-4. The PIN is required to change any settings — kids cannot bypass it
+1. Install LittleLock and open it. It asks a parent to **set a 4-digit PIN** (typed twice).
+2. Parent settings open. Tap **Choose allowed apps** and tick the apps your child may use. Only those show on the
+   home screen - nothing else, not Settings or the Play Store (they're marked if you do tick them).
+3. Tap **Make LittleLock the home screen** and pick LittleLock, so the Home button always comes back here.
+4. Tap **Turn on blocking (Accessibility)** and switch LittleLock on: then any app that isn't allowed (opened from a
+   notification, for example) goes straight back to the home screen.
+5. Tap **Done - lock again**.
 
-### Configuring Allowed Apps
+### Getting back into parent settings
 
-1. Open LittleLock → **Settings**
-2. Toggle on the apps you want your child to have access to
-3. All other apps will be blocked when the child tries to launch them
+Tap the **lock** at the top of the home screen and enter the PIN. Five wrong PINs in a row lock the pad for 30
+seconds. Parent settings lock again when you leave them (or after 10 minutes away from them).
 
-### Accessibility Setup
+### Leaving kid mode
 
-1. When first launching LittleLock, you'll be prompted to enable accessibility
-2. Go to **Settings → Accessibility → LittleLock** and enable it
-3. This allows LittleLock to detect when the child tries to disable it
+In parent settings tap **Turn kid mode off**: nothing is blocked any more, every app is shown, and Android asks which
+home app to use. **Turn kid mode on** brings it back.
 
 ---
 
@@ -117,21 +118,28 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
 ./gradlew assembleRelease
 ```
 
-### Build with Signing (using project keystore)
+### Release signing
 
-The project includes a debug keystore (`littlelock-release.keystore`) for development builds. For production, generate your own keystore:
+Every release must be signed with the **same** key, or a new APK won't install over the old one. The key never goes
+in the repo: the build reads it from environment variables or Gradle properties (for example in
+`~/.gradle/gradle.properties`):
 
-```bash
-./gradlew assembleRelease -PkeystoreFile=/path/to/your/keystore.jks \
-  -PkeystorePassword=your_password \
-  -PkeyAlias=your_alias \
-  -PkeyPassword=your_password
-```
+| Name | What |
+|------|------|
+| `LITTLELOCK_KEYSTORE_PATH` | path to the keystore file |
+| `LITTLELOCK_STORE_PASSWORD` | the keystore password |
+| `LITTLELOCK_KEY_ALIAS` | the key's alias (default `littlelock`) |
+| `LITTLELOCK_KEY_PASSWORD` | the key's password (default: the keystore password) |
+
+Without them a release build is debug-signed (the build says so) - fine for testing only.
+
+On GitHub Actions the keystore comes from repository secrets: `LITTLELOCK_KEYSTORE_BASE64` (the keystore file,
+base64-encoded) plus `LITTLELOCK_STORE_PASSWORD`, `LITTLELOCK_KEY_ALIAS` and `LITTLELOCK_KEY_PASSWORD`.
 
 ### Run Tests
 
 ```bash
-./gradlew test
+./gradlew testDebugUnitTest      # or, on Windows, the full health check: tools\check.ps1
 ```
 
 ### Static Analysis

@@ -41,7 +41,7 @@ object DailySummaryScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Set exact alarm for the configured time today/tomorrow
+        // Alarm for the configured time today/tomorrow
         val calendar = java.util.Calendar.getInstance().apply {
             set(java.util.Calendar.HOUR_OF_DAY, hour)
             set(java.util.Calendar.MINUTE, minute)
@@ -53,19 +53,13 @@ object DailySummaryScheduler {
             }
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                pendingIntent
-            )
-        } else {
-            alarmManager.set(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                pendingIntent
-            )
-        }
+        // inexact on purpose: an exact alarm needs the SCHEDULE_EXACT_ALARM permission on Android 12+ (without it
+        // this throws), and a daily summary a few minutes late is fine
+        alarmManager.setAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            pendingIntent
+        )
 
         Log.d(TAG, "Daily summary scheduled for ${hour}:${minute.toString().padStart(2, '0')}")
     }
@@ -116,6 +110,7 @@ class DailySummaryReceiver : android.content.BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == DailySummaryScheduler.ALARM_ACTION) {
             DailySummaryScheduler.handleDailySummary(context)
+            DailySummaryScheduler.scheduleDailySummary(context) // and again tomorrow
         }
     }
 }

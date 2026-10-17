@@ -19,7 +19,6 @@ gradle/build/
 /app/build/
 /app/release/
 *.apk
-!LittleLock-release.apk
 *.ap_
 *.aab
 
@@ -81,11 +80,15 @@ docs/*.txt
 google-services.json
 local.properties
 
-# Release APK (keep in repo for distribution, but not build artifacts)
-# app/build/outputs/apk/release/*.apk
+# Release APKs are published as GitHub release assets, never committed
 
-# Gradle distribution
+# Gradle distribution (the wrapper downloads it)
 gradle-8.2-bin.zip
+/gradle-8.2/
+
+# Build logs and leftovers
+gradle_*.txt
+/release_apk_check/
 
 # APK signature sidecar
 LittleLock-release.apk.idsig

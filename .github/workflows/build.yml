@@ -24,21 +24,32 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
-      - name: Generate Release Keystore
+      # One fixed release key, kept in the repo's secrets - every release is signed the same way, so a new APK
+      # installs over the old one. Without the secret the APK is debug-signed (and the step says so).
+      - name: Restore release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.LITTLELOCK_KEYSTORE_BASE64 }}
         run: |
-          keytool -genkeypair -v \
-            -keystore littlelock-release.keystore \
-            -storepass littlelock123 \
-            -keypass littlelock123 \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -alias littlelock \
-            -dname "CN=LittlesLock, OU=Dev, O=LittlesLock, L=City, ST=State, C=US"
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::LITTLELOCK_KEYSTORE_BASE64 isn't set - this release APK is debug-signed"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/littlelock-release.keystore"
+          echo "LITTLELOCK_KEYSTORE_PATH=$RUNNER_TEMP/littlelock-release.keystore" >> "$GITHUB_ENV"
 
       - name: Run Tests
-        run: ./gradlew test
+        run: ./gradlew testDebugUnitTest --console=plain
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        env:
+          LITTLELOCK_STORE_PASSWORD: ${{ secrets.LITTLELOCK_STORE_PASSWORD }}
+          LITTLELOCK_KEY_ALIAS: ${{ secrets.LITTLELOCK_KEY_ALIAS }}
+          LITTLELOCK_KEY_PASSWORD: ${{ secrets.LITTLELOCK_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --console=plain
+
+      - name: Remove the keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/littlelock-release.keystore"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4

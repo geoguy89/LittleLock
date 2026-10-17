@@ -1,82 +1,60 @@
 package com.littlelock.app
 
+import android.view.View
+import android.widget.GridView
+import android.widget.TextView
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Before
 import org.junit.Test
-import org.junit.Assert.*
-import java.io.File
+import org.junit.runner.RunWith
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 
-/**
- * Review test verifying the user interface is intuitive for children,
- * maintaining the same ease of use as the original application.
- */
+/** A child sees only what the parent chose - never Settings or the Play Store - and a friendly message otherwise. */
+@RunWith(RobolectricTestRunner::class)
 class ChildFriendlyReviewTest {
 
-    private val srcMain = File("src/main")
+    @Before
+    fun setUp() {
+        TestApps.install("com.android.settings", "Settings")
+        TestApps.install("com.android.vending", "Play Store")
+        TestApps.install("com.example.puzzles", "Puzzles")
+    }
 
     @Test
     fun the_user_interface_is_intuitive_for_children() {
-        // Verify launcher layout uses simple, child-friendly structure
-        val launcherLayout = File(srcMain, "res/layout/activity_launcher.xml")
-        assertTrue("activity_launcher.xml should exist", launcherLayout.exists())
-        val layoutContent = launcherLayout.readText()
+        TestApps.parentSetUp("com.example.puzzles")
+        val activity = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
+        val grid = activity.findViewById<GridView>(R.id.gridApps)
+        val shown = (0 until grid.adapter.count).map { (grid.adapter.getItem(it) as AppInfo).packageName }
+        assertEquals(listOf("com.example.puzzles"), shown)
+    }
 
-        // Verify GridView layout (simple grid of app icons - child-friendly)
-        assertTrue(
-            "Home screen should use GridView for simple icon grid layout",
-            layoutContent.contains("GridView")
-        )
+    @Test
+    fun with_nothing_allowed_the_child_sees_a_message_not_an_empty_screen() {
+        TestApps.parentSetUp()
+        val activity = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
+        assertEquals(0, activity.findViewById<GridView>(R.id.gridApps).adapter.count)
+        val empty = activity.findViewById<TextView>(R.id.tvEmpty)
+        assertEquals(View.VISIBLE, empty.visibility)
+        assertEquals(activity.getString(R.string.launcher_empty), empty.text.toString())
+    }
 
-        // Verify large touch targets (64dp icons - easy for children to tap)
-        val itemLayout = File(srcMain, "res/layout/item_app.xml")
-        assertTrue("item_app.xml should exist", itemLayout.exists())
-        val itemContent = itemLayout.readText()
-        assertTrue(
-            "App icons should have large touch targets (64dp)",
-            itemContent.contains("64dp")
-        )
+    @Test
+    fun on_first_run_the_parent_is_asked_to_set_a_pin() {
+        val activity = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
+        val started = shadowOf(activity).nextStartedActivity
+        assertEquals(PinLockActivity::class.java.name, started.component?.className)
+        assertEquals(PinLockActivity.MODE_SET, started.getStringExtra(PinLockActivity.EXTRA_MODE))
+    }
 
-        // Verify item layout exists for app icons
-        assertTrue(
-            "App items should have ImageView for icons",
-            itemContent.contains("ImageView")
-        )
-        assertTrue(
-            "App items should have TextView for names",
-            itemContent.contains("TextView")
-        )
-
-        // Verify child-friendly color palette
-        val colorsXml = File(srcMain, "res/values/colors.xml")
-        assertTrue("colors.xml should exist", colorsXml.exists())
-        val colorsContent = colorsXml.readText()
-        assertTrue(
-            "Colors should include child-friendly palette (colorful backgrounds)",
-            colorsContent.contains("littlelock_icon_bg")
-        )
-
-        // Verify launcher activity handles home behavior (keeps launcher on top)
-        val launcherActivity = File(srcMain, "java/com/littlelock/app/LauncherActivity.kt")
-        assertTrue("LauncherActivity.kt should exist", launcherActivity.exists())
-        val launcherContent = launcherActivity.readText()
-        assertTrue(
-            "LauncherActivity should handle home behavior to stay on top",
-            launcherContent.contains("onNewIntent") ||
-            launcherContent.contains("onUserLeaveHint") ||
-            launcherContent.contains("onWindowFocusChanged")
-        )
-
-        // Verify PIN lock protects settings (child-safe)
-        val pinLockActivity = File(srcMain, "java/com/littlelock/app/PinLockActivity.kt")
-        assertTrue("PinLockActivity.kt should exist", pinLockActivity.exists())
-
-        // Verify launcher has no complex navigation (simple for children)
-        // Should NOT have tabs, drawers, or complex navigation patterns
-        assertFalse(
-            "Launcher should not use complex navigation (ViewPager)",
-            launcherContent.contains("ViewPager")
-        )
-        assertFalse(
-            "Launcher should not use complex navigation (DrawerLayout)",
-            launcherContent.contains("DrawerLayout")
-        )
+    @Test
+    fun back_does_not_leave_the_home_screen() {
+        TestApps.parentSetUp("com.example.puzzles")
+        val activity = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
+        activity.onBackPressedDispatcher.onBackPressed()
+        assertFalse(activity.isFinishing)
     }
 }

@@ -24,10 +24,8 @@ class PermissionsTest {
         // Required permissions - must be present
         val requiredPermissions = listOf(
             "android.permission.QUERY_ALL_PACKAGES",
-            "android.permission.SET_WALLPAPER",
-            "android.permission.SYSTEM_ALERT_WINDOW",
             "android.permission.RECEIVE_BOOT_COMPLETED",
-            "android.permission.FOREGROUND_SERVICE"
+            "android.permission.BIND_ACCESSIBILITY_SERVICE"
         )
 
         for (permission in requiredPermissions) {
@@ -42,7 +40,13 @@ class PermissionsTest {
             "android.permission.READ_CONTACTS",
             "android.permission.READ_PHONE_STATE",
             "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.CAMERA"
+            "android.permission.CAMERA",
+            // not needed by a launcher - and the ones Google Play flags
+            "android.permission.SYSTEM_ALERT_WINDOW",
+            "android.permission.PACKAGE_USAGE_STATS",
+            "android.permission.GET_TASKS",
+            "android.permission.WRITE_SETTINGS",
+            "shortService"
         )
 
         for (permission in forbiddenPermissions) {

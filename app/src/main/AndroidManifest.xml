@@ -4,21 +4,11 @@
 
     <!-- Required permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.GET_TASKS"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -27,18 +17,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LittleLock"
-        android:launchMode="singleTask"
-        android:excludeFromRecents="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="false">
 
         <!-- Main Launcher Activity - acts as custom home screen -->
-          <activity
-              android:name=".LauncherActivity"
-              android:exported="true"
-              android:enabled="true"
-                android:excludeFromRecents="true"
-                android:taskAffinity=""
-              android:launchMode="singleTask"
+        <activity
+            android:name=".LauncherActivity"
+            android:exported="true"
+            android:enabled="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:stateNotNeeded="true"
             android:alwaysRetainTaskState="true">
               <intent-filter>
                   <action android:name="android.intent.action.MAIN" />
@@ -64,20 +52,20 @@
             android:launchMode="singleTask"
             android:excludeFromRecents="true" />
 
-        <!-- Launcher Foreground Service -->
-        <service
-            android:name=".LauncherService"
-            android:enabled="true"
+        <!-- Parent picks the allowed apps -->
+        <activity
+            android:name=".AllowedAppsActivity"
             android:exported="false"
-            android:foregroundServiceType="shortService" />
+            android:label="@string/settings_allowed_apps"
+            android:theme="@style/Theme.LittleLock.Settings" />
 
-        <!-- Accessibility Service -->
+        <!-- Accessibility Service: sends apps that aren't allowed back home (same process as the app, so it sees
+             the parent's signed-in session) -->
         <service
             android:name=".AccessibilityMonitorService"
             android:enabled="true"
             android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:process=":accessibility">
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
@@ -108,6 +96,7 @@
               <intent-filter>
                   <action android:name="android.intent.action.BOOT_COMPLETED" />
                   <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                  <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                   <category android:name="android.intent.category.DEFAULT" />
               </intent-filter>
           </receiver>
