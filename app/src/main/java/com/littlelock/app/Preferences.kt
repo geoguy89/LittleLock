@@ -24,6 +24,10 @@ object Preferences {
     private const val KEY_LOCKOUT_UNTIL = "pin_lockout_until"
     private const val KEY_ALLOWED_APPS = "allowed_apps"
     private const val KEY_KID_MODE = "kid_mode"
+    private const val KEY_KID_NAME = "kid_name"
+    private const val KEY_TILE_SIZE = "tile_size"
+    private const val KEY_WALLPAPER = "wallpaper"
+    private const val KEY_BLOCK_SHADE = "block_shade"
 
     const val MAX_ATTEMPTS = 5
     const val LOCKOUT_MS = 30_000L
@@ -100,6 +104,34 @@ object Preferences {
 
     fun setKidMode(context: Context, on: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_KID_MODE, on).apply()
+    }
+
+    /** The child's name for the greeting on the home screen ("" = none). */
+    fun getKidName(context: Context): String = getPrefs(context).getString(KEY_KID_NAME, "") ?: ""
+
+    fun setKidName(context: Context, name: String) {
+        getPrefs(context).edit().putString(KEY_KID_NAME, name.trim().take(24)).apply()
+    }
+
+    /** Index into [Look.TILES]: how big the app tiles are on the home screen. */
+    fun getTileSize(context: Context): Int = getPrefs(context).getInt(KEY_TILE_SIZE, Look.DEFAULT_TILE)
+
+    fun setTileSize(context: Context, index: Int) {
+        getPrefs(context).edit().putInt(KEY_TILE_SIZE, index.coerceIn(0, Look.TILES.lastIndex)).apply()
+    }
+
+    /** "" (the plain background), a colour ("color:ffd9d0ff") or [Look.IMAGE] (a picture the parent chose). */
+    fun getWallpaper(context: Context): String = getPrefs(context).getString(KEY_WALLPAPER, "") ?: ""
+
+    fun setWallpaper(context: Context, value: String) {
+        getPrefs(context).edit().putString(KEY_WALLPAPER, value).apply()
+    }
+
+    /** Keep the child out of the notification shade and quick settings while kid mode is on. On by default. */
+    fun isBlockShade(context: Context): Boolean = getPrefs(context).getBoolean(KEY_BLOCK_SHADE, true)
+
+    fun setBlockShade(context: Context, on: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_BLOCK_SHADE, on).apply()
     }
 
     private fun b64(bytes: ByteArray): String = Base64.getEncoder().encodeToString(bytes)

@@ -1,14 +1,25 @@
 package com.littlelock.app
 
+import android.app.AlertDialog
+import android.app.admin.DevicePolicyManager
+import android.app.role.RoleManager
 import android.content.ComponentName
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.littlelock.app.databinding.ActivitySettingsBinding
+import java.io.File
 
 /**
  * Parent settings. Only reachable through the parent PIN: opened without an unlocked [ParentSession] it sends the
@@ -22,6 +33,7 @@ class SettingsActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) {
         Toast.makeText(this, R.string.device_admin_updated, Toast.LENGTH_SHORT).show()
+        showStatus()
     }
 
     private val accessibilityResult = registerForActivityResult(
@@ -30,12 +42,27 @@ class SettingsActivity : AppCompatActivity() {
         showStatus()
     }
 
+    /** Android's own "make this your home app" question; if the phone ignores it we walk the parent to the setting. */
+    private val homeRoleResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        showStatus()
+        if (!isHomeApp()) explainHomeSettings()
+    }
+
+    private val pickPicture = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) saveWallpaper(uri)
+    }
+
+    private var loadingLook = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         loadSettings()
+        setupLook()
         setupListeners()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = leave()
@@ -60,6 +87,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.cbNotifAppLaunch.isChecked = Preferences.isAppLaunchNotifEnabled(this)
         binding.cbNotifDailySummary.isChecked = Preferences.isDailySummaryEnabled(this)
         binding.cbNotifBlockedApps.isChecked = Preferences.isBlockedAppsNotifEnabled(this)
+        binding.cbBlockShade.isChecked = Preferences.isBlockShade(this)
+        binding.etKidName.setText(Preferences.getKidName(this))
 
         val version = try {
             packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
@@ -67,6 +96,37 @@ class SettingsActivity : AppCompatActivity() {
             "?"
         }
         binding.tvVersion.text = getString(R.string.settings_version, version)
+    }
+
+    /** Tile-size choices, wallpaper colours. */
+    private fun setupLook() {
+        loadingLook = true
+        Look.TILES.forEachIndexed { i, tile ->
+            val rb = RadioButton(this).apply {
+                id = View.generateViewId()
+                text = "${tile.name}${if (i == Look.DEFAULT_TILE) " (default)" else ""}"
+                tag = i
+            }
+            binding.rgTile.addView(rb)
+            if (i == Preferences.getTileSize(this)) binding.rgTile.check(rb.id)
+        }
+        binding.rgTile.setOnCheckedChangeListener { group, checkedId ->
+            if (loadingLook) return@setOnCheckedChangeListener
+            val index = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
+            Preferences.setTileSize(this, index)
+        }
+        val names = listOf("Choose a colour…") + Look.COLORS.map { it.first }
+        binding.spWallColor.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
+        binding.spWallColor.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (loadingLook || position == 0) return
+                Preferences.setWallpaper(this@SettingsActivity, Look.colorValue(Look.COLORS[position - 1].second))
+                Toast.makeText(this@SettingsActivity, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        loadingLook = false
     }
 
     private fun showStatus() {
@@ -81,13 +141,16 @@ class SettingsActivity : AppCompatActivity() {
         binding.tvAccessibilityStatus.setText(
             if (isBlockingServiceOn()) R.string.settings_accessibility_on else R.string.settings_accessibility_explain
         )
+        binding.tvSetupHome.setText(if (isHomeApp()) R.string.setup_home_yes else R.string.setup_home_no)
+        binding.tvSetupAccess.setText(if (isBlockingServiceOn()) R.string.setup_access_yes else R.string.setup_access_no)
+        binding.tvSetupAdmin.setText(if (isAdminOn()) R.string.setup_admin_yes else R.string.setup_admin_no)
     }
 
     private fun setupListeners() {
         binding.btnAllowedApps.setOnClickListener {
             startActivity(Intent(this, AllowedAppsActivity::class.java))
         }
-        binding.btnSetHome.setOnClickListener { openHomeSettings() }
+        binding.btnSetHome.setOnClickListener { requestHome() }
         binding.btnKidMode.setOnClickListener {
             val turnOn = !Preferences.isKidMode(this)
             Preferences.setKidMode(this, turnOn)
@@ -115,6 +178,12 @@ class SettingsActivity : AppCompatActivity() {
         binding.btnEnableAccessibility.setOnClickListener {
             accessibilityResult.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
+        binding.btnPickWallpaper.setOnClickListener { pickPicture.launch("image/*") }
+        binding.btnClearWallpaper.setOnClickListener {
+            Preferences.setWallpaper(this, "")
+            File(filesDir, LauncherActivity.WALLPAPER_FILE).delete()
+            Toast.makeText(this, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
+        }
         binding.btnBack.setOnClickListener { leave() }
     }
 
@@ -124,11 +193,56 @@ class SettingsActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun openHomeSettings() {
+    /** Is LittleLock the phone's current home app? */
+    private fun isHomeApp(): Boolean {
+        val home = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+        val resolved = packageManager.resolveActivity(home, android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)
+        return resolved?.activityInfo?.packageName == packageName
+    }
+
+    /** Asks Android to make LittleLock the home app (the system shows its own "set as default" question). */
+    private fun requestHome() {
+        if (isHomeApp()) {
+            Toast.makeText(this, R.string.setup_home_yes, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val roles = getSystemService(RoleManager::class.java)
         try {
-            startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+            if (roles != null && roles.isRoleAvailable(RoleManager.ROLE_HOME) && !roles.isRoleHeld(RoleManager.ROLE_HOME)) {
+                homeRoleResult.launch(roles.createRequestRoleIntent(RoleManager.ROLE_HOME))
+                return
+            }
         } catch (e: Exception) {
-            startActivity(Intent(Settings.ACTION_SETTINGS))
+            // fall through to the settings page
+        }
+        explainHomeSettings()
+    }
+
+    /** The phone didn't switch by itself: say what to tap, then open the home-app setting (or the chooser). */
+    private fun explainHomeSettings() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.setup_home_help_title)
+            .setMessage(R.string.setup_home_help)
+            .setPositiveButton(R.string.setup_open_settings) { _, _ -> openHomeSettings() }
+            .setNegativeButton(R.string.setup_cancel, null)
+            .show()
+    }
+
+    private fun openHomeSettings() {
+        val attempts = listOf(
+            Intent(Settings.ACTION_HOME_SETTINGS),
+            Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS),
+            // with no default home app set, Android asks which one to use and offers "Always"
+            Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            Intent(Settings.ACTION_SETTINGS),
+        )
+        for (intent in attempts) {
+            try {
+                startActivity(intent)
+                return
+            } catch (e: Exception) {
+                // try the next one
+            }
         }
     }
 
@@ -138,11 +252,38 @@ class SettingsActivity : AppCompatActivity() {
         return enabled.split(':').any { ComponentName.unflattenFromString(it) == me }
     }
 
+    private fun isAdminOn(): Boolean = try {
+        getSystemService(DevicePolicyManager::class.java)
+            ?.isAdminActive(ComponentName(this, DeviceAdminReceiver::class.java)) == true
+    } catch (e: Exception) {
+        false
+    }
+
+    /** Copies the chosen picture into the app (scaled down to fit a phone screen) and uses it as the wallpaper. */
+    private fun saveWallpaper(uri: Uri) {
+        try {
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+            var sample = 1
+            while (bounds.outWidth / sample > 2000 || bounds.outHeight / sample > 2000) sample *= 2
+            val bmp = contentResolver.openInputStream(uri)?.use {
+                BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
+            } ?: throw IllegalStateException("unreadable")
+            File(filesDir, LauncherActivity.WALLPAPER_FILE).outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 88, it) }
+            Preferences.setWallpaper(this, Look.IMAGE)
+            Toast.makeText(this, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.settings_wallpaper_failed, Toast.LENGTH_LONG).show()
+        }
+    }
+
     private fun saveSettings() {
         val webhookUrl = binding.etWebhookUrl.text?.toString()?.trim()
         Preferences.setWebhookUrl(this, if (webhookUrl.isNullOrEmpty()) null else webhookUrl)
         Preferences.setAppLaunchNotifEnabled(this, binding.cbNotifAppLaunch.isChecked)
         Preferences.setDailySummaryEnabled(this, binding.cbNotifDailySummary.isChecked)
         Preferences.setBlockedAppsNotifEnabled(this, binding.cbNotifBlockedApps.isChecked)
+        Preferences.setBlockShade(this, binding.cbBlockShade.isChecked)
+        Preferences.setKidName(this, binding.etKidName.text?.toString().orEmpty())
     }
 }
