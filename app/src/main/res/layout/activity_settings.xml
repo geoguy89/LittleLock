@@ -18,9 +18,9 @@
               android:layout_height="wrap_content"
               android:layout_gravity="end"
               android:layout_marginBottom="12dp"
-              android:text="← Back" />
+              android:text="@string/settings_done" />
 
-          <!-- General Section -->
+          <!-- Parental controls -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,32 +37,43 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_general"
+                    android:text="@string/settings_parental"
                     android:textColor="@color/littlelock_primary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPin"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Current PIN"
-                        android:inputType="numberPassword"
-                        android:maxLength="4" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <Button
-                    android:id="@+id/btnVerifyPin"
+                <TextView
+                    android:id="@+id/tvKidModeStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Verify PIN" />
+                    android:textColor="@color/littlelock_text_secondary" />
+
+                <Button
+                    android:id="@+id/btnAllowedApps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/settings_allowed_apps" />
+
+                <Button
+                    android:id="@+id/btnSetHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_set_home" />
+
+                <Button
+                    android:id="@+id/btnKidMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_kid_mode_off" />
+
+                <Button
+                    android:id="@+id/btnChangePin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:text="@string/settings_change_pin" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -210,6 +221,14 @@
                     android:textColor="@color/littlelock_primary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvAccessibilityStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/settings_accessibility_explain"
+                    android:textColor="@color/littlelock_text_secondary" />
 
                 <Button
                     android:id="@+id/btnEnableAccessibility"

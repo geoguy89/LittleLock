@@ -10,7 +10,7 @@ import org.junit.Assert.assertTrue
  */
 class ApkInstallTest {
 
-    private val apkPath = "app/build/outputs/apk/release/LittleLock-release.apk"
+    private val apkPath = "build/outputs/apk/release/LittleLock-release.apk"
 
     @Test
     fun the_apk_installs_successfully_on_android_device() {

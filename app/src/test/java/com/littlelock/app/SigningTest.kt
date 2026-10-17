@@ -21,7 +21,7 @@ class SigningTest {
         ""
     }
 
-    private val apkPath = "app/build/outputs/apk/release/LittleLock-release.apk"
+    private val apkPath = "build/outputs/apk/release/LittleLock-release.apk"
 
     /**
      * Verify the release APK exists and passes apksigner verification.

@@ -9,43 +9,59 @@ import androidx.appcompat.app.AppCompatActivity
 import com.littlelock.app.databinding.ActivityPinLockBinding
 
 /**
- * PIN lock activity for entering or setting a parental control PIN.
- * Layout uses btn0-btn9, btnClear, ivDot1-ivDot4, tvPinTitle, tvPinError.
+ * The parent PIN pad.
+ *  - [MODE_ENTER]: checks the PIN, then opens what [EXTRA_NEXT] names (parent settings by default). Five wrong
+ *    PINs in a row lock the pad for 30 seconds.
+ *  - [MODE_SET]: the parent types a new PIN twice. Used on first run and from parent settings ("Change PIN").
  */
 class PinLockActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_MODE = "mode"
+        const val EXTRA_NEXT = "next"
+        const val MODE_ENTER = "enter"
+        const val MODE_SET = "set"
+        const val NEXT_SETTINGS = "settings"
+        const val NEXT_NONE = "none"
+    }
+
     private lateinit var binding: ActivityPinLockBinding
     private var enteredPin = ""
-    private var mode: String = "enter" // "enter", "set"
+    private var mode = MODE_ENTER
+    private var next = NEXT_SETTINGS
+    private var firstEntry: String? = null // set mode: the PIN typed the first time
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPinLockBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        mode = intent.getStringExtra("mode") ?: "enter"
-        updatePinDisplay()
-
-        // Number pad buttons: btn0-btn9
-        for (i in 0..9) {
-            val btnId = resources.getIdentifier("btn$i", "id", packageName)
-            if (btnId != 0) {
-                findViewById<View>(btnId).setOnClickListener {
-                    enterDigit(i.toString())
-                }
-            }
+        mode = intent.getStringExtra(EXTRA_MODE) ?: MODE_ENTER
+        next = intent.getStringExtra(EXTRA_NEXT) ?: NEXT_SETTINGS
+        // changing the PIN needs the parent to be signed in already; a first-run set doesn't
+        if (mode == MODE_SET && Preferences.isPinSet(this) && !ParentSession.isUnlocked()) {
+            mode = MODE_ENTER
         }
 
-        // Clear button
-        val btnClear = findViewById<View>(R.id.btnClear)
-        btnClear.setOnClickListener { deleteDigit() }
+        val digits = listOf(binding.btn0, binding.btn1, binding.btn2, binding.btn3, binding.btn4,
+            binding.btn5, binding.btn6, binding.btn7, binding.btn8, binding.btn9)
+        digits.forEachIndexed { i, button -> button.setOnClickListener { enterDigit(i.toString()) } }
+        binding.btnClear.setOnClickListener { deleteDigit() }
+        updatePinDisplay()
     }
 
-    private fun enterDigit(digit: String) {
-        if (enteredPin.length < 4) {
+    fun enterDigit(digit: String) {
+        if (mode == MODE_ENTER) {
+            val wait = Preferences.pinLockoutRemaining(this)
+            if (wait > 0) {
+                showError(getString(R.string.pin_locked_out, (wait + 999) / 1000))
+                return
+            }
+        }
+        if (enteredPin.length < PinHasher.PIN_LENGTH) {
             enteredPin += digit
             updatePinDisplay()
-            if (enteredPin.length == 4) {
+            if (enteredPin.length == PinHasher.PIN_LENGTH) {
                 confirmPin()
             }
         }
@@ -59,59 +75,63 @@ class PinLockActivity : AppCompatActivity() {
     }
 
     private fun updatePinDisplay() {
-        // Update dot indicators
-        for (i in 1..4) {
-            val dotId = resources.getIdentifier("ivDot$i", "id", packageName)
-            val dot = findViewById<ImageView>(dotId)
-            if (i <= enteredPin.length) {
-                dot.alpha = 1.0f
-            } else {
-                dot.alpha = 0.3f
+        val dots = listOf<ImageView>(binding.ivDot1, binding.ivDot2, binding.ivDot3, binding.ivDot4)
+        dots.forEachIndexed { i, dot -> dot.alpha = if (i < enteredPin.length) 1.0f else 0.3f }
+        binding.tvPinTitle.setText(
+            when {
+                mode == MODE_SET && firstEntry != null -> R.string.pin_confirm_title
+                mode == MODE_SET -> R.string.pin_set_title
+                else -> R.string.pin_enter_title
             }
-        }
-
-        // Update title text based on mode
-        val titleRes = when (mode) {
-            "set" -> R.string.pin_set_title
-            else -> R.string.pin_enter_title
-        }
-        binding.tvPinTitle.text = getString(titleRes)
+        )
     }
 
     private fun confirmPin() {
-        if (enteredPin.length != 4) {
-            showError(R.string.pin_error_short)
-            return
-        }
-
+        val pin = enteredPin
+        enteredPin = ""
         when (mode) {
-            "set" -> {
-                Preferences.setPin(this, enteredPin)
-                Toast.makeText(this, R.string.pin_set_success, Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            else -> {
-                // Enter mode - verify PIN
-                val correctPin = Preferences.getPin(this)
-                if (correctPin == enteredPin) {
-                    val intent = Intent(this, SettingsActivity::class.java)
-                    startActivity(intent)
-                    finish()
+            MODE_SET -> {
+                val first = firstEntry
+                if (first == null) {
+                    firstEntry = pin
+                } else if (first == pin) {
+                    Preferences.setPin(this, pin)
+                    ParentSession.unlock()
+                    Toast.makeText(this, R.string.pin_set_success, Toast.LENGTH_SHORT).show()
+                    done()
+                    return
                 } else {
-                    showError(R.string.pin_error_wrong)
-                    enteredPin = ""
-                    updatePinDisplay()
+                    firstEntry = null
+                    showError(getString(R.string.pin_mismatch))
                 }
             }
+            else -> {
+                if (Preferences.verifyPin(this, pin)) {
+                    Preferences.resetFailedPins(this)
+                    ParentSession.unlock()
+                    done()
+                    return
+                }
+                Preferences.recordFailedPin(this)
+                showError(getString(R.string.pin_error_wrong))
+            }
         }
+        updatePinDisplay()
     }
 
-    private fun showError(resId: Int) {
-        binding.tvPinError.visibility = View.VISIBLE
-        binding.tvPinError.text = getString(resId)
-        // Hide after 2 seconds
-        binding.tvPinError.postDelayed({
-            binding.tvPinError.visibility = View.GONE
-        }, 2000)
+    private fun done() {
+        if (next == NEXT_SETTINGS) {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        finish()
     }
+
+    private fun showError(text: String) {
+        binding.tvPinError.visibility = View.VISIBLE
+        binding.tvPinError.text = text
+        binding.tvPinError.removeCallbacks(hideError)
+        binding.tvPinError.postDelayed(hideError, 2000)
+    }
+
+    private val hideError = Runnable { binding.tvPinError.visibility = View.GONE }
 }

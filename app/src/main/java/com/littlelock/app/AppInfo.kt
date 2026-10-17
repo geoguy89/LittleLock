@@ -5,6 +5,5 @@ package com.littlelock.app
  */
 data class AppInfo(
     val label: String,
-    val packageName: String,
-    val iconResId: Int
+    val packageName: String
 )

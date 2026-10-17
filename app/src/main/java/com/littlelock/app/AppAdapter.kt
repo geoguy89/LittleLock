@@ -25,12 +25,12 @@ class AppAdapter(
         val tvAppName = view.findViewById<TextView>(R.id.tvAppName)
 
         try {
-            val icon = context.packageManager.getApplicationIcon(app.packageName)
-            ivAppIcon.setImageDrawable(icon)
+            ivAppIcon.setImageDrawable(context.packageManager.getApplicationIcon(app.packageName))
         } catch (e: PackageManager.NameNotFoundException) {
             ivAppIcon.setImageResource(R.drawable.ic_app_icon_1)
         }
         tvAppName.text = app.label
+        view.contentDescription = app.label
 
         return view
     }

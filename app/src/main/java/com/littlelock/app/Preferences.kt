@@ -2,9 +2,10 @@ package com.littlelock.app
 
 import android.content.Context
 import android.content.SharedPreferences
+import java.util.Base64
 
 /**
- * SharedPreferences helper for storing app settings and PIN.
+ * SharedPreferences helper for the app's settings, the allowed apps and the (hashed) parent PIN.
  */
 object Preferences {
 
@@ -17,22 +18,93 @@ object Preferences {
     private const val KEY_DAILY_LAUNCH_COUNT = "daily_launch_count"
     private const val KEY_DAILY_DATE = "daily_date"
     private const val KEY_PIN_SET = "pin_set"
+    private const val KEY_PIN_HASH = "pin_hash"
+    private const val KEY_PIN_SALT = "pin_salt"
+    private const val KEY_FAILED_ATTEMPTS = "pin_failed_attempts"
+    private const val KEY_LOCKOUT_UNTIL = "pin_lockout_until"
+    private const val KEY_ALLOWED_APPS = "allowed_apps"
+    private const val KEY_KID_MODE = "kid_mode"
+
+    const val MAX_ATTEMPTS = 5
+    const val LOCKOUT_MS = 30_000L
 
     fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    fun getPin(context: Context): String? {
-        return getPrefs(context).getString(KEY_PIN, null)
-    }
-
-    fun setPin(context: Context, pin: String) {
-        getPrefs(context).edit().putString(KEY_PIN, pin).putBoolean(KEY_PIN_SET, true).apply()
-    }
-
+    /** True once a parent PIN exists (hashed, or an old plain one from before 1.2 that is migrated on first use). */
     fun isPinSet(context: Context): Boolean {
-        return getPrefs(context).getBoolean(KEY_PIN_SET, false)
+        val prefs = getPrefs(context)
+        return prefs.contains(KEY_PIN_HASH) || !prefs.getString(KEY_PIN, null).isNullOrEmpty()
     }
+
+    /** Stores the PIN as a salted hash; the PIN itself is never written. */
+    fun setPin(context: Context, pin: String) {
+        require(PinHasher.isValidPin(pin)) { "PIN must be ${PinHasher.PIN_LENGTH} digits" }
+        val salt = PinHasher.newSalt()
+        getPrefs(context).edit()
+            .putString(KEY_PIN_SALT, b64(salt))
+            .putString(KEY_PIN_HASH, b64(PinHasher.hash(pin, salt)))
+            .remove(KEY_PIN)
+            .putBoolean(KEY_PIN_SET, true)
+            .putInt(KEY_FAILED_ATTEMPTS, 0)
+            .putLong(KEY_LOCKOUT_UNTIL, 0L)
+            .apply()
+    }
+
+    fun verifyPin(context: Context, pin: String): Boolean {
+        val prefs = getPrefs(context)
+        val hash = prefs.getString(KEY_PIN_HASH, null)
+        val salt = prefs.getString(KEY_PIN_SALT, null)
+        if (hash != null && salt != null) {
+            return PinHasher.verify(pin, unb64(salt), unb64(hash))
+        }
+        // a PIN saved in plain text by version 1.1 or older: check it once, then store it hashed
+        val legacy = prefs.getString(KEY_PIN, null)
+        if (!legacy.isNullOrEmpty() && legacy == pin) {
+            setPin(context, pin)
+            return true
+        }
+        return false
+    }
+
+    /** Milliseconds until the PIN can be tried again (0 = now). */
+    fun pinLockoutRemaining(context: Context, now: Long = System.currentTimeMillis()): Long =
+        (getPrefs(context).getLong(KEY_LOCKOUT_UNTIL, 0L) - now).coerceAtLeast(0L)
+
+    /** Counts a wrong PIN; after [MAX_ATTEMPTS] in a row the PIN pad locks for [LOCKOUT_MS]. */
+    fun recordFailedPin(context: Context, now: Long = System.currentTimeMillis()) {
+        val prefs = getPrefs(context)
+        val failed = prefs.getInt(KEY_FAILED_ATTEMPTS, 0) + 1
+        if (failed >= MAX_ATTEMPTS) {
+            prefs.edit().putInt(KEY_FAILED_ATTEMPTS, 0).putLong(KEY_LOCKOUT_UNTIL, now + LOCKOUT_MS).apply()
+        } else {
+            prefs.edit().putInt(KEY_FAILED_ATTEMPTS, failed).apply()
+        }
+    }
+
+    fun resetFailedPins(context: Context) {
+        getPrefs(context).edit().putInt(KEY_FAILED_ATTEMPTS, 0).putLong(KEY_LOCKOUT_UNTIL, 0L).apply()
+    }
+
+    /** Package names of the apps the parent allowed. Empty until the parent picks some. */
+    fun getAllowedApps(context: Context): Set<String> =
+        getPrefs(context).getStringSet(KEY_ALLOWED_APPS, emptySet())?.toSet() ?: emptySet()
+
+    fun setAllowedApps(context: Context, packages: Set<String>) {
+        getPrefs(context).edit().putStringSet(KEY_ALLOWED_APPS, HashSet(packages)).apply()
+    }
+
+    /** Kid mode on: only allowed apps are shown and other apps are sent back home. On by default. */
+    fun isKidMode(context: Context): Boolean = getPrefs(context).getBoolean(KEY_KID_MODE, true)
+
+    fun setKidMode(context: Context, on: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_KID_MODE, on).apply()
+    }
+
+    private fun b64(bytes: ByteArray): String = Base64.getEncoder().encodeToString(bytes)
+
+    private fun unb64(text: String): ByteArray = Base64.getDecoder().decode(text)
 
     fun getWebhookUrl(context: Context): String? {
         return getPrefs(context).getString(KEY_WEBHOOK_URL, null)

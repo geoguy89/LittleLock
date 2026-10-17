@@ -4,6 +4,5 @@
     android:accessibilityFeedbackType="feedbackAllMask"
     android:accessibilityFlags="flagReportViewIds|flagIncludeNotImportantViews"
     android:canRetrieveWindowContent="true"
-    android:canRequestFilterKeyEvents="true"
     android:notificationTimeout="100"
-    android:settingsActivity="com.littlelock.app/.SettingsActivity" />
+    android:description="@string/settings_accessibility_on" />

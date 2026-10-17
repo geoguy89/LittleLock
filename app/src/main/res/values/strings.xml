@@ -5,11 +5,29 @@
 
     <!-- Launcher -->
     <string name="launcher_title">My Apps</string>
-    <string name="launcher_empty">No apps available</string>
+    <string name="launcher_empty">No apps yet. Ask a grown-up to choose some.</string>
+    <string name="launcher_setup">Welcome! A parent needs to set a PIN and choose apps: tap the lock at the top.</string>
+    <string name="launcher_cant_open">%s can\'t be opened</string>
+    <string name="launcher_kid_mode_off">Kid mode is off - every app is shown</string>
+    <string name="launcher_parent_button">Parent settings (needs the parent PIN)</string>
 
     <!-- Settings -->
     <string name="settings_title">Parent Settings</string>
     <string name="settings_general">General</string>
+    <string name="settings_parental">Parental controls</string>
+    <string name="settings_allowed_apps">Choose allowed apps</string>
+    <string name="settings_set_home">Make LittleLock the home screen</string>
+    <string name="settings_kid_mode_off">Turn kid mode off (pick another home app)</string>
+    <string name="settings_kid_mode_on">Turn kid mode on</string>
+    <string name="settings_change_pin">Change parent PIN</string>
+    <string name="settings_done">Done - lock again</string>
+    <plurals name="settings_kid_mode_on_status">
+        <item quantity="one">Kid mode is on: %d app allowed.</item>
+        <item quantity="other">Kid mode is on: %d apps allowed.</item>
+    </plurals>
+    <string name="settings_kid_mode_off_status">Kid mode is off: every app is shown and nothing is blocked.</string>
+    <string name="settings_kid_mode_now_on">Kid mode is on</string>
+    <string name="settings_kid_mode_now_off">Kid mode is off. Pick the home app to use now.</string>
     <string name="settings_discord">Discord Notifications</string>
     <string name="settings_discord_webhook_url">Webhook URL</string>
     <string name="settings_discord_webhook_hint">Enter your Discord webhook URL</string>
@@ -24,8 +42,10 @@
     <string name="settings_device_admin_enable">Enable Device Admin</string>
     <string name="settings_device_admin_enabled">Device Admin Enabled</string>
     <string name="settings_device_admin_disabled">Device Admin Disabled</string>
-    <string name="settings_accessibility">Accessibility Service</string>
-    <string name="settings_accessibility_enable">Enable Accessibility Service</string>
+    <string name="settings_accessibility">Block other apps</string>
+    <string name="settings_accessibility_enable">Turn on blocking (Accessibility)</string>
+    <string name="settings_accessibility_explain">Off: an app that isn\'t allowed could still be opened another way (for example from a notification). Turn on LittleLock under Accessibility so any app that isn\'t allowed goes straight back to the home screen.</string>
+    <string name="settings_accessibility_on">On: any app that isn\'t allowed goes straight back to the home screen.</string>
     <string name="settings_accessibility_enabled">Accessibility Service Enabled</string>
     <string name="settings_about">About</string>
     <string name="settings_version">Version %s</string>
@@ -40,6 +60,7 @@
     <string name="pin_wrong">Wrong PIN. Try again.</string>
     <string name="pin_mismatch">PINs do not match. Try again.</string>
     <string name="pin_enter">Enter</string>
+    <string name="pin_locked_out">Too many wrong PINs. Try again in %d s.</string>
     <string name="pin_clear">Clear</string>
 
     <!-- App Info -->
@@ -71,8 +92,9 @@
     <string name="pin_set_success">PIN set successfully!</string>
     <string name="pin_error_wrong">Wrong PIN. Try again.</string>
 
-    <!-- Gesture -->
-    <string name="gesture_hint">4-finger swipe up to access settings</string>
+    <!-- Allowed apps -->
+    <string name="allowed_apps_explain">Tick the apps your child may use. Only these show on the home screen.</string>
+    <string name="allowed_apps_risky">%s (lets your child change the device or install apps)</string>
 
     <!-- Usage -->
     <string name="usage_today">Today\'s Usage</string>
