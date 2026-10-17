@@ -2,7 +2,14 @@ package com.littlelock.app
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
+import android.graphics.PixelFormat
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
+import android.view.Gravity
+import android.view.View
+import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
 import android.util.Log
@@ -43,6 +50,15 @@ class AccessibilityMonitorService : AccessibilityService() {
     private var lastBlocked: String? = null
     private var lastBlockedAt = 0L
 
+    private val handler = Handler(Looper.getMainLooper())
+    private var shield: View? = null
+    private val shieldTick = object : Runnable {
+        override fun run() {
+            updateShield()
+            handler.postDelayed(this, 2000)
+        }
+    }
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
 
@@ -51,6 +67,12 @@ class AccessibilityMonitorService : AccessibilityService() {
 
         val packageName = event.packageName?.toString() ?: return
         val className = event.className?.toString()
+
+        // the notification shade / quick settings opened anyway: close it again
+        if (ShadeGuard.isShade(packageName, className) && shieldWanted()) {
+            closeShade()
+            return
+        }
 
         if (Enforcer.shouldSendHome(packageName, this.packageName, Preferences.getAllowedApps(this),
                 keyboardPackages(), Preferences.isKidMode(this), ParentSession.isUnlocked())) {
@@ -123,5 +145,67 @@ class AccessibilityMonitorService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         Log.d(TAG, "Accessibility service connected")
+        handler.removeCallbacks(shieldTick)
+        handler.post(shieldTick)
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacks(shieldTick)
+        removeShield()
+        super.onDestroy()
+    }
+
+    private fun shieldWanted(): Boolean = ShadeGuard.shieldWanted(
+        Preferences.isKidMode(this), ParentSession.isUnlocked(), Preferences.isBlockShade(this))
+
+    private fun closeShade() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+        } else {
+            performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+    }
+
+    /** Puts the shield over the status bar while it is wanted, and takes it away when it isn't. */
+    private fun updateShield() {
+        if (shieldWanted()) addShield() else removeShield()
+    }
+
+    /**
+     * A transparent strip over the status bar that takes the touch, so pulling the shade down does nothing. It is an
+     * accessibility overlay, which this service may draw without any extra permission.
+     */
+    private fun addShield() {
+        if (shield != null) return
+        try {
+            val wm = getSystemService(WindowManager::class.java) ?: return
+            val barId = resources.getIdentifier("status_bar_height", "dimen", "android")
+            val bar = if (barId > 0) resources.getDimensionPixelSize(barId) else (28 * resources.displayMetrics.density).toInt()
+            val view = View(this).apply { setOnTouchListener { _, _ -> true } }
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                ShadeGuard.shieldHeightPx(bar, resources.displayMetrics.density),
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            ).apply { gravity = Gravity.TOP }
+            wm.addView(view, params)
+            shield = view
+        } catch (e: Exception) {
+            Log.w(TAG, "Couldn't put up the status-bar shield: ${e.message}")
+        }
+    }
+
+    private fun removeShield() {
+        val view = shield ?: return
+        shield = null
+        try {
+            getSystemService(WindowManager::class.java)?.removeView(view)
+        } catch (e: Exception) {
+            // already gone
+        }
     }
 }

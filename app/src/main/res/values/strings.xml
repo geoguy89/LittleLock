@@ -105,4 +105,25 @@
     <string name="device_admin_updated">Device Admin status updated</string>
     <string name="accessibility_updated">Accessibility Service status updated</string>
     <string name="settings_saved">Settings saved!</string>
+    <string name="settings_look">Make it theirs</string>
+    <string name="settings_kid_name_hint">Child\'s name (shown as "Hi, Name!")</string>
+    <string name="settings_tile_size">App size on the home screen</string>
+    <string name="settings_wallpaper">Wallpaper</string>
+    <string name="settings_wallpaper_pick">Choose a picture</string>
+    <string name="settings_wallpaper_clear">Plain background</string>
+    <string name="settings_wallpaper_color">Or pick a colour</string>
+    <string name="settings_wallpaper_done">Wallpaper saved</string>
+    <string name="settings_wallpaper_failed">Couldn\'t use that picture</string>
+    <string name="settings_block_shade">Keep the child out of the notification shade and quick settings</string>
+    <string name="settings_setup">Setup checklist</string>
+    <string name="setup_home_yes">✅ LittleLock is the home screen</string>
+    <string name="setup_home_no">⬜ 1. Make LittleLock the home screen - tap the button below, then choose LittleLock and "Always"</string>
+    <string name="setup_access_yes">✅ Accessibility is on (blocks other apps and the notification shade)</string>
+    <string name="setup_access_no">⬜ 2. Turn on Accessibility for LittleLock - it blocks other apps and the notification shade</string>
+    <string name="setup_admin_yes">✅ Device admin is on (makes it harder to uninstall)</string>
+    <string name="setup_admin_no">⬜ 3. Turn on Device admin - makes it harder to uninstall</string>
+    <string name="setup_home_help_title">One more step</string>
+    <string name="setup_home_help">Your phone didn\'t switch the home screen by itself. In the next screen choose "Home app" (or "Default home app") and pick LittleLock.</string>
+    <string name="setup_open_settings">Open settings</string>
+    <string name="setup_cancel">Not now</string>
 </resources>

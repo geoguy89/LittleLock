@@ -22,17 +22,24 @@
         <!-- Main Launcher Activity - acts as custom home screen -->
         <activity
             android:name=".LauncherActivity"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
             android:exported="true"
             android:enabled="true"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true"
             android:alwaysRetainTaskState="true">
+              <!-- Android lists a home app from a HOME + DEFAULT filter, and shows an app in the drawer from a
+                   LAUNCHER one; keeping them separate makes both work (the old single filter didn't). -->
               <intent-filter>
                   <action android:name="android.intent.action.MAIN" />
                   <category android:name="android.intent.category.HOME" />
-                  <category android:name="android.intent.category.LAUNCHER" />
                   <category android:name="android.intent.category.DEFAULT" />
+              </intent-filter>
+              <intent-filter>
+                  <action android:name="android.intent.action.MAIN" />
+                  <category android:name="android.intent.category.LAUNCHER" />
               </intent-filter>
         </activity>
 
