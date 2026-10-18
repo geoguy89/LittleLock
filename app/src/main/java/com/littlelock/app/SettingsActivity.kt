@@ -7,7 +7,9 @@ import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.app.TimePickerDialog
 import android.content.ClipData
+import android.widget.SeekBar
 import android.content.ClipboardManager
 import android.net.Uri
 import android.os.Bundle
@@ -93,6 +95,11 @@ class SettingsActivity : AppCompatActivity() {
         binding.cbNotifBlockedApps.isChecked = Preferences.isBlockedAppsNotifEnabled(this)
         binding.cbBlockShade.isChecked = Preferences.isBlockShade(this)
         binding.etKidName.setText(Preferences.getKidName(this))
+        binding.etDiscordToken.setText(Preferences.getDiscordToken(this))
+        binding.etDiscordChannel.setText(Preferences.getDiscordChannel(this))
+        binding.etDiscordUsers.setText(Preferences.getDiscordUsers(this))
+        binding.cbRemote.isChecked = Preferences.isRemoteOn(this)
+        loadTime()
 
         val version = try {
             packageManager.getPackageInfo(packageName, 0).versionName ?: "?"
@@ -119,19 +126,111 @@ class SettingsActivity : AppCompatActivity() {
             val index = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
             Preferences.setTileSize(this, index)
         }
-        val names = listOf("Choose a colour…") + Look.COLORS.map { it.first }
-        binding.spWallColor.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
-        binding.spWallColor.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (loadingLook || position == 0) return
-                Preferences.setWallpaper(this@SettingsActivity, Look.colorValue(Look.COLORS[position - 1].second))
-                Toast.makeText(this@SettingsActivity, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
+        Layouts.NAMES.forEachIndexed { i, name ->
+            val rb = RadioButton(this).apply {
+                id = View.generateViewId()
+                text = name
+                tag = i
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            binding.rgLayout.addView(rb)
+            if (i == Preferences.getLayoutMode(this)) binding.rgLayout.check(rb.id)
         }
+        binding.rgLayout.setOnCheckedChangeListener { group, checkedId ->
+            if (loadingLook) return@setOnCheckedChangeListener
+            val mode = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
+            Preferences.setLayoutMode(this, mode)
+        }
+        addColorPicker()
+        addPhotoPicker()
         addAnimalPicker()
         loadingLook = false
+    }
+
+    /** What the child's home screen will look like: the current wallpaper, shown right here as it is picked. */
+    private fun refreshWallPreview() {
+        val value = Preferences.getWallpaper(this)
+        val iv = binding.ivWallPreview
+        val color = Look.colorOf(value)
+        when {
+            color != null -> {
+                iv.setImageDrawable(null)
+                iv.setBackgroundColor(color)
+            }
+            else -> {
+                val dm = resources.displayMetrics
+                val bmp = Wallpapers.forValue(this, value, (dm.widthPixels * 0.6f).toInt(), (140 * dm.density * 1.6f).toInt())
+                iv.setBackgroundColor(getColor(R.color.littlelock_background))
+                iv.setImageBitmap(bmp)
+            }
+        }
+        markColors(value)
+    }
+
+    private fun markColors(value: String) {
+        for (i in 0 until binding.llColors.childCount) {
+            val v = binding.llColors.getChildAt(i)
+            val mine = Look.colorValue(Look.COLORS[i].second)
+            v.alpha = if (value == mine || value.isEmpty()) 1f else 0.55f
+            v.scaleX = if (value == mine) 1.15f else 1f
+            v.scaleY = v.scaleX
+        }
+    }
+
+    /** Colour swatches: tap one and the wallpaper changes, with a preview right above. */
+    private fun addColorPicker() {
+        val d = resources.displayMetrics.density
+        val size = (46 * d).toInt()
+        Look.COLORS.forEach { (name, argb) ->
+            val v = View(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((5 * d).toInt(), 0, (5 * d).toInt(), 0) }
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(argb)
+                    setStroke((2 * d).toInt(), 0x33000000)
+                }
+                contentDescription = name
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    Preferences.setWallpaper(this@SettingsActivity, Look.colorValue(argb))
+                    refreshWallPreview()
+                    Toast.makeText(this@SettingsActivity, name, Toast.LENGTH_SHORT).show()
+                }
+            }
+            binding.llColors.addView(v)
+        }
+        refreshWallPreview()
+    }
+
+    /** A row of built-in photos (public domain); tapping one makes it the wallpaper. */
+    private fun addPhotoPicker() {
+        val d = resources.displayMetrics.density
+        val size = (92 * d).toInt()
+        Look.PHOTOS.forEach { (key, name) ->
+            val iv = android.widget.ImageView(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((4 * d).toInt(), 0, (4 * d).toInt(), 0) }
+                scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+                setImageBitmap(thumbnail(Wallpapers.photoRes(key), (size * 1.0f).toInt()))
+                contentDescription = name
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    Preferences.setWallpaper(this@SettingsActivity, Look.photoValue(key))
+                    refreshWallPreview()
+                    Toast.makeText(this@SettingsActivity, name, Toast.LENGTH_SHORT).show()
+                }
+            }
+            binding.llPhotos.addView(iv)
+        }
+    }
+
+    /** A small version of a built-in photo for the picker (the full-size JPEG is not decoded for a thumbnail). */
+    private fun thumbnail(res: Int, px: Int): Bitmap? {
+        val o = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeResource(resources, res, o)
+        var sample = 1
+        while (o.outWidth / (sample * 2) >= px) sample *= 2
+        return BitmapFactory.decodeResource(resources, res, BitmapFactory.Options().apply { inSampleSize = sample })
     }
 
     /** A row of the cartoon animals to choose from; tapping one makes it the wallpaper. */
@@ -148,11 +247,37 @@ class SettingsActivity : AppCompatActivity() {
                 isFocusable = true
                 setOnClickListener {
                     Preferences.setWallpaper(this@SettingsActivity, Look.animalValue(key))
+                    refreshWallPreview()
                     Toast.makeText(this@SettingsActivity, name, Toast.LENGTH_SHORT).show()
                 }
             }
             binding.llAnimals.addView(iv)
         }
+    }
+
+    /** The screen-time controls, from what is saved. */
+    private fun loadTime() {
+        val t = Preferences.timeSettings(this)
+        timeLoading = true
+        binding.cbLimit.isChecked = t.limitOn
+        binding.sbLimit.progress = ((t.limitMinutes - TimeLimit.MIN_LIMIT) / 5).coerceIn(0, binding.sbLimit.max)
+        binding.tvLimitValue.text = getString(R.string.time_limit_value, t.limitMinutes)
+        timeLoading = false
+        showTimeStatus()
+    }
+
+    private var timeLoading = false
+
+    private fun showTimeStatus() {
+        val now = System.currentTimeMillis()
+        val t = Preferences.timeSettings(this, now)
+        binding.tvTimeStatus.text = RemoteCommands.status(t, now)
+        binding.btnLockNow.setText(if (t.forceLock) R.string.time_unlock_now else R.string.time_lock_now)
+    }
+
+    private fun saveTime(change: (TimeLimit.Settings) -> TimeLimit.Settings) {
+        Preferences.saveTimeSettings(this, change(Preferences.timeSettings(this)))
+        showTimeStatus()
     }
 
     private fun showStatus() {
@@ -214,6 +339,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.btnClearWallpaper.setOnClickListener {
             Preferences.setWallpaper(this, "")
             File(filesDir, LauncherActivity.WALLPAPER_FILE).delete()
+            refreshWallPreview()
             Toast.makeText(this, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
         }
         binding.btnCopyAdb.setOnClickListener {
@@ -233,6 +359,34 @@ class SettingsActivity : AppCompatActivity() {
                 .setNegativeButton(R.string.setup_cancel, null)
                 .show()
         }
+        binding.cbLimit.setOnCheckedChangeListener { _, on -> if (!timeLoading) saveTime { it.copy(limitOn = on) } }
+        binding.sbLimit.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val minutes = TimeLimit.MIN_LIMIT + progress * 5
+                binding.tvLimitValue.text = getString(R.string.time_limit_value, minutes)
+                if (fromUser && !timeLoading) saveTime { it.copy(limitMinutes = minutes) }
+            }
+
+            override fun onStartTrackingTouch(bar: SeekBar?) {}
+            override fun onStopTrackingTouch(bar: SeekBar?) {}
+        })
+        binding.btnLockNow.setOnClickListener { saveTime { it.copy(forceLock = !it.forceLock, extendedUntil = if (!it.forceLock) 0L else it.extendedUntil) } }
+        binding.btnResetUsed.setOnClickListener {
+            saveTime { it.copy(usedMs = 0L) }
+            Toast.makeText(this, R.string.time_reset_done, Toast.LENGTH_SHORT).show()
+        }
+        binding.btnExtendTime.setOnClickListener {
+            val soon = java.util.Calendar.getInstance().apply { add(java.util.Calendar.MINUTE, 30) }
+            TimePickerDialog(this, { _, h, m ->
+                val until = TimeLimit.nextOccurrence(System.currentTimeMillis(), h, m)
+                saveTime { it.copy(extendedUntil = until) }
+                Toast.makeText(this, getString(R.string.time_extended, TimeLimit.clockText(until)), Toast.LENGTH_LONG).show()
+            }, soon.get(java.util.Calendar.HOUR_OF_DAY), soon.get(java.util.Calendar.MINUTE), false).apply {
+                setTitle(R.string.time_extend_until_title)
+                show()
+            }
+        }
+        binding.btnRemoteTest.setOnClickListener { testRemote() }
         binding.btnBack.setOnClickListener { leave() }
     }
 
@@ -320,10 +474,22 @@ class SettingsActivity : AppCompatActivity() {
             } ?: throw IllegalStateException("unreadable")
             File(filesDir, LauncherActivity.WALLPAPER_FILE).outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 88, it) }
             Preferences.setWallpaper(this, Look.IMAGE)
+            refreshWallPreview()
             Toast.makeText(this, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, R.string.settings_wallpaper_failed, Toast.LENGTH_LONG).show()
         }
+    }
+
+    /** Saves the Discord fields and posts a hello in the channel, so the parent knows it works. */
+    private fun testRemote() {
+        saveSettings()
+        val token = Preferences.getDiscordToken(this)
+        val channel = Preferences.getDiscordChannel(this)
+        Thread {
+            val ok = DiscordWebhookService.postBotMessage(token, channel, "✅ LittleLock is listening here. ${RemoteCommands.help()}")
+            runOnUiThread { Toast.makeText(this, if (ok) R.string.remote_test_ok else R.string.remote_test_failed, Toast.LENGTH_LONG).show() }
+        }.start()
     }
 
     private fun saveSettings() {
@@ -334,5 +500,8 @@ class SettingsActivity : AppCompatActivity() {
         Preferences.setBlockedAppsNotifEnabled(this, binding.cbNotifBlockedApps.isChecked)
         Preferences.setBlockShade(this, binding.cbBlockShade.isChecked)
         Preferences.setKidName(this, binding.etKidName.text?.toString().orEmpty())
+        Preferences.setDiscordRemote(this, binding.etDiscordToken.text?.toString().orEmpty(), binding.etDiscordChannel.text?.toString().orEmpty(),
+            binding.etDiscordUsers.text?.toString().orEmpty())
+        Preferences.setRemoteOn(this, binding.cbRemote.isChecked)
     }
 }

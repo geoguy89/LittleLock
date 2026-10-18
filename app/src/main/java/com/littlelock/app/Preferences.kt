@@ -29,6 +29,18 @@ object Preferences {
     private const val KEY_WALLPAPER = "wallpaper"
     private const val KEY_BLOCK_SHADE = "block_shade"
     private const val KEY_KIOSK = "kiosk"
+    private const val KEY_LAYOUT = "layout_mode"
+    private const val KEY_LIMIT_ON = "limit_on"
+    private const val KEY_LIMIT_MIN = "limit_minutes"
+    private const val KEY_USED_MS = "used_ms"
+    private const val KEY_USED_DAY = "used_day"
+    private const val KEY_FORCE_LOCK = "force_lock"
+    private const val KEY_EXTENDED_UNTIL = "extended_until"
+    private const val KEY_REMOTE_ON = "remote_on"
+    private const val KEY_DISCORD_TOKEN = "discord_bot_token"
+    private const val KEY_DISCORD_CHANNEL = "discord_channel"
+    private const val KEY_DISCORD_USERS = "discord_users"
+    private const val KEY_DISCORD_LAST = "discord_last_id"
 
     const val MAX_ATTEMPTS = 5
     const val LOCKOUT_MS = 30_000L
@@ -140,6 +152,77 @@ object Preferences {
 
     fun setKioskOn(context: Context, on: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_KIOSK, on).apply()
+    }
+
+    /** [Layouts.GRID] (the picked size, centred) or [Layouts.AUTO] (the biggest tiles that fit, centred). */
+    fun getLayoutMode(context: Context): Int = getPrefs(context).getInt(KEY_LAYOUT, Layouts.GRID)
+
+    fun setLayoutMode(context: Context, mode: Int) {
+        getPrefs(context).edit().putInt(KEY_LAYOUT, if (mode == Layouts.AUTO) Layouts.AUTO else Layouts.GRID).apply()
+    }
+
+    private fun dayKey(now: Long): String = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US).format(java.util.Date(now))
+
+    /** The screen-time settings; today's used time starts again at 0 each new day. */
+    fun timeSettings(context: Context, now: Long = System.currentTimeMillis()): TimeLimit.Settings {
+        val p = getPrefs(context)
+        val sameDay = p.getString(KEY_USED_DAY, "") == dayKey(now)
+        return TimeLimit.Settings(
+            limitOn = p.getBoolean(KEY_LIMIT_ON, false),
+            limitMinutes = p.getInt(KEY_LIMIT_MIN, 60),
+            usedMs = if (sameDay) p.getLong(KEY_USED_MS, 0L) else 0L,
+            forceLock = p.getBoolean(KEY_FORCE_LOCK, false),
+            extendedUntil = p.getLong(KEY_EXTENDED_UNTIL, 0L)
+        )
+    }
+
+    fun saveTimeSettings(context: Context, s: TimeLimit.Settings, now: Long = System.currentTimeMillis()) {
+        getPrefs(context).edit()
+            .putBoolean(KEY_LIMIT_ON, s.limitOn)
+            .putInt(KEY_LIMIT_MIN, s.limitMinutes.coerceIn(TimeLimit.MIN_LIMIT, TimeLimit.MAX_LIMIT))
+            .putLong(KEY_USED_MS, s.usedMs)
+            .putString(KEY_USED_DAY, dayKey(now))
+            .putBoolean(KEY_FORCE_LOCK, s.forceLock)
+            .putLong(KEY_EXTENDED_UNTIL, s.extendedUntil)
+            .apply()
+    }
+
+    /** Counts [deltaMs] of screen time for today (only while a limit is set and the tablet is open). */
+    fun addUsedMs(context: Context, deltaMs: Long, now: Long = System.currentTimeMillis()): TimeLimit.Settings {
+        val s = TimeLimit.addUsage(timeSettings(context, now), deltaMs, now)
+        saveTimeSettings(context, s, now)
+        return s
+    }
+
+    /** Is the tablet locked by screen time right now? */
+    fun isTimeLocked(context: Context, now: Long = System.currentTimeMillis()): Boolean =
+        TimeLimit.state(timeSettings(context, now), now).locked
+
+    fun isRemoteOn(context: Context): Boolean = getPrefs(context).getBoolean(KEY_REMOTE_ON, false)
+
+    fun setRemoteOn(context: Context, on: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_REMOTE_ON, on).apply()
+    }
+
+    fun getDiscordToken(context: Context): String = getPrefs(context).getString(KEY_DISCORD_TOKEN, "") ?: ""
+
+    fun getDiscordChannel(context: Context): String = getPrefs(context).getString(KEY_DISCORD_CHANNEL, "") ?: ""
+
+    fun getDiscordUsers(context: Context): String = getPrefs(context).getString(KEY_DISCORD_USERS, "") ?: ""
+
+    fun setDiscordRemote(context: Context, token: String, channel: String, users: String) {
+        getPrefs(context).edit()
+            .putString(KEY_DISCORD_TOKEN, token.trim())
+            .putString(KEY_DISCORD_CHANNEL, channel.trim())
+            .putString(KEY_DISCORD_USERS, users.trim())
+            .remove(KEY_DISCORD_LAST)                    // a changed channel starts fresh: nothing old is replayed
+            .apply()
+    }
+
+    fun getDiscordLast(context: Context): String = getPrefs(context).getString(KEY_DISCORD_LAST, "") ?: ""
+
+    fun setDiscordLast(context: Context, id: String) {
+        getPrefs(context).edit().putString(KEY_DISCORD_LAST, id).apply()
     }
 
     private fun b64(bytes: ByteArray): String = Base64.getEncoder().encodeToString(bytes)

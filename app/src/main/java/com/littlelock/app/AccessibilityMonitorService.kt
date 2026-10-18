@@ -1,6 +1,13 @@
 package com.littlelock.app
 
 import android.accessibilityservice.AccessibilityService
+import android.app.ActivityManager
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.os.PowerManager
+import android.widget.FrameLayout
+import android.widget.TextView
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
@@ -49,6 +56,25 @@ class AccessibilityMonitorService : AccessibilityService() {
     }
 
     private var lastPackageName: String? = null
+    private var lastForeground: String? = null
+    private var cover: View? = null
+    private var lastTick = 0L
+    private var timeUpShown = false
+    private var killedForLock = false
+    private var polling = false
+    private var lastPoll = 0L
+    private val remoteWorker = java.util.concurrent.Executors.newSingleThreadExecutor()
+    private val coverTimeout = Runnable { hideCover() }
+    private val timeTick = object : Runnable {
+        override fun run() {
+            try {
+                tickTime()
+            } catch (e: Exception) {
+                Log.w(TAG, "time tick: ${e.message}")
+            }
+            handler.postDelayed(this, 5000)
+        }
+    }
     private var lastBlocked: String? = null
     private var lastBlockedAt = 0L
 
@@ -75,6 +101,19 @@ class AccessibilityMonitorService : AccessibilityService() {
 
         val packageName = event.packageName?.toString() ?: return
         val className = event.className?.toString()
+        lastForeground = packageName
+
+        // LittleLock itself is in front again: the cover that hid the other app can go
+        if (packageName == this.packageName) {
+            if (cover != null) handler.postDelayed({ hideCover() }, 450)
+            return
+        }
+
+        // Time's up: nothing but the time-up page may be in front (the system's own windows and keyboards still work)
+        if (timeLocked() && packageName != "com.android.systemui" && packageName != "android" && packageName !in keyboardPackages()) {
+            showTimeUp()
+            return
+        }
 
         // the notification shade / quick settings opened anyway: close it again
         val said = (event.text?.joinToString(" ") ?: "") + " " + (event.contentDescription ?: "")
@@ -126,6 +165,7 @@ class AccessibilityMonitorService : AccessibilityService() {
     /** Back to the LittleLock home screen, and (at most once a minute per app) tell the parent. */
     private fun sendHome(packageName: String, event: AccessibilityEvent) {
         Log.i(TAG, "Not allowed in kid mode: $packageName - back to the home screen")
+        showCover()                                     // hide the other app at once; spamming Home only meets the cover
         startActivity(Intent(this, LauncherActivity::class.java).addFlags(
             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
         val now = SystemClock.elapsedRealtime()
@@ -156,12 +196,158 @@ class AccessibilityMonitorService : AccessibilityService() {
         Log.d(TAG, "Accessibility service connected")
         handler.removeCallbacks(shieldTick)
         handler.post(shieldTick)
+        handler.removeCallbacks(timeTick)
+        lastTick = 0L
+        handler.post(timeTick)
     }
 
     override fun onDestroy() {
         handler.removeCallbacks(shieldTick)
+        handler.removeCallbacks(timeTick)
+        hideCover()
         removeShield()
+        remoteWorker.shutdown()
         super.onDestroy()
+    }
+
+    // ------------------------------------------------------------------ screen time
+
+    private fun timeLocked(): Boolean = Preferences.isKidMode(this) && !ParentSession.isUnlocked() && Preferences.isTimeLocked(this)
+
+    private fun isScreenOn(): Boolean = getSystemService(PowerManager::class.java)?.isInteractive != false
+
+    /** Every few seconds: count screen time, lock when time is up (and close the apps), and look for a command from the parent. */
+    private fun tickTime() {
+        val now = System.currentTimeMillis()
+        val kid = Preferences.isKidMode(this)
+        val parent = ParentSession.isUnlocked()
+        if (lastTick != 0L && kid && !parent && isScreenOn()) {
+            Preferences.addUsedMs(this, (now - lastTick).coerceIn(0L, 15_000L), now)
+        }
+        lastTick = now
+        if (kid && !parent && Preferences.isTimeLocked(this, now)) {
+            if (!timeUpShown || (lastForeground != null && lastForeground != packageName)) showTimeUp()
+            else if (!killedForLock) scheduleClose()
+        } else {
+            timeUpShown = false
+            killedForLock = false
+        }
+        pollRemote(now)
+    }
+
+    /** The time-up page over everything (behind a colourful cover so no app flashes through), then the apps are closed. */
+    private fun showTimeUp() {
+        if (!timeUpShown) {
+            timeUpShown = true
+            val url = Preferences.getWebhookUrl(this)
+            if (Preferences.isBlockedAppsNotifEnabled(this) && !url.isNullOrEmpty()) {
+                val state = TimeLimit.state(Preferences.timeSettings(this), System.currentTimeMillis())
+                DiscordWebhookService.sendNote(url, "⏰ Time's up", if (state.why == TimeLimit.Why.FORCED) "The tablet was locked." else "Today's screen time is used up.")
+            }
+        }
+        showCover()
+        startActivity(Intent(this, TimeUpActivity::class.java).addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+        scheduleClose()
+    }
+
+    /** A moment later (the apps are in the background by then) close what the child was using. */
+    private fun scheduleClose() {
+        if (killedForLock) return
+        killedForLock = true
+        handler.postDelayed({
+            val am = getSystemService(ActivityManager::class.java)
+            Preferences.getAllowedApps(this).forEach { pkg ->
+                try {
+                    am?.killBackgroundProcesses(pkg)
+                } catch (e: Exception) {
+                    Log.w(TAG, "couldn't close $pkg: ${e.message}")
+                }
+            }
+        }, 1500)
+    }
+
+    /** Looks in the parent's Discord channel for commands (if the remote is on), at most every 30 seconds. */
+    private fun pollRemote(now: Long) {
+        if (!Preferences.isRemoteOn(this) || polling || now - lastPoll < 30_000L) return
+        val token = Preferences.getDiscordToken(this)
+        val channel = Preferences.getDiscordChannel(this)
+        val users = DiscordRemote.users(Preferences.getDiscordUsers(this))
+        if (token.isBlank() || channel.isBlank()) return
+        polling = true
+        lastPoll = now
+        val app = applicationContext
+        remoteWorker.execute {
+            try {
+                val last = Preferences.getDiscordLast(app)
+                val msgs = DiscordWebhookService.fetchMessages(token, channel, last.ifEmpty { null })
+                if (msgs != null) {
+                    if (last.isEmpty()) {
+                        // the first look: remember where the channel stands and run nothing that is already there
+                        Preferences.setDiscordLast(app, if (msgs.isEmpty()) "1" else DiscordRemote.newest(msgs))
+                    } else {
+                        val o = DiscordRemote.handle(msgs, users, last, Preferences.timeSettings(app), System.currentTimeMillis())
+                        Preferences.saveTimeSettings(app, o.settings)
+                        Preferences.setDiscordLast(app, o.lastId)
+                        o.replies.forEach { DiscordWebhookService.postBotMessage(token, channel, it) }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "remote: ${e.message}")
+            } finally {
+                polling = false
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ the cover
+
+    /**
+     * An opaque, colourful full-screen cover, drawn at once when another app (or the phone's own home screen) comes up in kid mode,
+     * so nothing underneath can be tapped while LittleLock is brought back. It takes every touch; it goes away when LittleLock is in
+     * front again (or after a few seconds at most).
+     */
+    private fun showCover() {
+        handler.removeCallbacks(coverTimeout)
+        handler.postDelayed(coverTimeout, 2500)
+        if (cover != null) return
+        try {
+            val wm = getSystemService(WindowManager::class.java) ?: return
+            val v = FrameLayout(this).apply {
+                background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(0xFF6C63FF.toInt(), 0xFFFF6B9D.toInt(), 0xFFFFC75F.toInt()))
+                setOnTouchListener { _, _ -> true }
+                addView(TextView(context).apply {
+                    text = getString(R.string.cover_text)
+                    textSize = 34f
+                    gravity = Gravity.CENTER
+                    setTextColor(Color.WHITE)
+                    setTypeface(typeface, Typeface.BOLD)
+                }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            }
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.OPAQUE
+            )
+            wm.addView(v, params)
+            cover = v
+        } catch (e: Exception) {
+            Log.w(TAG, "Couldn't put up the cover: ${e.message}")
+        }
+    }
+
+    private fun hideCover() {
+        handler.removeCallbacks(coverTimeout)
+        val v = cover ?: return
+        cover = null
+        try {
+            getSystemService(WindowManager::class.java)?.removeView(v)
+        } catch (e: Exception) {
+            // already gone
+        }
     }
 
     private fun shieldWanted(): Boolean = ShadeGuard.shieldWanted(

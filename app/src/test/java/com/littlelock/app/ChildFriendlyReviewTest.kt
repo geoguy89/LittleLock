@@ -1,7 +1,6 @@
 package com.littlelock.app
 
 import android.view.View
-import android.widget.GridView
 import android.widget.TextView
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -27,16 +26,16 @@ class ChildFriendlyReviewTest {
     fun the_user_interface_is_intuitive_for_children() {
         TestApps.parentSetUp("com.example.puzzles")
         val activity = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
-        val grid = activity.findViewById<GridView>(R.id.gridApps)
-        val shown = (0 until grid.adapter.count).map { (grid.adapter.getItem(it) as AppInfo).packageName }
-        assertEquals(listOf("com.example.puzzles"), shown)
+        val grid = activity.findViewById<AppGrid>(R.id.gridApps)
+        val shown = (0 until grid.childCount).map { grid.getChildAt(it).contentDescription.toString() }
+        assertEquals(listOf("Puzzles"), shown)
     }
 
     @Test
     fun with_nothing_allowed_the_child_sees_a_message_not_an_empty_screen() {
         TestApps.parentSetUp()
         val activity = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
-        assertEquals(0, activity.findViewById<GridView>(R.id.gridApps).adapter.count)
+        assertEquals(0, activity.findViewById<AppGrid>(R.id.gridApps).childCount)
         val empty = activity.findViewById<TextView>(R.id.tvEmpty)
         assertEquals(View.VISIBLE, empty.visibility)
         assertEquals(activity.getString(R.string.launcher_empty), empty.text.toString())

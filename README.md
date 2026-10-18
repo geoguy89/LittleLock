@@ -183,3 +183,23 @@ card returns the tablet to normal. Without this step LittleLock still works, wit
 
 Pick a colour, a photo, or one of the cartoon animals in parent settings. The animals are drawn by `tools/gen_wallpapers.py`
 (run it to regenerate `res/drawable/wp_*.xml`; `--preview DIR` writes PNGs to look at).
+
+## Screen time, "Time's up", and the Discord remote
+
+In parent settings, **Screen time** sets a daily limit (5 minutes to 4 hours), lets you **Lock now**, and **Extend time…** until a clock time you
+choose. When time is up the apps the child was using are closed and a full-screen colourful *Time's up* page covers everything - Home leads
+there, not to the apps. On that page the **Parent** button asks for the PIN and then *what time the tablet should lock again*; until then it is
+open and at that time the page comes back.
+
+**Remote control (Discord)** is optional and uses *your own* Discord bot, so nothing goes through anyone else's server: create a bot at
+discord.com/developers, turn on its *Message Content Intent*, add it to a private channel where it can read and post, then paste the bot token,
+the channel id and your own Discord user id into parent settings. Post commands in that channel from your phone: `status`, `lock`, `unlock`,
+`extend 30`, `extend 1h`, `extend until 8:30pm`, `limit 90`, `limit off`, `reset`. Only the user ids you list are obeyed; the tablet checks the
+channel about every 30 seconds and answers in the channel.
+
+## Layout and photos
+
+*Layout* centres the apps on the screen however many you chose: at the size you picked, or *Fill the screen* for the biggest tiles that still fit.
+Wallpapers: ten cartoon animals (drawn in code, `tools/gen_wallpapers.py`), eighteen built-in CC0 / public-domain photos (credits in
+`app/src/main/assets/PHOTO_CREDITS.txt`), colours, or a picture of your own. While another app (or the tablet's own home screen) comes up in kid
+mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly never lets a tap through.

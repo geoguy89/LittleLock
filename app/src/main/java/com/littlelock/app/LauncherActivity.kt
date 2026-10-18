@@ -1,7 +1,6 @@
 package com.littlelock.app
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -11,7 +10,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.littlelock.app.databinding.ActivityLauncherBinding
-import java.io.File
 
 /**
  * The child's home screen: a grid of the apps the parent allowed, nothing else - with the child's name and the
@@ -29,10 +27,6 @@ class LauncherActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.root.applySystemBarInsets()
 
-        binding.gridApps.emptyView = binding.tvEmpty
-        binding.gridApps.setOnItemClickListener { _, _, position, _ ->
-            visibleApps.getOrNull(position)?.let { launch(it) }
-        }
         binding.btnSettings.setOnClickListener { openParentArea() }
 
         // this is the home screen: Back has nowhere to go
@@ -48,6 +42,11 @@ class LauncherActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (Preferences.isKidMode(this) && !ParentSession.isUnlocked() && Preferences.isTimeLocked(this)) {
+            // time is up: Home leads to the time-up page, not to the apps
+            startActivity(Intent(this, TimeUpActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            return
+        }
         loadApps()
         syncKiosk()
     }
@@ -76,9 +75,10 @@ class LauncherActivity : AppCompatActivity() {
             AppFilter.choosableApps(all, packageName)
         }
         val lightText = applyLook()
-        val tile = Look.tile(Preferences.getTileSize(this))
-        binding.gridApps.columnWidth = (tile.cellDp * resources.displayMetrics.density).toInt()
-        binding.gridApps.adapter = AppAdapter(this, visibleApps, lightText = lightText)
+        binding.gridApps.tile = Look.tile(Preferences.getTileSize(this))
+        binding.gridApps.mode = Preferences.getLayoutMode(this)
+        binding.gridApps.setApps(visibleApps, lightText) { launch(it) }
+        binding.tvEmpty.visibility = if (visibleApps.isEmpty()) View.VISIBLE else View.GONE
         binding.tvEmpty.setText(
             if (Preferences.isPinSet(this)) R.string.launcher_empty else R.string.launcher_setup
         )
@@ -101,21 +101,10 @@ class LauncherActivity : AppCompatActivity() {
             return Look.isDark(color)
         }
         val dm = resources.displayMetrics
-        val animal = Look.animalOf(wallpaper)
-        if (animal != null) {
-            val bmp = Wallpapers.render(this, animal, dm.widthPixels, dm.heightPixels)
-            if (bmp != null) {
-                binding.root.background = BitmapDrawable(resources, bmp).apply { gravity = Gravity.FILL }
-                return Wallpapers.isDark(bmp)
-            }
-        }
-        if (wallpaper == Look.IMAGE) {
-            val file = File(filesDir, WALLPAPER_FILE)
-            val bmp = if (file.isFile) BitmapFactory.decodeFile(file.path) else null
-            if (bmp != null) {
-                binding.root.background = BitmapDrawable(resources, bmp).apply { gravity = Gravity.FILL }
-                return Wallpapers.isDark(bmp)
-            }
+        val bmp = Wallpapers.forValue(this, wallpaper, dm.widthPixels, dm.heightPixels)
+        if (bmp != null) {
+            binding.root.background = BitmapDrawable(resources, bmp).apply { gravity = Gravity.FILL }
+            return Wallpapers.isDark(bmp)
         }
         binding.root.setBackgroundColor(getColor(R.color.littlelock_background))
         return false
