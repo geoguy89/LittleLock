@@ -229,6 +229,10 @@ class AccessibilityMonitorService : AccessibilityService() {
             if (!timeUpShown || (lastForeground != null && lastForeground != packageName)) showTimeUp()
             else if (!killedForLock) scheduleClose()
         } else {
+            // the lock ended by the clock (bedtime over, extension used, unlocked from afar): don't leave the time-up page sitting there
+            if (timeUpShown && kid && isScreenOn()) {
+                startActivity(Intent(this, LauncherActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            }
             timeUpShown = false
             killedForLock = false
         }

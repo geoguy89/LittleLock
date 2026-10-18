@@ -55,6 +55,25 @@ class TimeUpActivity : AppCompatActivity() {
         }
     }
 
+    /** Waking the tablet re-reads the clock at once, so a lock that ended while it slept never greets the child. */
+    private val wake = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            val st = TimeLimit.state(Preferences.timeSettings(this@TimeUpActivity), System.currentTimeMillis())
+            if (!st.locked || !Preferences.isKidMode(this@TimeUpActivity)) leave()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val f = android.content.IntentFilter(Intent.ACTION_SCREEN_ON).apply { addAction(Intent.ACTION_USER_PRESENT) }
+        androidx.core.content.ContextCompat.registerReceiver(this, wake, f, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED)
+    }
+
+    override fun onStop() {
+        try { unregisterReceiver(wake) } catch (_: IllegalArgumentException) {}
+        super.onStop()
+    }
+
     override fun onPause() {
         binding.root.removeCallbacks(recheck)
         super.onPause()

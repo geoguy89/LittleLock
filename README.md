@@ -232,3 +232,8 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 ## 1.6.4
 
 - The accent colour now also colours the system navigation bar itself (status bar and navigation buttons), not only the strip drawn by the app.
+
+## 1.6.5
+
+- Bedtime ends on the clock, always: an extension only opens the tablet for its own time and never moves the morning end of the lockdown (now covered by a test).
+- If the bedtime / time-up page is still showing when the lock ends (the tablet slept through it), LittleLock now brings the apps back on its own within seconds, and again the moment the screen wakes.

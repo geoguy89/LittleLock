@@ -100,4 +100,17 @@ class BedtimeTest {
     fun the_status_says_it_is_bedtime() {
         assertTrue(RemoteCommands.status(s, at(10, 22), utc).contains("Bedtime lockdown until 2:00 AM"))
     }
+
+    @Test
+    fun an_extension_never_pushes_the_morning_reset_later() {
+        val ext = s.copy(extendedUntil = at(10, 23))            // opened until 11 PM
+        assertTrue(TimeLimit.state(ext, at(10, 23, 30), utc).locked)
+        assertEquals(at(11, 2), TimeLimit.state(ext, at(10, 23, 30), utc).bedEndsAt)
+        assertFalse(TimeLimit.state(ext, at(11, 2, 1), utc).locked)
+        val late = s.copy(extendedUntil = at(11, 1))             // extended again past midnight
+        assertEquals(at(11, 2), TimeLimit.state(late, at(11, 1, 30), utc).bedEndsAt)
+        assertFalse(TimeLimit.state(late, at(11, 7), utc).locked)
+        val farOut = s.copy(extendedUntil = at(11, 1))
+        assertFalse(TimeLimit.state(farOut, at(11, 9), utc).locked)
+    }
 }
