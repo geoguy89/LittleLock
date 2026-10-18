@@ -164,5 +164,12 @@
     <string name="remote_test_ok">Sent - check the channel</string>
     <string name="remote_test_failed">Couldn\'t reach the channel - check the token, the channel id and that the bot may post there</string>
     <string name="remote_saved">Saved</string>
-    <string name="cover_text">🌈\nHold on!\nBack to your apps…</string>
+    <string name="settings_align">Where the apps sit on the screen</string>
+    <string name="settings_gap">Space between apps</string>
+    <string name="bed_switch">Bedtime lockdown: everything is off every night</string>
+    <string name="bed_start_button">Starts at %1$s - tap to change</string>
+    <string name="bed_length_value">Lasts %1$s</string>
+    <string name="bed_title">Good night!</string>
+    <string name="bed_message">The tablet is sleeping now. It wakes up at %1$s.</string>
+    <string name="settings_accent">Accent colour (top bar, buttons, headings)</string>
 </resources>

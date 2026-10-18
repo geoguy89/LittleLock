@@ -203,3 +203,11 @@ channel about every 30 seconds and answers in the channel.
 Wallpapers: ten cartoon animals (drawn in code, `tools/gen_wallpapers.py`), eighteen built-in CC0 / public-domain photos (credits in
 `app/src/main/assets/PHOTO_CREDITS.txt`), colours, or a picture of your own. While another app (or the tablet's own home screen) comes up in kid
 mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly never lets a tap through.
+
+## 1.6.0
+
+- **Bedtime lockdown** (on by default): every night everything is off from 8:00 PM for 6 hours. Start time and length are adjustable in Settings > Screen time, or from Discord (`bedtime 9pm 8h`, `bedtime off`). A parent can still extend with the PIN or `extend 30`.
+- **Accent colour**: pick the colour of the top bar, buttons and headings (Settings > Make it theirs).
+- **Layout**: adjustable spacing between apps, and the block of apps can sit at the top, middle or bottom.
+- **Monkey wallpapers**: nine CC0 monkey/orangutan photos and a cartoon monkey (credits in `assets/PHOTO_CREDITS.txt`).
+- The rainbow "Hold on" cover is gone; the cover is now a plain dark screen with no words.

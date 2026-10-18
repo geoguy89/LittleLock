@@ -22,6 +22,7 @@ class LauncherActivity : AppCompatActivity() {
     private var visibleApps: List<AppInfo> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Accent.apply(this)
         super.onCreate(savedInstanceState)
         binding = ActivityLauncherBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -77,6 +78,8 @@ class LauncherActivity : AppCompatActivity() {
         val lightText = applyLook()
         binding.gridApps.tile = Look.tile(Preferences.getTileSize(this))
         binding.gridApps.mode = Preferences.getLayoutMode(this)
+        binding.gridApps.align = Preferences.getLayoutAlign(this)
+        binding.gridApps.gapDp = Layouts.gapDp(Preferences.getLayoutGap(this))
         binding.gridApps.setApps(visibleApps, lightText) { launch(it) }
         binding.tvEmpty.visibility = if (visibleApps.isEmpty()) View.VISIBLE else View.GONE
         binding.tvEmpty.setText(

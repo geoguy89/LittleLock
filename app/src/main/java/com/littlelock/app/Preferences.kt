@@ -30,12 +30,18 @@ object Preferences {
     private const val KEY_BLOCK_SHADE = "block_shade"
     private const val KEY_KIOSK = "kiosk"
     private const val KEY_LAYOUT = "layout_mode"
+    private const val KEY_ACCENT = "accent"
+    private const val KEY_ALIGN = "layout_align"
+    private const val KEY_GAP = "layout_gap"
     private const val KEY_LIMIT_ON = "limit_on"
     private const val KEY_LIMIT_MIN = "limit_minutes"
     private const val KEY_USED_MS = "used_ms"
     private const val KEY_USED_DAY = "used_day"
     private const val KEY_FORCE_LOCK = "force_lock"
     private const val KEY_EXTENDED_UNTIL = "extended_until"
+    private const val KEY_BED_ON = "bed_on"
+    private const val KEY_BED_START = "bed_start_min"
+    private const val KEY_BED_MINUTES = "bed_minutes"
     private const val KEY_REMOTE_ON = "remote_on"
     private const val KEY_DISCORD_TOKEN = "discord_bot_token"
     private const val KEY_DISCORD_CHANNEL = "discord_channel"
@@ -161,6 +167,27 @@ object Preferences {
         getPrefs(context).edit().putInt(KEY_LAYOUT, if (mode == Layouts.AUTO) Layouts.AUTO else Layouts.GRID).apply()
     }
 
+    /** The key of the accent colour the parent picked (see [Accent]). */
+    fun getAccent(context: Context): String = getPrefs(context).getString(KEY_ACCENT, Accent.DEFAULT) ?: Accent.DEFAULT
+
+    fun setAccent(context: Context, key: String) {
+        getPrefs(context).edit().putString(KEY_ACCENT, Accent.choice(key).key).apply()
+    }
+
+    /** [Layouts.TOP], [Layouts.MIDDLE] or [Layouts.BOTTOM]: where the block of apps sits down the screen. */
+    fun getLayoutAlign(context: Context): Int = getPrefs(context).getInt(KEY_ALIGN, Layouts.MIDDLE).coerceIn(Layouts.TOP, Layouts.BOTTOM)
+
+    fun setLayoutAlign(context: Context, align: Int) {
+        getPrefs(context).edit().putInt(KEY_ALIGN, align.coerceIn(Layouts.TOP, Layouts.BOTTOM)).apply()
+    }
+
+    /** Index into [Layouts.GAP_DP]: the space between the app tiles. */
+    fun getLayoutGap(context: Context): Int = getPrefs(context).getInt(KEY_GAP, Layouts.DEFAULT_GAP).coerceIn(0, Layouts.GAP_DP.lastIndex)
+
+    fun setLayoutGap(context: Context, step: Int) {
+        getPrefs(context).edit().putInt(KEY_GAP, step.coerceIn(0, Layouts.GAP_DP.lastIndex)).apply()
+    }
+
     private fun dayKey(now: Long): String = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US).format(java.util.Date(now))
 
     /** The screen-time settings; today's used time starts again at 0 each new day. */
@@ -172,7 +199,10 @@ object Preferences {
             limitMinutes = p.getInt(KEY_LIMIT_MIN, 60),
             usedMs = if (sameDay) p.getLong(KEY_USED_MS, 0L) else 0L,
             forceLock = p.getBoolean(KEY_FORCE_LOCK, false),
-            extendedUntil = p.getLong(KEY_EXTENDED_UNTIL, 0L)
+            extendedUntil = p.getLong(KEY_EXTENDED_UNTIL, 0L),
+            bedOn = p.getBoolean(KEY_BED_ON, true),
+            bedStartMin = p.getInt(KEY_BED_START, TimeLimit.DEFAULT_BED_START),
+            bedMinutes = p.getInt(KEY_BED_MINUTES, TimeLimit.DEFAULT_BED_MINUTES)
         )
     }
 
@@ -184,6 +214,9 @@ object Preferences {
             .putString(KEY_USED_DAY, dayKey(now))
             .putBoolean(KEY_FORCE_LOCK, s.forceLock)
             .putLong(KEY_EXTENDED_UNTIL, s.extendedUntil)
+            .putBoolean(KEY_BED_ON, s.bedOn)
+            .putInt(KEY_BED_START, s.bedStartMin.coerceIn(0, 24 * 60 - 1))
+            .putInt(KEY_BED_MINUTES, s.bedMinutes.coerceIn(TimeLimit.MIN_BED, TimeLimit.MAX_BED))
             .apply()
     }
 

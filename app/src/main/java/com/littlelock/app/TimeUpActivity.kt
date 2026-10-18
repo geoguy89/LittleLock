@@ -69,10 +69,15 @@ class TimeUpActivity : AppCompatActivity() {
     }
 
     private fun paint() {
+        val st = TimeLimit.state(Preferences.timeSettings(this), System.currentTimeMillis())
+        if (st.why == TimeLimit.Why.BEDTIME) {
+            binding.tvTimeUpTitle.setText(R.string.bed_title)
+            binding.tvTimeUpMessage.text = getString(R.string.bed_message, TimeLimit.clockText(st.bedEndsAt))
+        }
         val dm = resources.displayMetrics
         val bmp = Wallpapers.render(this, "owl", dm.widthPixels, dm.heightPixels)
         binding.root.background = bmp?.let { BitmapDrawable(resources, it).apply { gravity = Gravity.FILL } }
-            ?: GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(0xFF6C63FF.toInt(), 0xFFFF6B9D.toInt(), 0xFFFFC75F.toInt()))
+            ?: GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(0xFF2B2F4A.toInt(), 0xFF1E1E24.toInt()))
     }
 
     /** The parent picks the clock time the tablet locks again. */

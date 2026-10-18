@@ -18,6 +18,7 @@ object RemoteCommands {
         data class ExtendMinutes(val minutes: Int) : Command()
         data class ExtendUntil(val hour: Int, val minute: Int) : Command()
         data class Limit(val minutes: Int?) : Command()      // null = no daily limit
+        data class Bedtime(val on: Boolean, val startMin: Int?, val minutes: Int?) : Command()
     }
 
     class Result(val settings: TimeLimit.Settings, val reply: String)
@@ -44,6 +45,7 @@ object RemoteCommands {
             "reset" -> Command.ResetUsed
             "extend", "more", "add" -> extend(rest)
             "limit" -> limit(rest)
+            "bedtime", "bed", "night" -> bedtime(rest)
             else -> null
         }
     }
@@ -71,6 +73,18 @@ object RemoteCommands {
         return if (minutes in TimeLimit.MIN_LIMIT..TimeLimit.MAX_LIMIT) Command.Limit(minutes) else null
     }
 
+    /** "bedtime off", "bedtime on", "bedtime 9pm", "bedtime 9pm 8h", "bedtime 8pm for 6 hours". */
+    private fun bedtime(rest: String): Command? {
+        if (rest in listOf("off", "none", "no")) return Command.Bedtime(false, null, null)
+        if (rest in listOf("on", "yes")) return Command.Bedtime(true, null, null)
+        val found = BARE_AMPM.find(rest) ?: BARE_24.find(rest) ?: return null
+        val start = (clock(found) as? Command.ExtendUntil)?.let { it.hour * 60 + it.minute } ?: return null
+        val after = rest.removeRange(found.range).replace("for", "").trim()
+        val len = if (after.isEmpty()) null else minutesIn(after) ?: return null
+        if (len != null && len !in TimeLimit.MIN_BED..TimeLimit.MAX_BED) return null
+        return Command.Bedtime(true, start, len)
+    }
+
     private fun minutesIn(text: String): Int? {
         HOURS.find(text)?.let { return (it.groupValues[1].toDouble() * 60).roundToInt() }
         return MINUTES.find(text)?.groupValues?.get(1)?.toIntOrNull()
@@ -78,7 +92,7 @@ object RemoteCommands {
 
     const val MAX_EXTEND_MINUTES = 12 * 60
 
-    fun help(): String = "Commands: status · lock · unlock · extend 30 · extend 1h · extend until 8:30pm · limit 90 · limit off · reset"
+    fun help(): String = "Commands: status · lock · unlock · extend 30 · extend 1h · extend until 8:30pm · limit 90 · limit off · bedtime 8pm 6h · bedtime off · reset"
 
     /** Applies [c] to the screen-time [s] at time [now]; returns the new settings and the answer to send back. */
     fun apply(s: TimeLimit.Settings, c: Command, now: Long, tz: TimeZone = TimeZone.getDefault()): Result = when (c) {
@@ -90,14 +104,18 @@ object RemoteCommands {
         }
         Command.Unlock -> {
             val n = s.copy(forceLock = false, extendedUntil = 0L)
-            val st = TimeLimit.state(n, now)
+            val st = TimeLimit.state(n, now, tz)
             Result(n, if (st.locked) "🔓 The lock-now is off, but today's limit is used up - the tablet is still locked. Send  extend 30  to open it for a while."
             else "🔓 Unlocked. ${remaining(n, st)}")
         }
         Command.ResetUsed -> Result(s.copy(usedMs = 0L), "↺ Today's used time is back to 0.")
         is Command.Limit -> {
             val n = if (c.minutes == null) s.copy(limitOn = false) else s.copy(limitOn = true, limitMinutes = c.minutes)
-            Result(n, if (c.minutes == null) "No daily limit now." else "Daily limit: ${TimeLimit.durationText(c.minutes * 60_000L)}. ${remaining(n, TimeLimit.state(n, now))}")
+            Result(n, if (c.minutes == null) "No daily limit now." else "Daily limit: ${TimeLimit.durationText(c.minutes * 60_000L)}. ${remaining(n, TimeLimit.state(n, now, tz))}")
+        }
+        is Command.Bedtime -> {
+            val n = s.copy(bedOn = c.on, bedStartMin = c.startMin ?: s.bedStartMin, bedMinutes = c.minutes ?: s.bedMinutes)
+            Result(n, if (!c.on) "Bedtime lockdown is off." else "🌙 Bedtime lockdown: ${TimeLimit.minuteOfDayText(n.bedStartMin)} for ${TimeLimit.durationText(n.bedMinutes * 60_000L)} every night.")
         }
         is Command.ExtendMinutes -> {
             val until = now + c.minutes * 60_000L
@@ -113,9 +131,10 @@ object RemoteCommands {
         if (!s.limitOn) "No daily limit." else "${TimeLimit.durationText(st.remainingMs)} left today."
 
     fun status(s: TimeLimit.Settings, now: Long, tz: TimeZone = TimeZone.getDefault()): String {
-        val st = TimeLimit.state(s, now)
+        val st = TimeLimit.state(s, now, tz)
         return when {
             st.locked && st.why == TimeLimit.Why.FORCED -> "🔒 Locked (you locked it). Used today: ${TimeLimit.durationText(s.usedMs)}."
+            st.locked && st.why == TimeLimit.Why.BEDTIME -> "🌙 Bedtime lockdown until ${TimeLimit.clockText(st.bedEndsAt, tz)}. Send  extend 30  to open it for a while."
             st.locked -> "🔒 Locked - today's ${TimeLimit.durationText(s.limitMinutes * 60_000L)} limit is used up."
             st.extendedUntil > now -> "🔓 Open until ${TimeLimit.clockText(st.extendedUntil, tz)}. Used today: ${TimeLimit.durationText(s.usedMs)}."
             s.limitOn -> "🔓 Open. ${TimeLimit.durationText(st.remainingMs)} left of ${TimeLimit.durationText(s.limitMinutes * 60_000L)} today."

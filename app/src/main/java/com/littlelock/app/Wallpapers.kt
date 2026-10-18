@@ -28,6 +28,7 @@ object Wallpapers {
         "owl" -> R.drawable.wp_owl
         "elephant" -> R.drawable.wp_elephant
         "frog" -> R.drawable.wp_frog
+        "monkey" -> R.drawable.wp_monkey
         else -> 0
     }
 
@@ -51,6 +52,15 @@ object Wallpapers {
         "fawn" -> R.drawable.ph_fawn
         "butterflies" -> R.drawable.ph_butterflies
         "rainbow" -> R.drawable.ph_rainbow
+        "monkeylook" -> R.drawable.ph_monkeylook
+        "monkeyface" -> R.drawable.ph_monkeyface
+        "monkeytrio" -> R.drawable.ph_monkeytrio
+        "babymonkey" -> R.drawable.ph_babymonkey
+        "monkeyhug" -> R.drawable.ph_monkeyhug
+        "babyorang" -> R.drawable.ph_babyorang
+        "orangutans" -> R.drawable.ph_orangutans
+        "capuchin" -> R.drawable.ph_capuchin
+        "monkeybrow" -> R.drawable.ph_monkeybrow
         else -> 0
     }
 

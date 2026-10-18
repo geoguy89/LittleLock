@@ -37,6 +37,7 @@ object TestApps {
         Preferences.setPin(context, "1234")
         Preferences.setKidMode(context, true)
         Preferences.setAllowedApps(context, allowed.toSet())
+        Preferences.saveTimeSettings(context, TimeLimit.Settings(bedOn = false))     // tests must not depend on the time of day
         ParentSession.lock()
     }
 }

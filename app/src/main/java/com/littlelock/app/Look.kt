@@ -35,7 +35,7 @@ object Look {
 
     /** The cartoon animals (key, name) - the pictures come from tools/gen_wallpapers.py; [Wallpapers] maps a key to its drawable. */
     val ANIMALS = listOf("cat" to "Cat", "dog" to "Puppy", "bunny" to "Bunny", "bear" to "Bear", "panda" to "Panda",
-        "fox" to "Fox", "penguin" to "Penguin", "owl" to "Owl", "elephant" to "Elephant", "frog" to "Frog")
+        "fox" to "Fox", "penguin" to "Penguin", "owl" to "Owl", "elephant" to "Elephant", "frog" to "Frog", "monkey" to "Monkey")
 
     /** Photos built into the app (key, name): public-domain (CC0) pictures, credited in assets/PHOTO_CREDITS.txt. */
     val PHOTOS = listOf(
@@ -56,7 +56,16 @@ object Look {
         "hedgehog" to "Hedgehog",
         "fawn" to "Fawn",
         "butterflies" to "Butterflies",
-        "rainbow" to "Rainbow")
+        "rainbow" to "Rainbow",
+        "monkeylook" to "Monkey gazing up",
+        "monkeyface" to "Macaque",
+        "monkeytrio" to "Three monkeys",
+        "babymonkey" to "Baby monkey",
+        "monkeyhug" to "Monkey hug",
+        "babyorang" to "Baby orangutan",
+        "orangutans" to "Orangutan family",
+        "capuchin" to "Capuchin monkey",
+        "monkeybrow" to "Monkey")
 
     private const val PHOTO_PREFIX = "photo:"
     private const val ANIMAL_PREFIX = "animal:"

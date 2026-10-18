@@ -235,14 +235,18 @@ class AccessibilityMonitorService : AccessibilityService() {
         pollRemote(now)
     }
 
-    /** The time-up page over everything (behind a colourful cover so no app flashes through), then the apps are closed. */
+    /** The time-up page over everything (behind a plain cover so no app flashes through), then the apps are closed. */
     private fun showTimeUp() {
         if (!timeUpShown) {
             timeUpShown = true
             val url = Preferences.getWebhookUrl(this)
             if (Preferences.isBlockedAppsNotifEnabled(this) && !url.isNullOrEmpty()) {
                 val state = TimeLimit.state(Preferences.timeSettings(this), System.currentTimeMillis())
-                DiscordWebhookService.sendNote(url, "⏰ Time's up", if (state.why == TimeLimit.Why.FORCED) "The tablet was locked." else "Today's screen time is used up.")
+                DiscordWebhookService.sendNote(url, "⏰ Time's up", when (state.why) {
+                    TimeLimit.Why.FORCED -> "The tablet was locked."
+                    TimeLimit.Why.BEDTIME -> "Bedtime lockdown started."
+                    else -> "Today's screen time is used up."
+                })
             }
         }
         showCover()
@@ -303,7 +307,7 @@ class AccessibilityMonitorService : AccessibilityService() {
     // ------------------------------------------------------------------ the cover
 
     /**
-     * An opaque, colourful full-screen cover, drawn at once when another app (or the phone's own home screen) comes up in kid mode,
+     * A plain, quiet full-screen cover (no words or colours to put anyone off), drawn at once when another app (or the phone's own home screen) comes up in kid mode,
      * so nothing underneath can be tapped while LittleLock is brought back. It takes every touch; it goes away when LittleLock is in
      * front again (or after a few seconds at most).
      */
@@ -314,15 +318,8 @@ class AccessibilityMonitorService : AccessibilityService() {
         try {
             val wm = getSystemService(WindowManager::class.java) ?: return
             val v = FrameLayout(this).apply {
-                background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(0xFF6C63FF.toInt(), 0xFFFF6B9D.toInt(), 0xFFFFC75F.toInt()))
+                setBackgroundColor(0xFF1E1E24.toInt())
                 setOnTouchListener { _, _ -> true }
-                addView(TextView(context).apply {
-                    text = getString(R.string.cover_text)
-                    textSize = 34f
-                    gravity = Gravity.CENTER
-                    setTextColor(Color.WHITE)
-                    setTypeface(typeface, Typeface.BOLD)
-                }, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
             }
             val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,

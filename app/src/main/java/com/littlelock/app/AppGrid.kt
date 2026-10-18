@@ -82,6 +82,8 @@ class AppTile(context: Context) : LinearLayout(context) {
 class AppGrid @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : ViewGroup(context, attrs) {
 
     var mode: Int = Layouts.GRID
+    var align: Int = Layouts.MIDDLE
+    var gapDp: Int = Layouts.gapDp(Layouts.DEFAULT_GAP)
     var tile: Look.Tile = Look.tile(Look.DEFAULT_TILE)
     private var result: Layouts.Result? = null
 
@@ -109,8 +111,8 @@ class AppGrid @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         val hSize = MeasureSpec.getSize(heightMeasureSpec)
         val availW = max(0, w - paddingLeft - paddingRight)
         val availH = if (hMode == MeasureSpec.UNSPECIFIED) resources.displayMetrics.heightPixels / 2 else max(0, hSize - paddingTop - paddingBottom)
-        val gap = (10 * density).toInt()
-        val r = Layouts.forMode(mode, childCount, availW, availH, baseW(), baseH(), gap)
+        val gap = (gapDp * density).toInt()
+        val r = Layouts.forMode(mode, childCount, availW, availH, baseW(), baseH(), gap, align)
         result = r
         for (i in 0 until childCount) {
             val c = getChildAt(i) as AppTile

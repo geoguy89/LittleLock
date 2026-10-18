@@ -16,6 +16,7 @@ class AllowedAppsActivity : AppCompatActivity() {
     private var apps: List<AppInfo> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Accent.apply(this)
         super.onCreate(savedInstanceState)
         binding = ActivityAllowedAppsBinding.inflate(layoutInflater)
         setContentView(binding.root)

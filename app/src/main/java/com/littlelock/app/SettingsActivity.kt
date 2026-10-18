@@ -61,6 +61,7 @@ class SettingsActivity : AppCompatActivity() {
     private var loadingLook = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Accent.apply(this)
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -140,10 +141,31 @@ class SettingsActivity : AppCompatActivity() {
             val mode = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
             Preferences.setLayoutMode(this, mode)
         }
+        radioChoices(binding.rgAlign, Layouts.ALIGN_NAMES, Preferences.getLayoutAlign(this)) { Preferences.setLayoutAlign(this, it) }
+        radioChoices(binding.rgGap, listOf("None", "Tight", "Normal (default)", "Roomy", "Very roomy"), Preferences.getLayoutGap(this)) { Preferences.setLayoutGap(this, it) }
+        addAccentPicker()
         addColorPicker()
         addPhotoPicker()
         addAnimalPicker()
         loadingLook = false
+    }
+
+    /** Fill [group] with one radio button per name, checking [selected]; [onPick] gets the chosen index. */
+    private fun radioChoices(group: android.widget.RadioGroup, names: List<String>, selected: Int, onPick: (Int) -> Unit) {
+        names.forEachIndexed { i, name ->
+            val rb = RadioButton(this).apply {
+                id = View.generateViewId()
+                text = name
+                tag = i
+            }
+            group.addView(rb)
+            if (i == selected) group.check(rb.id)
+        }
+        group.setOnCheckedChangeListener { g, checkedId ->
+            if (loadingLook) return@setOnCheckedChangeListener
+            val index = g.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
+            onPick(index)
+        }
     }
 
     /** What the child's home screen will look like: the current wallpaper, shown right here as it is picked. */
@@ -177,6 +199,33 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     /** Colour swatches: tap one and the wallpaper changes, with a preview right above. */
+    /** The accent colour of the top bar, buttons and headings: a row of swatches; the picked one has a ring. The screen redraws in it. */
+    private fun addAccentPicker() {
+        val d = resources.displayMetrics.density
+        val size = (46 * d).toInt()
+        val current = Accent.current(this).key
+        Accent.ALL.forEach { choice ->
+            val v = View(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((5 * d).toInt(), 0, (5 * d).toInt(), 0) }
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(choice.argb)
+                    setStroke(((if (choice.key == current) 4 else 2) * d).toInt(), if (choice.key == current) 0xFF000000.toInt() else 0x33000000)
+                }
+                contentDescription = choice.name
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    if (choice.key != Accent.current(this@SettingsActivity).key) {
+                        Preferences.setAccent(this@SettingsActivity, choice.key)
+                        recreate()
+                    }
+                }
+            }
+            binding.llAccent.addView(v)
+        }
+    }
+
     private fun addColorPicker() {
         val d = resources.displayMetrics.density
         val size = (46 * d).toInt()
@@ -262,6 +311,10 @@ class SettingsActivity : AppCompatActivity() {
         binding.cbLimit.isChecked = t.limitOn
         binding.sbLimit.progress = ((t.limitMinutes - TimeLimit.MIN_LIMIT) / 5).coerceIn(0, binding.sbLimit.max)
         binding.tvLimitValue.text = getString(R.string.time_limit_value, t.limitMinutes)
+        binding.cbBed.isChecked = t.bedOn
+        binding.btnBedStart.text = getString(R.string.bed_start_button, TimeLimit.minuteOfDayText(t.bedStartMin))
+        binding.sbBed.progress = ((t.bedMinutes - TimeLimit.MIN_BED) / 30).coerceIn(0, binding.sbBed.max)
+        binding.tvBedValue.text = getString(R.string.bed_length_value, TimeLimit.durationText(t.bedMinutes * 60_000L))
         timeLoading = false
         showTimeStatus()
     }
@@ -365,6 +418,27 @@ class SettingsActivity : AppCompatActivity() {
                 val minutes = TimeLimit.MIN_LIMIT + progress * 5
                 binding.tvLimitValue.text = getString(R.string.time_limit_value, minutes)
                 if (fromUser && !timeLoading) saveTime { it.copy(limitMinutes = minutes) }
+            }
+
+            override fun onStartTrackingTouch(bar: SeekBar?) {}
+            override fun onStopTrackingTouch(bar: SeekBar?) {}
+        })
+        binding.cbBed.setOnCheckedChangeListener { _, on -> if (!timeLoading) saveTime { it.copy(bedOn = on) } }
+        binding.btnBedStart.setOnClickListener {
+            val cur = Preferences.timeSettings(this).bedStartMin
+            TimePickerDialog(this, { _, h, m ->
+                saveTime { it.copy(bedStartMin = h * 60 + m) }
+                binding.btnBedStart.text = getString(R.string.bed_start_button, TimeLimit.minuteOfDayText(h * 60 + m))
+            }, cur / 60, cur % 60, false).apply {
+                setTitle(R.string.bed_switch)
+                show()
+            }
+        }
+        binding.sbBed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val minutes = TimeLimit.MIN_BED + progress * 30
+                binding.tvBedValue.text = getString(R.string.bed_length_value, TimeLimit.durationText(minutes * 60_000L))
+                if (fromUser && !timeLoading) saveTime { it.copy(bedMinutes = minutes) }
             }
 
             override fun onStartTrackingTouch(bar: SeekBar?) {}

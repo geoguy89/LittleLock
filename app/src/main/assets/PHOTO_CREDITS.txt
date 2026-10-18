@@ -19,3 +19,14 @@ Hedgehog: "Free hedgehog image" - unknown - CC0 - https://www.rawpixel.com/image
 Fawn: "Whit-tailed Deer Fawn" - usdoe - CC0 - https://www.rawpixel.com/image/8734309/whit-tailed-deer-fawn
 Butterflies: "Butterflies Nature" - Kelly Ishmael - CC0 - https://stocksnap.io/photo/butterflies-nature-IFVYIKNJC1
 Rainbow: "Rainbow Mountains" - Patrick Fore - CC0 - https://stocksnap.io/photo/rainbow-mountains-9Z7ZIEY28T
+
+Monkeys (added in 1.6):
+Monkey gazing up: "Monkey Portrait" - Joe deSousa - CC0 - https://stocksnap.io/photo/monkey-portrait-JENKYX8RSH
+Macaque: "Monkey Animal" - Quentin Dr - CC0 - https://stocksnap.io/photo/monkey-animal-6X0PULZQ5K
+Three monkeys: "Monkey Animal" - Nitin Dhumal - CC0 - https://stocksnap.io/photo/monkey-animal-7IXWFEWAA3
+Baby monkey: "Baby monkey photo" - unknown - CC0 - https://www.rawpixel.com/image/6043408/baby-monkey-photo-free-public-domain-cc0-image
+Monkey hug: "Free long-nosed monkey baby closeup" - unknown - CC0 - https://www.rawpixel.com/image/5924217/photo-image-public-domain-tree-green
+Baby orangutan: "Chimpanzee baby photo" - unknown - CC0 - https://www.rawpixel.com/image/6034306/photo-image-background-public-domain-nature
+Orangutan family: "Solitary orangutan eating infant" - unknown - CC0 - https://www.rawpixel.com/image/3338031/free-photo-image-ape-animal-cc0
+Capuchin monkey: "Monkey Portrait" - World Wildlife - CC0 - https://stocksnap.io/photo/monkey-portrait-KBKFCKOWL5
+Monkey: "Macaque monkey wood" - unknown - CC0 - https://www.rawpixel.com/image/4024899/macaque-monkey

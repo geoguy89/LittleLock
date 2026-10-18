@@ -18,6 +18,7 @@ class ChildFriendlyReviewTest {
     @Before
     fun setUp() {
         TestApps.install("com.android.settings", "Settings")
+        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(bedOn = false))
         TestApps.install("com.android.vending", "Play Store")
         TestApps.install("com.example.puzzles", "Puzzles")
     }

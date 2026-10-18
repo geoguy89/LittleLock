@@ -27,7 +27,7 @@ class ScreensTest {
         TestApps.install("com.example.music", "Music")
         TestApps.parentSetUp("com.example.puzzles", "com.example.drawing", "com.example.music")
         Preferences.setWallpaper(TestApps.context, "")
-        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings())
+        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(bedOn = false))
     }
 
     private fun settings(): SettingsActivity {
@@ -102,7 +102,7 @@ class ScreensTest {
 
     @Test
     fun when_time_is_up_home_leads_to_the_time_up_page_not_the_apps() {
-        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(limitOn = true, limitMinutes = 30, usedMs = 40 * 60_000L))
+        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(bedOn = false, limitOn = true, limitMinutes = 30, usedMs = 40 * 60_000L))
         val home = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
         val started = shadowOf(home).nextStartedActivity
         assertEquals(TimeUpActivity::class.java.name, started.component?.className)
@@ -110,7 +110,7 @@ class ScreensTest {
 
     @Test
     fun a_forced_lock_is_lifted_by_an_extension() {
-        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(forceLock = true))
+        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(bedOn = false, forceLock = true))
         assertTrue(Preferences.isTimeLocked(TestApps.context))
         Preferences.saveTimeSettings(TestApps.context, Preferences.timeSettings(TestApps.context).copy(extendedUntil = System.currentTimeMillis() + 600_000L))
         assertFalse(Preferences.isTimeLocked(TestApps.context))
@@ -131,7 +131,7 @@ class ScreensTest {
     @Test
     fun time_settings_start_each_day_at_zero_used() {
         val day1 = 1_800_000_000_000L
-        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(limitOn = true, usedMs = 99_000L), day1)
+        Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(bedOn = false, limitOn = true, usedMs = 99_000L), day1)
         assertEquals(99_000L, Preferences.timeSettings(TestApps.context, day1).usedMs)
         assertEquals(0L, Preferences.timeSettings(TestApps.context, day1 + 26 * 3_600_000L).usedMs)
     }

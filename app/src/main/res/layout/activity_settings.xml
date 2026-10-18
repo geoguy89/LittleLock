@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_setup"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -83,7 +83,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_kiosk"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -166,7 +166,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_time"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -195,6 +195,30 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:max="47" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/cbBed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/bed_switch" />
+
+                <Button
+                    android:id="@+id/btnBedStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvBedValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/littlelock_text_secondary" />
+
+                <SeekBar
+                    android:id="@+id/sbBed"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:max="31" />
 
                 <Button
                     android:id="@+id/btnExtendTime"
@@ -236,7 +260,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_remote"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -322,7 +346,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_look"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -359,12 +383,61 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:text="@string/settings_accent"
+                    android:textColor="@color/littlelock_text_primary"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/llAccent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="6dp" />
+                </HorizontalScrollView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:text="@string/settings_layout"
                     android:textColor="@color/littlelock_text_primary"
                     android:textStyle="bold" />
 
                 <RadioGroup
                     android:id="@+id/rgLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/settings_align"
+                    android:textColor="@color/littlelock_text_primary"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/rgAlign"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/settings_gap"
+                    android:textColor="@color/littlelock_text_primary"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/rgGap"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
@@ -486,7 +559,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_parental"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -544,7 +617,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_discord"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -590,7 +663,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_notifications"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -634,7 +707,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_device_admin"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -666,7 +739,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_accessibility"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -705,7 +778,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_about"
-                    android:textColor="@color/littlelock_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 

@@ -73,4 +73,23 @@ class LayoutsTest {
         assertEquals(1f, Layouts.forMode(Layouts.GRID, 2, 1000, 1600, 200, 240, 10).scale, 0.001f)
         assertTrue(Layouts.forMode(Layouts.AUTO, 2, 1000, 1600, 200, 240, 10).scale > 1f)
     }
+
+    @Test
+    fun the_block_can_sit_at_the_top_the_middle_or_the_bottom() {
+        val top = Layouts.arrange(8, 1000, 1600, 200, 240, 10, 1f, Layouts.TOP)
+        val mid = Layouts.arrange(8, 1000, 1600, 200, 240, 10, 1f, Layouts.MIDDLE)
+        val bot = Layouts.arrange(8, 1000, 1600, 200, 240, 10, 1f, Layouts.BOTTOM)
+        assertEquals(0, top.cells.minOf { it.y })
+        assertEquals(1600 - (mid.cells.maxOf { it.y } + 240), mid.cells.minOf { it.y })
+        assertEquals(1600, bot.cells.maxOf { it.y } + 240)
+    }
+
+    @Test
+    fun the_gap_steps_widen_the_block() {
+        val tight = Layouts.arrange(8, 1000, 1600, 200, 240, Layouts.gapDp(0))
+        val roomy = Layouts.arrange(8, 1000, 1600, 200, 240, Layouts.gapDp(4))
+        assertTrue(roomy.contentH > tight.contentH)
+        assertEquals(0, Layouts.gapDp(0))
+        assertEquals(Layouts.gapDp(Layouts.GAP_DP.lastIndex), Layouts.gapDp(99))
+    }
 }

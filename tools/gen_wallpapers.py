@@ -321,8 +321,31 @@ def frog(c: Canvas):
         c.circle(300 + sx * 12, 318, 3.5, "#2D6B2F")
 
 
+def monkey(c: Canvas):
+    scene_day(c, "#CDEFD2", "#EEF9E4", "#79C464", "#5FB257")
+    brown, tan = "#8A5A36", "#F2D3A8"
+    c.curve((380, 400), (470, 410), (440, 300), brown, 22)
+    c.ellipse(300, 400, 88, 82, brown)
+    c.ellipse(300, 420, 56, 52, tan)
+    for sx in (-1, 1):
+        c.circle(300 + sx * 112, 285, 40, brown)
+        c.circle(300 + sx * 112, 285, 26, tan)
+    c.circle(300, 285, 100, brown)
+    c.ellipse(300, 300, 78, 70, tan)
+    c.circle(266, 268, 40, tan)
+    c.circle(334, 268, 40, tan)
+    eyes(c, 270, 34, 15, "#1B1B1B")
+    c.ellipse(300, 318, 34, 24, "#E8B98A")
+    c.circle(290, 312, 4, "#5A3A22")
+    c.circle(310, 312, 4, "#5A3A22")
+    c.curve((270, 336), (300, 366), (330, 336), "#5A3A22", 5)
+    cheeks(c, 330, 70, 14)
+    for sx in (-1, 1):
+        c.ellipse(300 + sx * 50, 482, 30, 14, brown)
+
+
 ANIMALS = {"cat": ("Cat", cat), "dog": ("Puppy", dog), "bunny": ("Bunny", bunny), "bear": ("Bear", bear), "panda": ("Panda", panda),
-           "fox": ("Fox", fox), "penguin": ("Penguin", penguin), "owl": ("Owl", owl), "elephant": ("Elephant", elephant), "frog": ("Frog", frog)}
+           "fox": ("Fox", fox), "penguin": ("Penguin", penguin), "owl": ("Owl", owl), "elephant": ("Elephant", elephant), "frog": ("Frog", frog), "monkey": ("Monkey", monkey)}
 
 
 # ---------------------------------------------------------------------------------------- outputs
