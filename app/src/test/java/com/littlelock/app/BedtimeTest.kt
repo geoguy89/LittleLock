@@ -113,4 +113,13 @@ class BedtimeTest {
         val farOut = s.copy(extendedUntil = at(11, 1))
         assertFalse(TimeLimit.state(farOut, at(11, 9), utc).locked)
     }
+
+    @Test
+    fun usage_can_be_asked_for_any_time() {
+        assertEquals(RemoteCommands.Command.Usage, RemoteCommands.parse("usage"))
+        assertEquals(RemoteCommands.Command.Usage, RemoteCommands.parse("!stats"))
+        val r = RemoteCommands.apply(s.copy(usedMs = 90 * 60_000L), RemoteCommands.Command.Usage, at(10, 12), utc, 7).reply
+        assertTrue(r.contains("Used today: 1 h 30 min"))
+        assertTrue(r.contains("Apps opened today: 7"))
+    }
 }

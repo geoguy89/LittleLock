@@ -335,7 +335,7 @@ class AccessibilityMonitorService : AccessibilityService() {
                         // the first look: remember where the channel stands and run nothing that is already there
                         Preferences.setDiscordLast(app, if (msgs.isEmpty()) "1" else DiscordRemote.newest(msgs))
                     } else {
-                        val o = DiscordRemote.handle(msgs, users, last, Preferences.timeSettings(app), System.currentTimeMillis())
+                        val o = DiscordRemote.handle(msgs, users, last, Preferences.timeSettings(app), System.currentTimeMillis(), launches = Preferences.getDailyLaunchCount(app))
                         Preferences.saveTimeSettings(app, o.settings)
                         Preferences.setDiscordLast(app, o.lastId)
                         o.replies.forEach { DiscordWebhookService.postBotMessage(token, channel, it) }

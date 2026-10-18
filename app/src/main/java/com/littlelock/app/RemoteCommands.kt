@@ -15,6 +15,7 @@ object RemoteCommands {
         object Unlock : Command()
         object ResetUsed : Command()
         object Help : Command()
+        object Usage : Command()
         data class ExtendMinutes(val minutes: Int) : Command()
         data class ExtendUntil(val hour: Int, val minute: Int) : Command()
         data class Limit(val minutes: Int?) : Command()      // null = no daily limit
@@ -39,6 +40,7 @@ object RemoteCommands {
         val rest = t.substringAfter(' ', "").trim()
         return when (word) {
             "status", "time", "state" -> Command.Status
+            "usage", "stats", "stat", "report", "summary" -> Command.Usage
             "help", "commands" -> Command.Help
             "lock" -> Command.Lock
             "unlock" -> Command.Unlock
@@ -92,12 +94,13 @@ object RemoteCommands {
 
     const val MAX_EXTEND_MINUTES = 12 * 60
 
-    fun help(): String = "Commands: status · lock · unlock · extend 30 · extend 1h · extend until 8:30pm · limit 90 · limit off · bedtime 8pm 6h · bedtime off · reset"
+    fun help(): String = "Commands: status · usage · lock · unlock · extend 30 · extend 1h · extend until 8:30pm · limit 90 · limit off · bedtime 8pm 6h · bedtime off · reset"
 
     /** Applies [c] to the screen-time [s] at time [now]; returns the new settings and the answer to send back. */
-    fun apply(s: TimeLimit.Settings, c: Command, now: Long, tz: TimeZone = TimeZone.getDefault()): Result = when (c) {
+    fun apply(s: TimeLimit.Settings, c: Command, now: Long, tz: TimeZone = TimeZone.getDefault(), launches: Int = 0): Result = when (c) {
         Command.Help -> Result(s, help())
         Command.Status -> Result(s, status(s, now, tz))
+        Command.Usage -> Result(s, usage(s, now, tz, launches))
         Command.Lock -> {
             val n = s.copy(forceLock = true, extendedUntil = 0L)
             Result(n, "🔒 Locked now. It stays locked until you extend or unlock it.")
@@ -129,6 +132,13 @@ object RemoteCommands {
 
     private fun remaining(s: TimeLimit.Settings, st: TimeLimit.State): String =
         if (!s.limitOn) "No daily limit." else "${TimeLimit.durationText(st.remainingMs)} left today."
+
+    /** The usage numbers right now, on request (the scheduled update does the same on a timer). */
+    fun usage(s: TimeLimit.Settings, now: Long, tz: TimeZone = TimeZone.getDefault(), launches: Int = 0): String {
+        val st = TimeLimit.state(s, now, tz)
+        val left = if (s.limitOn) " ${TimeLimit.durationText(st.remainingMs)} left of ${TimeLimit.durationText(s.limitMinutes * 60_000L)}." else " No daily limit."
+        return "📊 Used today: ${TimeLimit.durationText(s.usedMs)}.$left Apps opened today: $launches.\n${status(s, now, tz)}"
+    }
 
     fun status(s: TimeLimit.Settings, now: Long, tz: TimeZone = TimeZone.getDefault()): String {
         val st = TimeLimit.state(s, now, tz)

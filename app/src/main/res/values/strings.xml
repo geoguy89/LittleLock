@@ -28,7 +28,7 @@
     <string name="settings_kid_mode_off_status">Kid mode is off: every app is shown and nothing is blocked.</string>
     <string name="settings_kid_mode_now_on">Kid mode is on</string>
     <string name="settings_kid_mode_now_off">Kid mode is off. Pick the home app to use now.</string>
-    <string name="settings_discord">Discord Notifications</string>
+    <string name="settings_discord">Discord notifications (webhook)</string>
     <string name="settings_discord_webhook_url">Webhook URL</string>
     <string name="settings_discord_webhook_hint">Enter your Discord webhook URL</string>
     <string name="settings_discord_save">Save</string>
@@ -155,7 +155,17 @@
     <string name="time_reset_used">Start today\'s time over</string>
     <string name="time_reset_done">Today\'s used time is back to 0</string>
     <string name="settings_remote">Remote control (Discord)</string>
-    <string name="remote_explain">Extend time, lock or unlock from your phone by posting in a private Discord channel. You need your own Discord bot: create one at discord.com/developers, turn on its "Message Content Intent", add it to a private channel it can read and write in, and paste its token, the channel id (right-click the channel > Copy Channel ID) and your own Discord user name or id below. Only the users you list are obeyed. Commands: status, lock, unlock, extend 30, extend until 8:30pm, limit 90, limit off, reset.</string>
+    <string name="remote_explain">Control the tablet from your phone by posting in a private Discord channel. One-time setup:
+
+1. Go to discord.com/developers/applications and tap New Application.
+2. Open Bot (left menu). Tap Reset Token and copy it into \"Bot token\" below. Turn ON \"Message Content Intent\" and save.
+3. Open OAuth2 > URL Generator. Under Scopes tick \"bot\". Under Bot Permissions tick View Channels, Send Messages and Read Message History.
+4. Open the generated URL at the bottom, pick your server and tap Authorize.
+5. In Discord turn on Settings > Advanced > Developer Mode. Long-press your private text channel > Copy Channel ID and paste it below. Make sure the bot can see that channel.
+6. Type your Discord user name (or user id) below. Only the people you list are obeyed.
+7. Turn the switch on and tap Send a test message.
+
+Then type in that channel: status, usage, lock, unlock, extend 30, extend until 8:30pm, limit 90, limit off, bedtime 8pm 8h, bedtime off, reset, help.</string>
     <string name="remote_switch">Listen for commands in Discord</string>
     <string name="remote_token_hint">Bot token</string>
     <string name="remote_channel_hint">Channel id</string>

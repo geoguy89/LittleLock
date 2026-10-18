@@ -237,3 +237,9 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 
 - Bedtime ends on the clock, always: an extension only opens the tablet for its own time and never moves the morning end of the lockdown (now covered by a test).
 - If the bedtime / time-up page is still showing when the lock ends (the tablet slept through it), LittleLock now brings the apps back on its own within seconds, and again the moment the screen wakes.
+
+## 1.6.6
+
+- Step-by-step Discord bot instructions in Settings (Developer Portal > OAuth2 > URL Generator, tick "bot", View Channels / Send Messages / Read Message History).
+- The Discord webhook, the notification choices and the remote-control bot now sit together in Settings.
+- New Discord command `usage` (also `stats`): today's used time, time left, apps opened and the lock state, whenever you ask.
