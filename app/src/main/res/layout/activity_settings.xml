@@ -65,6 +65,89 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Lockdown (kiosk) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_kiosk"
+                    android:textColor="@color/littlelock_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvKioskStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/littlelock_text_primary" />
+
+                <LinearLayout
+                    android:id="@+id/llKioskHelp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/kiosk_explain"
+                        android:textColor="@color/littlelock_text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvKioskCommand"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="#1A000000"
+                        android:fontFamily="monospace"
+                        android:padding="8dp"
+                        android:textColor="@color/littlelock_text_primary"
+                        android:textIsSelectable="true"
+                        android:textSize="13sp" />
+
+                    <Button
+                        android:id="@+id/btnCopyAdb"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/kiosk_copy" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llKioskOwner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/cbKiosk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/kiosk_switch" />
+
+                    <Button
+                        android:id="@+id/btnReleaseKiosk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:text="@string/kiosk_release" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Make it theirs -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -140,6 +223,26 @@
                     android:id="@+id/spWallColor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/settings_animals"
+                    android:textColor="@color/littlelock_text_secondary" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/llAnimals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="4dp" />
+                </HorizontalScrollView>
 
                 <Button
                     android:id="@+id/btnClearWallpaper"

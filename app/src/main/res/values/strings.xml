@@ -126,4 +126,17 @@
     <string name="setup_home_help">Your phone didn\'t switch the home screen by itself. In the next screen choose "Home app" (or "Default home app") and pick LittleLock.</string>
     <string name="setup_open_settings">Open settings</string>
     <string name="setup_cancel">Not now</string>
+    <string name="settings_kiosk">Lock the tablet down</string>
+    <string name="kiosk_explain">Accessibility can only send the child back when another app shows up. For a real lockdown - no notification pane, no Home or Recents buttons, and only the allowed apps able to start - make LittleLock the device owner. Connect the tablet to a computer with USB debugging on (on some tablets remove the accounts first) and run this command once:</string>
+    <string name="kiosk_on_status">✅ Lockdown is available. While kid mode is on, only the allowed apps run and the notification pane and the buttons are off. The PIN lifts it while you are in parent settings.</string>
+    <string name="kiosk_off_status">⬜ Not set up (needs the one-time computer step below). Until then LittleLock sends the child back from other apps and closes the notification pane, which is not as strong.</string>
+    <string name="kiosk_copy">Copy the command</string>
+    <string name="kiosk_copied">Copied - paste it into a command window on the computer</string>
+    <string name="kiosk_switch">Lock the tablet down while kid mode is on</string>
+    <string name="kiosk_release">Give up device owner (back to an ordinary tablet)</string>
+    <string name="kiosk_release_title">Give up device owner?</string>
+    <string name="kiosk_release_message">LittleLock stops being the permanent home app and the lockdown goes away. You can set it up again from a computer.</string>
+    <string name="kiosk_released">Done - this is an ordinary tablet again</string>
+    <string name="kiosk_release_failed">Couldn\'t give it up from here - run: adb shell dpm remove-active-admin com.littlelock.app/.DeviceAdminReceiver</string>
+    <string name="settings_animals">Or a cartoon animal</string>
 </resources>

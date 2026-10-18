@@ -10,7 +10,9 @@ import android.os.SystemClock
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.graphics.Rect
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityWindowInfo
 import android.view.inputmethod.InputMethodManager
 import android.util.Log
 
@@ -62,6 +64,12 @@ class AccessibilityMonitorService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
 
+        // windows came or went: is the notification shade / quick settings one of them? (whatever the phone calls it)
+        if (event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
+            if (shieldWanted() && shadeWindowOpen()) closeShade()
+            return
+        }
+
         // Only care about window state changed events (app launches)
         if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
 
@@ -69,7 +77,8 @@ class AccessibilityMonitorService : AccessibilityService() {
         val className = event.className?.toString()
 
         // the notification shade / quick settings opened anyway: close it again
-        if (ShadeGuard.isShade(packageName, className) && shieldWanted()) {
+        val said = (event.text?.joinToString(" ") ?: "") + " " + (event.contentDescription ?: "")
+        if (ShadeGuard.isShade(packageName, className, said) && shieldWanted()) {
             closeShade()
             return
         }
@@ -158,6 +167,18 @@ class AccessibilityMonitorService : AccessibilityService() {
     private fun shieldWanted(): Boolean = ShadeGuard.shieldWanted(
         Preferences.isKidMode(this), ParentSession.isUnlocked(), Preferences.isBlockShade(this))
 
+    /** Any system-UI window covering a good part of the screen is the shade (or quick settings) pulled down. */
+    private fun shadeWindowOpen(): Boolean = try {
+        val h = resources.displayMetrics.heightPixels
+        windows.any { w ->
+            val r = Rect()
+            w.getBoundsInScreen(r)
+            ShadeGuard.isShadeWindow(w.root?.packageName?.toString(), r.height(), h, w.type == AccessibilityWindowInfo.TYPE_SYSTEM)
+        }
+    } catch (e: Exception) {
+        false
+    }
+
     private fun closeShade() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
@@ -184,7 +205,7 @@ class AccessibilityMonitorService : AccessibilityService() {
             val view = View(this).apply { setOnTouchListener { _, _ -> true } }
             val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
-                ShadeGuard.shieldHeightPx(bar, resources.displayMetrics.density),
+                ShadeGuard.shieldHeightPx(bar),
                 WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or

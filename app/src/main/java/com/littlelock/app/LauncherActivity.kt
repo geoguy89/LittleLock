@@ -27,6 +27,7 @@ class LauncherActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLauncherBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.applySystemBarInsets()
 
         binding.gridApps.emptyView = binding.tvEmpty
         binding.gridApps.setOnItemClickListener { _, _, position, _ ->
@@ -48,6 +49,17 @@ class LauncherActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadApps()
+        syncKiosk()
+    }
+
+    /** With the device-owner lockdown set up: on while kid mode is on and the parent is out, lifted otherwise. */
+    private fun syncKiosk() {
+        if (!Kiosk.isOwner(this)) return
+        if (Kiosk.wanted(Preferences.isKioskOn(this), true, Preferences.isKidMode(this), ParentSession.isUnlocked())) {
+            Kiosk.engage(this)
+        } else {
+            Kiosk.disengage(this)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -88,12 +100,21 @@ class LauncherActivity : AppCompatActivity() {
             binding.root.background = ColorDrawable(color)
             return Look.isDark(color)
         }
+        val dm = resources.displayMetrics
+        val animal = Look.animalOf(wallpaper)
+        if (animal != null) {
+            val bmp = Wallpapers.render(this, animal, dm.widthPixels, dm.heightPixels)
+            if (bmp != null) {
+                binding.root.background = BitmapDrawable(resources, bmp).apply { gravity = Gravity.FILL }
+                return Wallpapers.isDark(bmp)
+            }
+        }
         if (wallpaper == Look.IMAGE) {
             val file = File(filesDir, WALLPAPER_FILE)
             val bmp = if (file.isFile) BitmapFactory.decodeFile(file.path) else null
             if (bmp != null) {
                 binding.root.background = BitmapDrawable(resources, bmp).apply { gravity = Gravity.FILL }
-                return true
+                return Wallpapers.isDark(bmp)
             }
         }
         binding.root.setBackgroundColor(getColor(R.color.littlelock_background))

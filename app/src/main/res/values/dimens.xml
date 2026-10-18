@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- PIN pad keys: small enough that four rows fit a short (landscape) screen; the bigger set below is for tall screens -->
+    <dimen name="pin_key">56dp</dimen>
+    <dimen name="pin_key_margin">4dp</dimen>
+    <dimen name="pin_gap">12dp</dimen>
+</resources>

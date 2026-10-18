@@ -33,11 +33,25 @@ object Look {
         "Forest" to 0xFF1E5B4A.toInt(),
     )
 
+    /** The cartoon animals (key, name) - the pictures come from tools/gen_wallpapers.py; [Wallpapers] maps a key to its drawable. */
+    val ANIMALS = listOf("cat" to "Cat", "dog" to "Puppy", "bunny" to "Bunny", "bear" to "Bear", "panda" to "Panda",
+        "fox" to "Fox", "penguin" to "Penguin", "owl" to "Owl", "elephant" to "Elephant", "frog" to "Frog")
+
+    private const val ANIMAL_PREFIX = "animal:"
     private const val COLOR_PREFIX = "color:"
     const val IMAGE = "image"
 
     /** The stored wallpaper value for a colour. */
     fun colorValue(argb: Int): String = COLOR_PREFIX + Integer.toHexString(argb)
+
+    /** The stored wallpaper value for an animal. */
+    fun animalValue(key: String): String = ANIMAL_PREFIX + key
+
+    /** The animal key inside a stored wallpaper value, or null when it isn't a known animal. */
+    fun animalOf(value: String?): String? {
+        if (value == null || !value.startsWith(ANIMAL_PREFIX)) return null
+        return value.removePrefix(ANIMAL_PREFIX).takeIf { k -> ANIMALS.any { it.first == k } }
+    }
 
     /** The colour inside a stored wallpaper value, or null when it isn't a colour. */
     fun colorOf(value: String?): Int? {

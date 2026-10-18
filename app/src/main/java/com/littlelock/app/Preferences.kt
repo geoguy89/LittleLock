@@ -28,6 +28,7 @@ object Preferences {
     private const val KEY_TILE_SIZE = "tile_size"
     private const val KEY_WALLPAPER = "wallpaper"
     private const val KEY_BLOCK_SHADE = "block_shade"
+    private const val KEY_KIOSK = "kiosk"
 
     const val MAX_ATTEMPTS = 5
     const val LOCKOUT_MS = 30_000L
@@ -132,6 +133,13 @@ object Preferences {
 
     fun setBlockShade(context: Context, on: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_BLOCK_SHADE, on).apply()
+    }
+
+    /** Kiosk lockdown (needs the device-owner step, see [Kiosk]). On by default: if the parent set it up, they want it. */
+    fun isKioskOn(context: Context): Boolean = getPrefs(context).getBoolean(KEY_KIOSK, true)
+
+    fun setKioskOn(context: Context, on: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_KIOSK, on).apply()
     }
 
     private fun b64(bytes: ByteArray): String = Base64.getEncoder().encodeToString(bytes)

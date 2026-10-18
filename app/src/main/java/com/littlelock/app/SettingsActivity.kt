@@ -7,6 +7,8 @@ import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -60,6 +62,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.applySystemBarInsets()
 
         loadSettings()
         setupLook()
@@ -79,6 +82,7 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         ParentSession.unlock() // still here: keep the parent signed in
+        Kiosk.disengage(this)  // the parent is in: lift the lockdown so Android's own settings can be opened
         showStatus()
     }
 
@@ -126,7 +130,29 @@ class SettingsActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+        addAnimalPicker()
         loadingLook = false
+    }
+
+    /** A row of the cartoon animals to choose from; tapping one makes it the wallpaper. */
+    private fun addAnimalPicker() {
+        val d = resources.displayMetrics.density
+        val size = (92 * d).toInt()
+        Look.ANIMALS.forEach { (key, name) ->
+            val iv = android.widget.ImageView(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((4 * d).toInt(), 0, (4 * d).toInt(), 0) }
+                scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+                setImageResource(Wallpapers.resOf(key))
+                contentDescription = name
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    Preferences.setWallpaper(this@SettingsActivity, Look.animalValue(key))
+                    Toast.makeText(this@SettingsActivity, name, Toast.LENGTH_SHORT).show()
+                }
+            }
+            binding.llAnimals.addView(iv)
+        }
     }
 
     private fun showStatus() {
@@ -144,6 +170,12 @@ class SettingsActivity : AppCompatActivity() {
         binding.tvSetupHome.setText(if (isHomeApp()) R.string.setup_home_yes else R.string.setup_home_no)
         binding.tvSetupAccess.setText(if (isBlockingServiceOn()) R.string.setup_access_yes else R.string.setup_access_no)
         binding.tvSetupAdmin.setText(if (isAdminOn()) R.string.setup_admin_yes else R.string.setup_admin_no)
+        val owner = Kiosk.isOwner(this)
+        binding.tvKioskStatus.setText(if (owner) R.string.kiosk_on_status else R.string.kiosk_off_status)
+        binding.llKioskHelp.visibility = if (owner) View.GONE else View.VISIBLE
+        binding.llKioskOwner.visibility = if (owner) View.VISIBLE else View.GONE
+        binding.tvKioskCommand.text = Kiosk.adbCommand(packageName)
+        binding.cbKiosk.isChecked = Preferences.isKioskOn(this)
     }
 
     private fun setupListeners() {
@@ -183,6 +215,23 @@ class SettingsActivity : AppCompatActivity() {
             Preferences.setWallpaper(this, "")
             File(filesDir, LauncherActivity.WALLPAPER_FILE).delete()
             Toast.makeText(this, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
+        }
+        binding.btnCopyAdb.setOnClickListener {
+            getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText("adb", Kiosk.adbCommand(packageName)))
+            Toast.makeText(this, R.string.kiosk_copied, Toast.LENGTH_LONG).show()
+        }
+        binding.cbKiosk.setOnCheckedChangeListener { _, on -> Preferences.setKioskOn(this, on) }
+        binding.btnReleaseKiosk.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.kiosk_release_title)
+                .setMessage(R.string.kiosk_release_message)
+                .setPositiveButton(R.string.kiosk_release) { _, _ ->
+                    val ok = Kiosk.release(this)
+                    Toast.makeText(this, if (ok) R.string.kiosk_released else R.string.kiosk_release_failed, Toast.LENGTH_LONG).show()
+                    showStatus()
+                }
+                .setNegativeButton(R.string.setup_cancel, null)
+                .show()
         }
         binding.btnBack.setOnClickListener { leave() }
     }

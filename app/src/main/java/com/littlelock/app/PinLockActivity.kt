@@ -35,6 +35,7 @@ class PinLockActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPinLockBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.applySystemBarInsets()
 
         mode = intent.getStringExtra(EXTRA_MODE) ?: MODE_ENTER
         next = intent.getStringExtra(EXTRA_NEXT) ?: NEXT_SETTINGS

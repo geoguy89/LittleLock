@@ -26,7 +26,23 @@ class ShadeGuardTest {
     }
 
     @Test
-    fun the_shield_is_a_little_taller_than_the_status_bar() {
-        assertEquals(84 + 12, ShadeGuard.shieldHeightPx(84, 2f))
+    fun a_makers_own_system_ui_is_recognised_by_the_windows_title() {
+        assertTrue(ShadeGuard.isShade("com.amazon.systemui", "com.amazon.Whatever", "Notification shade."))
+        assertTrue(ShadeGuard.isShade("com.android.systemui", "x.Panel", "Quick Settings"))
+        assertFalse(ShadeGuard.isShade("com.android.systemui", "x.Volume", "Volume"))
+        assertFalse(ShadeGuard.isShade("com.example.game", "x", "Notification shade"))
+    }
+
+    @Test
+    fun only_a_tall_system_ui_window_counts_as_the_shade() {
+        assertTrue(ShadeGuard.isShadeWindow("com.android.systemui", 1200, 2000, true))
+        assertFalse(ShadeGuard.isShadeWindow("com.android.systemui", 90, 2000, true))       // the status bar
+        assertFalse(ShadeGuard.isShadeWindow("com.example.game", 1200, 2000, true))
+        assertFalse(ShadeGuard.isShadeWindow("com.android.systemui", 1200, 2000, false))    // an application window
+    }
+
+    @Test
+    fun the_shield_is_exactly_the_status_bar_so_nothing_below_it_is_covered() {
+        assertEquals(84, ShadeGuard.shieldHeightPx(84))
     }
 }
