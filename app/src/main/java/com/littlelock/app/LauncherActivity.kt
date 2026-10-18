@@ -43,6 +43,8 @@ class LauncherActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // coming back to the home screen ends the parent's unlocked window: the lock is back without a manual relock
+        ParentSession.lock()
         if (Preferences.isKidMode(this) && !ParentSession.isUnlocked() && Preferences.isTimeLocked(this)) {
             // time is up: Home leads to the time-up page, not to the apps
             startActivity(Intent(this, TimeUpActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))

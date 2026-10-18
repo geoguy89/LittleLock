@@ -41,4 +41,11 @@ class HomeScreenReviewTest {
         val grid = controller.get().findViewById<AppGrid>(R.id.gridApps)
         assertEquals(1, grid.childCount)
     }
+
+    @Test
+    fun coming_back_to_the_home_screen_locks_the_parent_session_again() {
+        ParentSession.unlock()
+        Robolectric.buildActivity(LauncherActivity::class.java).setup()
+        org.junit.Assert.assertFalse(ParentSession.isUnlocked())
+    }
 }

@@ -211,3 +211,7 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 - **Layout**: adjustable spacing between apps, and the block of apps can sit at the top, middle or bottom.
 - **Monkey wallpapers**: nine CC0 monkey/orangutan photos and a cartoon monkey (credits in `assets/PHOTO_CREDITS.txt`).
 - The rainbow "Hold on" cover is gone; the cover is now a plain dark screen with no words.
+
+## 1.6.1
+
+- Coming back to the LittleLock home screen locks the parent session again automatically (no manual relock).
