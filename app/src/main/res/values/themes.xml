@@ -36,48 +36,56 @@
     <style name="Accent.Purple" parent="">
         <item name="colorPrimary">#FF6C63FF</item>
         <item name="colorPrimaryVariant">#FF544DB7</item>
-        <item name="android:statusBarColor">#FF544DB7</item>
+        <item name="android:statusBarColor">#FF6C63FF</item>
+        <item name="android:navigationBarColor">#FF6C63FF</item>
     </style>
 
     <style name="Accent.Blue" parent="">
         <item name="colorPrimary">#FF2F80ED</item>
         <item name="colorPrimaryVariant">#FF1F5FB8</item>
-        <item name="android:statusBarColor">#FF1F5FB8</item>
+        <item name="android:statusBarColor">#FF2F80ED</item>
+        <item name="android:navigationBarColor">#FF2F80ED</item>
     </style>
 
     <style name="Accent.Teal" parent="">
         <item name="colorPrimary">#FF00A896</item>
         <item name="colorPrimaryVariant">#FF007A6C</item>
-        <item name="android:statusBarColor">#FF007A6C</item>
+        <item name="android:statusBarColor">#FF00A896</item>
+        <item name="android:navigationBarColor">#FF00A896</item>
     </style>
 
     <style name="Accent.Green" parent="">
         <item name="colorPrimary">#FF3BAA4A</item>
         <item name="colorPrimaryVariant">#FF28782F</item>
-        <item name="android:statusBarColor">#FF28782F</item>
+        <item name="android:statusBarColor">#FF3BAA4A</item>
+        <item name="android:navigationBarColor">#FF3BAA4A</item>
     </style>
 
     <style name="Accent.Orange" parent="">
         <item name="colorPrimary">#FFF2842B</item>
         <item name="colorPrimaryVariant">#FFB8611A</item>
-        <item name="android:statusBarColor">#FFB8611A</item>
+        <item name="android:statusBarColor">#FFF2842B</item>
+        <item name="android:navigationBarColor">#FFF2842B</item>
     </style>
 
     <style name="Accent.Red" parent="">
         <item name="colorPrimary">#FFE5484D</item>
         <item name="colorPrimaryVariant">#FFAE3236</item>
-        <item name="android:statusBarColor">#FFAE3236</item>
+        <item name="android:statusBarColor">#FFE5484D</item>
+        <item name="android:navigationBarColor">#FFE5484D</item>
     </style>
 
     <style name="Accent.Pink" parent="">
         <item name="colorPrimary">#FFE4559B</item>
         <item name="colorPrimaryVariant">#FFAE3A76</item>
-        <item name="android:statusBarColor">#FFAE3A76</item>
+        <item name="android:statusBarColor">#FFE4559B</item>
+        <item name="android:navigationBarColor">#FFE4559B</item>
     </style>
 
     <style name="Accent.Gray" parent="">
         <item name="colorPrimary">#FF5F6B7A</item>
         <item name="colorPrimaryVariant">#FF434C57</item>
-        <item name="android:statusBarColor">#FF434C57</item>
+        <item name="android:statusBarColor">#FF5F6B7A</item>
+        <item name="android:navigationBarColor">#FF5F6B7A</item>
     </style>
 </resources>

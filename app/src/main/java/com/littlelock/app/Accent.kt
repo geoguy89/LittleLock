@@ -31,6 +31,10 @@ object Accent {
     /** Call in onCreate before the layout is inflated. */
     fun apply(activity: Activity) {
         activity.theme.applyStyle(current(activity).styleRes, true)
+        // the system bars themselves (status bar and the navigation buttons strip), for tablets that still draw them
+        val argb = current(activity).argb
+        activity.window.statusBarColor = argb
+        activity.window.navigationBarColor = argb
     }
 
     /** The colour with [alpha] (0..255), e.g. for the translucent bar on the home screen. */

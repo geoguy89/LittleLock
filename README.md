@@ -228,3 +228,7 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 - Discord: the test message now says exactly what is wrong (wrong token / bot not in the channel / wrong channel id), and checks that the bot can read the channel.
 - Discord remote: you can list yourself by user name as well as numeric id.
 - Usage update posted to the Discord channel every 1/2/4/8 hours (default 2), only when the tablet was used.
+
+## 1.6.4
+
+- The accent colour now also colours the system navigation bar itself (status bar and navigation buttons), not only the strip drawn by the app.
