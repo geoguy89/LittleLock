@@ -222,3 +222,9 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 - Wallpaper photos are shown less blown-up: a soft copy fills what the picture does not reach; they keep their native resolution.
 - The accent colour now also fills the strip behind the navigation buttons at the bottom, on the home screen, the time-up/bedtime page and the PIN pad.
 - Screen timeout inside LittleLock: the screen goes to sleep after 1/2/5/10 minutes without a touch (default 2; or never). The time-up page no longer keeps the screen on.
+
+## 1.6.3
+
+- Discord: the test message now says exactly what is wrong (wrong token / bot not in the channel / wrong channel id), and checks that the bot can read the channel.
+- Discord remote: you can list yourself by user name as well as numeric id.
+- Usage update posted to the Discord channel every 1/2/4/8 hours (default 2), only when the tablet was used.

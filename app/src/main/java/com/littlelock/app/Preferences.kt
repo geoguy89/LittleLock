@@ -30,6 +30,9 @@ object Preferences {
     private const val KEY_BLOCK_SHADE = "block_shade"
     private const val KEY_KIOSK = "kiosk"
     private const val KEY_LAYOUT = "layout_mode"
+    private const val KEY_USAGE_EVERY = "usage_every_h"
+    private const val KEY_USAGE_LAST = "usage_last_sent"
+    private const val KEY_USAGE_LAST_USED = "usage_last_used"
     private const val KEY_IDLE = "idle_minutes"
     private const val KEY_ACCENT = "accent"
     private const val KEY_ALIGN = "layout_align"
@@ -166,6 +169,21 @@ object Preferences {
 
     fun setLayoutMode(context: Context, mode: Int) {
         getPrefs(context).edit().putInt(KEY_LAYOUT, if (mode == Layouts.AUTO) Layouts.AUTO else Layouts.GRID).apply()
+    }
+
+    /** Hours between usage updates posted to the Discord channel (0 = none). */
+    fun getUsageEvery(context: Context): Int = getPrefs(context).getInt(KEY_USAGE_EVERY, 2)
+
+    fun setUsageEvery(context: Context, hours: Int) {
+        getPrefs(context).edit().putInt(KEY_USAGE_EVERY, hours.coerceIn(0, 24)).apply()
+    }
+
+    fun getUsageLast(context: Context): Long = getPrefs(context).getLong(KEY_USAGE_LAST, 0L)
+
+    fun getUsageLastUsed(context: Context): Long = getPrefs(context).getLong(KEY_USAGE_LAST_USED, 0L)
+
+    fun setUsageSent(context: Context, at: Long, usedMs: Long) {
+        getPrefs(context).edit().putLong(KEY_USAGE_LAST, at).putLong(KEY_USAGE_LAST_USED, usedMs).apply()
     }
 
     /** Minutes without a touch before LittleLock puts the screen to sleep (0 = never). */

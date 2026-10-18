@@ -141,6 +141,8 @@ class SettingsActivity : AppCompatActivity() {
             val mode = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
             Preferences.setLayoutMode(this, mode)
         }
+        val usageChoices = listOf(0, 1, 2, 4, 8)
+        radioChoices(binding.rgUsage, usageChoices.map { if (it == 0) "Never" else if (it == 1) "1 hour" else "$it hours" }, usageChoices.indexOf(Preferences.getUsageEvery(this)).coerceAtLeast(0)) { Preferences.setUsageEvery(this, usageChoices[it]) }
         radioChoices(binding.rgIdle, Idle.CHOICES.map { Idle.name(it) }, Idle.CHOICES.indexOf(Preferences.getIdleMinutes(this)).coerceAtLeast(0)) { Preferences.setIdleMinutes(this, Idle.CHOICES[it]) }
         radioChoices(binding.rgAlign, Layouts.ALIGN_NAMES, Preferences.getLayoutAlign(this)) { Preferences.setLayoutAlign(this, it) }
         radioChoices(binding.rgGap, listOf("None", "Normal (default)", "Roomy", "Wide", "Very wide", "Huge"), Preferences.getLayoutGap(this)) { Preferences.setLayoutGap(this, it) }
@@ -562,8 +564,12 @@ class SettingsActivity : AppCompatActivity() {
         val token = Preferences.getDiscordToken(this)
         val channel = Preferences.getDiscordChannel(this)
         Thread {
-            val ok = DiscordWebhookService.postBotMessage(token, channel, "✅ LittleLock is listening here. ${RemoteCommands.help()}")
-            runOnUiThread { Toast.makeText(this, if (ok) R.string.remote_test_ok else R.string.remote_test_failed, Toast.LENGTH_LONG).show() }
+            val problem = DiscordWebhookService.postBotMessageResult(token, channel, "✅ LittleLock is listening here. ${RemoteCommands.help()}")
+                ?: DiscordWebhookService.readResult(token, channel)
+            runOnUiThread {
+                val shown = if (problem == null) getString(R.string.remote_test_ok) else problem
+                android.app.AlertDialog.Builder(this).setMessage(shown).setPositiveButton(android.R.string.ok, null).show()
+            }
         }.start()
     }
 

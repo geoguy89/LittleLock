@@ -55,8 +55,22 @@ class DiscordRemoteTest {
 
     @Test
     fun user_ids_are_read_from_a_pasted_list_and_the_newest_message_is_the_baseline() {
-        assertEquals(setOf("123", "456"), DiscordRemote.users("123, 456;abc  "))
+        assertEquals(setOf("123", "456", "abc"), DiscordRemote.users("123, 456;@Abc  "))
         assertEquals("30", DiscordRemote.newest(listOf(msg(20, "x"), msg(30, "y"))))
         assertEquals("40", DiscordRemote.newest(listOf(msg(20, "x")), "40"))
+    }
+
+    @Test
+    fun a_parent_can_be_listed_by_user_name_too() {
+        val m = DiscordRemote.Msg("10", "777", false, "extend 30", now - 5_000, setOf("travis", "Travis W"))
+        val o = DiscordRemote.handle(listOf(m), DiscordRemote.users("Travis"), "5", locked, now, utc)
+        assertFalse(TimeLimit.state(o.settings, now).locked)
+    }
+
+    @Test
+    fun discord_answers_are_explained() {
+        assertTrue(DiscordWebhookService.explain(403).contains("View Channel"))
+        assertTrue(DiscordWebhookService.explain(404).contains("Copy Channel ID"))
+        assertTrue(DiscordWebhookService.explain(401).contains("token"))
     }
 }

@@ -155,11 +155,11 @@
     <string name="time_reset_used">Start today\'s time over</string>
     <string name="time_reset_done">Today\'s used time is back to 0</string>
     <string name="settings_remote">Remote control (Discord)</string>
-    <string name="remote_explain">Extend time, lock or unlock from your phone by posting in a private Discord channel. You need your own Discord bot: create one at discord.com/developers, turn on its "Message Content Intent", add it to a private channel it can read and write in, and paste its token, the channel id and your own user id below. Only the user ids you list are obeyed. Commands: status, lock, unlock, extend 30, extend until 8:30pm, limit 90, limit off, reset.</string>
+    <string name="remote_explain">Extend time, lock or unlock from your phone by posting in a private Discord channel. You need your own Discord bot: create one at discord.com/developers, turn on its "Message Content Intent", add it to a private channel it can read and write in, and paste its token, the channel id (right-click the channel > Copy Channel ID) and your own Discord user name or id below. Only the users you list are obeyed. Commands: status, lock, unlock, extend 30, extend until 8:30pm, limit 90, limit off, reset.</string>
     <string name="remote_switch">Listen for commands in Discord</string>
     <string name="remote_token_hint">Bot token</string>
     <string name="remote_channel_hint">Channel id</string>
-    <string name="remote_users_hint">Your Discord user id (several: separate with commas)</string>
+    <string name="remote_users_hint">Your Discord user name or id (several: separate with commas)</string>
     <string name="remote_test">Send a test message</string>
     <string name="remote_test_ok">Sent - check the channel</string>
     <string name="remote_test_failed">Couldn\'t reach the channel - check the token, the channel id and that the bot may post there</string>
@@ -173,4 +173,5 @@
     <string name="bed_message">The tablet is sleeping now. It wakes up at %1$s.</string>
     <string name="settings_accent">Accent colour (top bar, buttons, headings)</string>
     <string name="settings_idle">Screen off when nobody touches it for</string>
+    <string name="settings_usage_every">Usage update in Discord every</string>
 </resources>

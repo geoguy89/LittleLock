@@ -233,10 +233,33 @@ class AccessibilityMonitorService : AccessibilityService() {
             killedForLock = false
         }
         sleepWhenIdle(now, kid && !parent)
+        if (kid) sendUsageUpdate(now)
         pollRemote(now)
     }
 
     private var sleptAt = 0L
+
+    /** Every few hours (the parent chooses) a short usage note goes to the Discord channel - only when the tablet was used since the last one. */
+    private fun sendUsageUpdate(now: Long) {
+        val hours = Preferences.getUsageEvery(this)
+        val url = Preferences.getWebhookUrl(this)
+        if (hours <= 0 || url.isNullOrEmpty()) return
+        val last = Preferences.getUsageLast(this)
+        if (last == 0L) {                                      // first time: start counting from now
+            Preferences.setUsageSent(this, now, Preferences.timeSettings(this, now).usedMs)
+            return
+        }
+        if (now - last < hours * 3_600_000L) return
+        val s = Preferences.timeSettings(this, now)
+        if (s.usedMs == Preferences.getUsageLastUsed(this)) {  // nothing happened since the last note
+            Preferences.setUsageSent(this, now, s.usedMs)
+            return
+        }
+        Preferences.setUsageSent(this, now, s.usedMs)
+        val left = if (s.limitOn) " ${TimeLimit.durationText((s.limitMinutes * 60_000L - s.usedMs).coerceAtLeast(0))} left." else ""
+        val text = "Used today: ${TimeLimit.durationText(s.usedMs)}.$left Apps opened today: ${Preferences.getDailyLaunchCount(this)}."
+        Thread { DiscordWebhookService.sendNote(url, "📊 Usage update", text) }.start()
+    }
 
     /** Nobody touching LittleLock for the chosen minutes: put the screen to sleep (once - it is woken by a touch or the power button). */
     private fun sleepWhenIdle(now: Long, kidMode: Boolean) {

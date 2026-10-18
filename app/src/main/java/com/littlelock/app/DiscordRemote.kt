@@ -4,14 +4,14 @@ import java.util.TimeZone
 
 /**
  * The optional Discord remote: the parent posts a command in a private channel (from their phone, anywhere) and the tablet obeys
- * it. Only messages from the user ids the parent listed are acted on; bots, strangers, ordinary chat and anything older than a few
+ * it. Only messages from the users (id or name) the parent listed are acted on; bots, strangers, ordinary chat and anything older than a few
  * minutes are ignored. This file only decides what a batch of messages means - fetching and replying live in
  * [DiscordWebhookService].
  */
 object DiscordRemote {
 
     /** A message as fetched from the channel. [id] is Discord's numeric message id (later = bigger). */
-    class Msg(val id: String, val authorId: String, val isBot: Boolean, val content: String, val timestampMs: Long)
+    class Msg(val id: String, val authorId: String, val isBot: Boolean, val content: String, val timestampMs: Long, val authorNames: Set<String> = emptySet())
 
     class Outcome(val settings: TimeLimit.Settings, val replies: List<String>, val lastId: String)
 
@@ -22,7 +22,9 @@ object DiscordRemote {
     fun newest(messages: List<Msg>, current: String = ""): String =
         (messages.map { it.id } + listOfNotNull(current.takeIf { it.isNotEmpty() })).maxByOrNull { it.toLongOrNull() ?: 0L } ?: current
 
-    fun users(text: String): Set<String> = text.split(',', ' ', ';', '\n').map { it.trim() }.filter { it.isNotEmpty() && it.all(Char::isDigit) }.toSet()
+    /** Who may give commands: numeric Discord user ids, or user names (without the @, any capitals). */
+    fun users(text: String): Set<String> =
+        text.split(',', ' ', ';', '\n').map { it.trim().removePrefix("@") }.filter { it.isNotEmpty() }.map { if (it.all(Char::isDigit)) it else it.lowercase() }.toSet()
 
     /** Runs the commands in [messages] (oldest first) for the [allowed] users, returning the new settings and what to answer. */
     fun handle(
@@ -38,7 +40,7 @@ object DiscordRemote {
         val last = lastId.toLongOrNull() ?: 0L
         for (m in messages.sortedBy { it.id.toLongOrNull() ?: 0L }) {
             if ((m.id.toLongOrNull() ?: 0L) <= last) continue
-            if (m.isBot || m.authorId !in allowed) continue
+            if (m.isBot || (m.authorId !in allowed && m.authorNames.none { it in allowed })) continue
             if (now - m.timestampMs > MAX_AGE_MS) continue
             val cmd = RemoteCommands.parse(m.content) ?: continue
             val r = RemoteCommands.apply(s, cmd, now, tz)
