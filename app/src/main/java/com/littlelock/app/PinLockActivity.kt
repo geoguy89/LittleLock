@@ -35,6 +35,7 @@ class PinLockActivity : AppCompatActivity() {
     private var firstEntry: String? = null // set mode: the PIN typed the first time
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Accent.apply(this)
         super.onCreate(savedInstanceState)
         binding = ActivityPinLockBinding.inflate(layoutInflater)
         setContentView(binding.root)

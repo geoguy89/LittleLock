@@ -215,3 +215,10 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 ## 1.6.1
 
 - Coming back to the LittleLock home screen locks the parent session again automatically (no manual relock).
+
+## 1.6.2
+
+- Much wider app spacing steps (up to Huge); default stays 10 dp.
+- Wallpaper photos are shown less blown-up: a soft copy fills what the picture does not reach; they keep their native resolution.
+- The accent colour now also fills the strip behind the navigation buttons at the bottom, on the home screen, the time-up/bedtime page and the PIN pad.
+- Screen timeout inside LittleLock: the screen goes to sleep after 1/2/5/10 minutes without a touch (default 2; or never). The time-up page no longer keeps the screen on.

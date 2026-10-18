@@ -28,9 +28,9 @@ class TimeUpActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Accent.apply(this)
         super.onCreate(savedInstanceState)
         setShowWhenLocked(true)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding = ActivityTimeUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarInsets()
@@ -60,8 +60,13 @@ class TimeUpActivity : AppCompatActivity() {
         super.onPause()
     }
 
+    override fun onUserInteraction() {
+        Idle.touch()
+    }
+
     override fun onResume() {
         super.onResume()
+        Idle.touch()
         binding.root.postDelayed(recheck, 3000)               // extended from afar (Discord): carry on to the apps
         // the parent extended it (or it was unlocked from afar): back to the apps
         val st = TimeLimit.state(Preferences.timeSettings(this), System.currentTimeMillis())

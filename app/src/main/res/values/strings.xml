@@ -172,4 +172,5 @@
     <string name="bed_title">Good night!</string>
     <string name="bed_message">The tablet is sleeping now. It wakes up at %1$s.</string>
     <string name="settings_accent">Accent colour (top bar, buttons, headings)</string>
+    <string name="settings_idle">Screen off when nobody touches it for</string>
 </resources>

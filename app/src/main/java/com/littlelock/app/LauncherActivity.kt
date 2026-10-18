@@ -41,8 +41,13 @@ class LauncherActivity : AppCompatActivity() {
         }
     }
 
+    override fun onUserInteraction() {
+        Idle.touch()
+    }
+
     override fun onResume() {
         super.onResume()
+        Idle.touch()
         // coming back to the home screen ends the parent's unlocked window: the lock is back without a manual relock
         ParentSession.lock()
         if (Preferences.isKidMode(this) && !ParentSession.isUnlocked() && Preferences.isTimeLocked(this)) {

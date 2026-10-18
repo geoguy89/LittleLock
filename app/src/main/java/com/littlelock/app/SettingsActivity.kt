@@ -141,8 +141,9 @@ class SettingsActivity : AppCompatActivity() {
             val mode = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
             Preferences.setLayoutMode(this, mode)
         }
+        radioChoices(binding.rgIdle, Idle.CHOICES.map { Idle.name(it) }, Idle.CHOICES.indexOf(Preferences.getIdleMinutes(this)).coerceAtLeast(0)) { Preferences.setIdleMinutes(this, Idle.CHOICES[it]) }
         radioChoices(binding.rgAlign, Layouts.ALIGN_NAMES, Preferences.getLayoutAlign(this)) { Preferences.setLayoutAlign(this, it) }
-        radioChoices(binding.rgGap, listOf("None", "Tight", "Normal (default)", "Roomy", "Very roomy"), Preferences.getLayoutGap(this)) { Preferences.setLayoutGap(this, it) }
+        radioChoices(binding.rgGap, listOf("None", "Normal (default)", "Roomy", "Wide", "Very wide", "Huge"), Preferences.getLayoutGap(this)) { Preferences.setLayoutGap(this, it) }
         addAccentPicker()
         addColorPicker()
         addPhotoPicker()

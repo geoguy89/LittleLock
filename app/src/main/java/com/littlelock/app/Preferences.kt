@@ -30,6 +30,7 @@ object Preferences {
     private const val KEY_BLOCK_SHADE = "block_shade"
     private const val KEY_KIOSK = "kiosk"
     private const val KEY_LAYOUT = "layout_mode"
+    private const val KEY_IDLE = "idle_minutes"
     private const val KEY_ACCENT = "accent"
     private const val KEY_ALIGN = "layout_align"
     private const val KEY_GAP = "layout_gap"
@@ -165,6 +166,13 @@ object Preferences {
 
     fun setLayoutMode(context: Context, mode: Int) {
         getPrefs(context).edit().putInt(KEY_LAYOUT, if (mode == Layouts.AUTO) Layouts.AUTO else Layouts.GRID).apply()
+    }
+
+    /** Minutes without a touch before LittleLock puts the screen to sleep (0 = never). */
+    fun getIdleMinutes(context: Context): Int = getPrefs(context).getInt(KEY_IDLE, Idle.DEFAULT_MINUTES)
+
+    fun setIdleMinutes(context: Context, minutes: Int) {
+        getPrefs(context).edit().putInt(KEY_IDLE, if (minutes in Idle.CHOICES) minutes else Idle.DEFAULT_MINUTES).apply()
     }
 
     /** The key of the accent colour the parent picked (see [Accent]). */

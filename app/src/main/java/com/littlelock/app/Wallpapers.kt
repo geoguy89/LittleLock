@@ -69,14 +69,37 @@ object Wallpapers {
     /** [source] scaled to cover a [width] x [height] screen and cropped to the middle - never stretched. */
     fun cover(source: Bitmap, width: Int, height: Int): Bitmap {
         if (source.width <= 0 || source.height <= 0 || width <= 0 || height <= 0) return source
-        val scale = max(width / source.width.toFloat(), height / source.height.toFloat())
+        val s = scales(source.width, source.height, width, height)
         val out = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(out)
-        canvas.translate((width - source.width * scale) / 2f, (height - source.height * scale) / 2f)
-        canvas.scale(scale, scale)
-        canvas.drawBitmap(source, 0f, 0f, Paint(Paint.FILTER_BITMAP_FLAG))
+        val paint = Paint(Paint.FILTER_BITMAP_FLAG)
+        if (s.fill > s.shown) {
+            // the picture is not blown up to reach every edge: a soft, enlarged copy of it fills the rest
+            val tiny = Bitmap.createScaledBitmap(source, max(1, source.width / 24), max(1, source.height / 24), true)
+            canvas.save()
+            canvas.translate((width - source.width * s.fill) / 2f, (height - source.height * s.fill) / 2f)
+            canvas.scale(s.fill * 24f * source.width / (tiny.width * 24f), s.fill * 24f * source.height / (tiny.height * 24f))
+            canvas.drawBitmap(tiny, 0f, 0f, paint)
+            canvas.restore()
+            canvas.drawColor(0x33000000)
+        }
+        canvas.translate((width - source.width * s.shown) / 2f, (height - source.height * s.shown) / 2f)
+        canvas.scale(s.shown, s.shown)
+        canvas.drawBitmap(source, 0f, 0f, paint)
         return out
     }
+
+    /** [fill] covers the whole screen; [shown] is the (smaller or equal) scale the picture is actually drawn at: never below fitting the width. */
+    class Scales(val fill: Float, val shown: Float)
+
+    fun scales(srcW: Int, srcH: Int, width: Int, height: Int): Scales {
+        val fitWidth = width / srcW.toFloat()
+        val fill = max(fitWidth, height / srcH.toFloat())
+        return Scales(fill, max(fitWidth, fill * SHOWN_OF_FILL))
+    }
+
+    /** How much of the full "fill the screen" enlargement the picture gets: less is less blown up (and shows more of it). */
+    private const val SHOWN_OF_FILL = 0.78f
 
     /**
      * The picture for a stored wallpaper value - an animal, a built-in photo, or the parent's own picture - fitted to a

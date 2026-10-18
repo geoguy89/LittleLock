@@ -232,7 +232,25 @@ class AccessibilityMonitorService : AccessibilityService() {
             timeUpShown = false
             killedForLock = false
         }
+        sleepWhenIdle(now, kid && !parent)
         pollRemote(now)
+    }
+
+    private var sleptAt = 0L
+
+    /** Nobody touching LittleLock for the chosen minutes: put the screen to sleep (once - it is woken by a touch or the power button). */
+    private fun sleepWhenIdle(now: Long, kidMode: Boolean) {
+        val on = isScreenOn()
+        if (!on) {
+            Idle.touch(now)                                    // a wake-up starts a fresh count
+            return
+        }
+        if (!kidMode || now - sleptAt < 30_000L) return
+        val inFront = lastForeground == null || lastForeground == packageName
+        if (Idle.shouldSleep(Preferences.getIdleMinutes(this), Idle.lastTouch, now, inFront, on)) {
+            sleptAt = now
+            performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)
+        }
     }
 
     /** The time-up page over everything (behind a plain cover so no app flashes through), then the apps are closed. */

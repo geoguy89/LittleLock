@@ -26,9 +26,9 @@ object Layouts {
 
     val ALIGN_NAMES = listOf("Top", "Middle", "Bottom")
 
-    /** Space between tiles: the picked step (0..4) in dp. */
-    val GAP_DP = listOf(0, 6, 10, 18, 28)
-    const val DEFAULT_GAP = 2
+    /** Space between tiles: the picked step (0..5) in dp. */
+    val GAP_DP = listOf(0, 10, 20, 40, 80, 130)
+    const val DEFAULT_GAP = 1
 
     fun gapDp(step: Int): Int = GAP_DP[step.coerceIn(0, GAP_DP.size - 1)]
 
