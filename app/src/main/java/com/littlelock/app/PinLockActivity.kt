@@ -23,6 +23,9 @@ class PinLockActivity : AppCompatActivity() {
         const val MODE_SET = "set"
         const val NEXT_SETTINGS = "settings"
         const val NEXT_NONE = "none"
+
+        /** Return RESULT_OK to whoever asked, without signing the parent in or opening anything. */
+        const val NEXT_RESULT = "result"
     }
 
     private lateinit var binding: ActivityPinLockBinding
@@ -109,6 +112,11 @@ class PinLockActivity : AppCompatActivity() {
             else -> {
                 if (Preferences.verifyPin(this, pin)) {
                     Preferences.resetFailedPins(this)
+                    if (next == NEXT_RESULT) {
+                        setResult(RESULT_OK)
+                        finish()
+                        return
+                    }
                     ParentSession.unlock()
                     done()
                     return

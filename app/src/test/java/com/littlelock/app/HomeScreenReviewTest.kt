@@ -1,6 +1,5 @@
 package com.littlelock.app
 
-import android.widget.GridView
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -24,12 +23,12 @@ class HomeScreenReviewTest {
     @Test
     fun the_home_screen_layout_and_app_drawer_functionality() {
         val activity = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
-        val grid = activity.findViewById<GridView>(R.id.gridApps)
-        val labels = (0 until grid.adapter.count).map { (grid.adapter.getItem(it) as AppInfo).label }
+        val grid = activity.findViewById<AppGrid>(R.id.gridApps)
+        val labels = (0 until grid.childCount).map { grid.getChildAt(it).contentDescription.toString() }
         assertEquals(listOf("Drawing", "Puzzles"), labels)
 
         // tapping an app opens it
-        grid.performItemClick(grid.adapter.getView(1, null, grid), 1, 1L)
+        grid.getChildAt(1).performClick()
         val started = shadowOf(activity).nextStartedActivity
         assertEquals("com.example.puzzles", started.component?.packageName ?: started.`package`)
     }
@@ -39,7 +38,7 @@ class HomeScreenReviewTest {
         val controller = Robolectric.buildActivity(LauncherActivity::class.java).setup()
         Preferences.setAllowedApps(TestApps.context, setOf("com.example.drawing"))
         controller.pause().resume()
-        val grid = controller.get().findViewById<GridView>(R.id.gridApps)
-        assertEquals(1, grid.adapter.count)
+        val grid = controller.get().findViewById<AppGrid>(R.id.gridApps)
+        assertEquals(1, grid.childCount)
     }
 }

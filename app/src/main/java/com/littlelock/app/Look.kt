@@ -37,12 +37,42 @@ object Look {
     val ANIMALS = listOf("cat" to "Cat", "dog" to "Puppy", "bunny" to "Bunny", "bear" to "Bear", "panda" to "Panda",
         "fox" to "Fox", "penguin" to "Penguin", "owl" to "Owl", "elephant" to "Elephant", "frog" to "Frog")
 
+    /** Photos built into the app (key, name): public-domain (CC0) pictures, credited in assets/PHOTO_CREDITS.txt. */
+    val PHOTOS = listOf(
+        "kitten" to "Kitten",
+        "labpup" to "Chocolate puppy",
+        "puppy" to "Puppy",
+        "ducklings" to "Ducklings",
+        "chicks" to "Fluffy ducklings",
+        "rabbit" to "Rabbit",
+        "panda" to "Panda",
+        "pandas" to "Baby pandas",
+        "elephant" to "Baby elephant",
+        "giraffe" to "Giraffe",
+        "penguin" to "Penguin",
+        "lioncub" to "Lion cub",
+        "goat" to "Baby goat",
+        "lamb" to "Lamb",
+        "hedgehog" to "Hedgehog",
+        "fawn" to "Fawn",
+        "butterflies" to "Butterflies",
+        "rainbow" to "Rainbow")
+
+    private const val PHOTO_PREFIX = "photo:"
     private const val ANIMAL_PREFIX = "animal:"
     private const val COLOR_PREFIX = "color:"
     const val IMAGE = "image"
 
     /** The stored wallpaper value for a colour. */
     fun colorValue(argb: Int): String = COLOR_PREFIX + Integer.toHexString(argb)
+
+    fun photoValue(key: String): String = PHOTO_PREFIX + key
+
+    /** The photo key inside a stored wallpaper value, or null when it isn't a known photo. */
+    fun photoOf(value: String?): String? {
+        if (value == null || !value.startsWith(PHOTO_PREFIX)) return null
+        return value.removePrefix(PHOTO_PREFIX).takeIf { k -> PHOTOS.any { it.first == k } }
+    }
 
     /** The stored wallpaper value for an animal. */
     fun animalValue(key: String): String = ANIMAL_PREFIX + key

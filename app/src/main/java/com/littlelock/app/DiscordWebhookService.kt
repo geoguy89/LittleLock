@@ -115,4 +115,59 @@ object DiscordWebhookService {
             }
         })
     }
+
+    // ------------------------------------------------------------------ the optional remote: read commands, answer them
+
+    private const val API = "https://discord.com/api/v10"
+    private const val AGENT = "DiscordBot (LittleLock-parental-control, 1.5)"
+
+    /**
+     * The latest messages in the parent's private channel (newest first), read with the parent's own bot. null when it can't be
+     * reached or the token / channel is wrong. Call from a background thread.
+     */
+    fun fetchMessages(token: String, channel: String, after: String?): List<DiscordRemote.Msg>? {
+        if (token.isBlank() || channel.isBlank() || !channel.all { it.isDigit() }) return null
+        val suffix = if (!after.isNullOrEmpty() && after.all { it.isDigit() }) "&after=$after" else ""
+        val request = Request.Builder().url("$API/channels/$channel/messages?limit=30$suffix")
+            .header("Authorization", "Bot ${token.trim()}").header("User-Agent", AGENT).build()
+        return try {
+            client.newCall(request).execute().use { r ->
+                if (!r.isSuccessful) return null
+                val arr = org.json.JSONArray(r.body?.string() ?: "[]")
+                (0 until arr.length()).map { i ->
+                    val o = arr.getJSONObject(i)
+                    val a = o.optJSONObject("author")
+                    DiscordRemote.Msg(
+                        o.optString("id"), a?.optString("id") ?: "", a?.optBoolean("bot") ?: false, o.optString("content"),
+                        runCatching { java.time.OffsetDateTime.parse(o.optString("timestamp")).toInstant().toEpochMilli() }.getOrDefault(0L)
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** Posts [text] in the parent's channel as their bot. Returns whether Discord accepted it. Call from a background thread. */
+    fun postBotMessage(token: String, channel: String, text: String): Boolean {
+        if (token.isBlank() || channel.isBlank() || !channel.all { it.isDigit() }) return false
+        val body = org.json.JSONObject().put("content", text.take(1900)).toString().toRequestBody("application/json".toMediaType())
+        val request = Request.Builder().url("$API/channels/$channel/messages").post(body)
+            .header("Authorization", "Bot ${token.trim()}").header("User-Agent", AGENT).build()
+        return try {
+            client.newCall(request).execute().use { it.isSuccessful }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /** A short plain note to the parent's channel (for example "Time's up"). */
+    fun sendNote(webhookUrl: String, title: String, text: String) {
+        val body = org.json.JSONObject().put("content", "**" + title + "** - " + text).toString().toRequestBody("application/json".toMediaType())
+        try {
+            client.newCall(Request.Builder().url(webhookUrl).post(body).build()).execute().close()
+        } catch (e: Exception) {
+            // the note is a courtesy
+        }
+    }
 }
