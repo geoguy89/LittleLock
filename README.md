@@ -163,3 +163,23 @@ Built with:
 - **Kotlin** — Primary language
 - **Android SDK** — Platform APIs
 - **Discord Webhooks** — Notification delivery
+
+## Lockdown (kiosk) mode - the strong lock, for tablets
+
+LittleLock can send a child back from other apps and close the notification pane by itself (the Accessibility service), but
+on a tablet - a Kindle Fire in particular - the only complete lockdown is Android's own *lock task* mode. It removes the
+notification pane and quick settings, the Home and Recents buttons, and lets only the apps you allowed start. It needs LittleLock
+to be the **device owner**, which is set once from a computer:
+
+1. On the tablet turn on USB debugging (Settings > Device options > tap the serial number seven times > Developer options). On some
+   tablets remove added accounts first.
+2. Connect it to a computer and run: `adb shell dpm set-device-owner com.littlelock.app/.DeviceAdminReceiver`
+3. Open LittleLock > parent settings > *Lock the tablet down*. LittleLock is now the permanent home app (no "choose a launcher" step).
+
+The parent PIN lifts the lockdown while you are in parent settings and puts it back when you leave. *Give up device owner* in the same
+card returns the tablet to normal. Without this step LittleLock still works, with the weaker accessibility-based lock.
+
+## Wallpapers
+
+Pick a colour, a photo, or one of the cartoon animals in parent settings. The animals are drawn by `tools/gen_wallpapers.py`
+(run it to regenerate `res/drawable/wp_*.xml`; `--preview DIR` writes PNGs to look at).

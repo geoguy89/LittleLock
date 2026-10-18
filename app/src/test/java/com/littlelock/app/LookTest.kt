@@ -33,6 +33,16 @@ class LookTest {
     }
 
     @Test
+    fun an_animal_wallpaper_round_trips_and_unknown_ones_are_not_animals() {
+        assertEquals("fox", Look.animalOf(Look.animalValue("fox")))
+        assertNull(Look.animalOf("animal:dragon"))
+        assertNull(Look.animalOf("color:ff00ff00"))
+        assertNull(Look.animalOf(null))
+        assertTrue(Look.ANIMALS.size >= 8)
+        assertEquals(Look.ANIMALS.size, Look.ANIMALS.map { it.first }.toSet().size)
+    }
+
+    @Test
     fun dark_wallpapers_are_told_from_light_ones() {
         assertTrue(Look.isDark(0xFF23224A.toInt()))
         assertFalse(Look.isDark(0xFFFFE9A8.toInt()))

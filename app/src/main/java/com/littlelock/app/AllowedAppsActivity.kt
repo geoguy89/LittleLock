@@ -19,6 +19,7 @@ class AllowedAppsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAllowedAppsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.applySystemBarInsets()
         title = getString(R.string.settings_allowed_apps)
 
         apps = AppFilter.choosableApps(AppFilter.launchableApps(packageManager), packageName)
