@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- when time is up, the apps the child was using are closed (their background processes), not just covered -->
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <!-- updating LittleLock itself from its GitHub releases: on Android 12+ the second permission lets it update without a confirmation screen -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <application
         android:allowBackup="true"
@@ -118,6 +121,12 @@
                   <category android:name="android.intent.category.DEFAULT" />
               </intent-filter>
           </receiver>
+
+          <!-- The installer's answer to a self-update -->
+          <receiver
+              android:name=".InstallStatusReceiver"
+              android:enabled="true"
+              android:exported="false" />
 
           <!-- Daily Summary Receiver -->
           <receiver

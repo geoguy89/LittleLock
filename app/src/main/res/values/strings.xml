@@ -50,6 +50,19 @@
     <string name="settings_about">About</string>
     <string name="settings_version">Version %s</string>
 
+    <!-- Today's use and updates -->
+    <string name="usage_title">Used today</string>
+    <string name="usage_none">Nothing has been used yet today.</string>
+    <string name="update_title">App updates</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking GitHub...</string>
+    <string name="update_current">LittleLock %s is the newest version.</string>
+    <string name="update_available">Version %1$s is available (you have %2$s).</string>
+    <string name="update_install">Download and install %s</string>
+    <string name="update_downloading">Downloading... %d%%</string>
+    <string name="update_installing">Installing - LittleLock restarts when it is done.</string>
+    <string name="update_allow">Allow LittleLock to install updates on the next screen, then press Back and try again.</string>
+
     <!-- PIN Lock -->
     <string name="pin_enter_title">Enter Parent PIN</string>
     <string name="pin_enter_hint">Enter 4-digit PIN</string>

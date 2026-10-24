@@ -70,6 +70,7 @@ class SettingsActivity : AppCompatActivity() {
         loadSettings()
         setupLook()
         setupListeners()
+        setupUpdates()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() = leave()
         })
@@ -87,6 +88,88 @@ class SettingsActivity : AppCompatActivity() {
         ParentSession.unlock() // still here: keep the parent signed in
         Kiosk.disengage(this)  // the parent is in: lift the lockdown so Android's own settings can be opened
         showStatus()
+        showUsage()
+    }
+
+    // ------------------------------------------------------------------ what was used today
+
+    private fun showUsage() {
+        val data = Preferences.usageData(this)
+        val day = UsageLog.dayKey(System.currentTimeMillis())
+        val list = UsageLog.itemised(data, day, { Preferences.appLabel(this, it) }, bold = false)
+        binding.tvUsageToday.text = if (list.isEmpty()) getString(R.string.usage_none) else UsageLog.headline(data, day) + "\n\n" + list
+    }
+
+    // ------------------------------------------------------------------ updates from GitHub
+
+    private val updater by lazy { AndroidUpdater(this) }
+    private var release: Release? = null
+    private var updating = false
+
+    private fun setupUpdates() {
+        binding.btnCheckUpdate.setOnClickListener { checkForUpdate() }
+        binding.btnInstallUpdate.setOnClickListener { installUpdate() }
+        checkForUpdate()
+    }
+
+    private fun checkForUpdate() {
+        if (updating) return
+        binding.tvUpdateStatus.setText(R.string.update_checking)
+        binding.btnCheckUpdate.isEnabled = false
+        updater.latest { r, why ->
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                binding.btnCheckUpdate.isEnabled = true
+                release = r
+                val newer = r != null && ReleaseFeed.isNewer(r.tag, updater.installedVersion)
+                binding.tvUpdateStatus.text = when {
+                    r == null -> why ?: getString(R.string.update_check)
+                    newer -> getString(R.string.update_available, r.version, updater.installedVersion)
+                    else -> getString(R.string.update_current, updater.installedVersion)
+                }
+                binding.tvUpdateNotes.text = if (newer) r!!.notes else ""
+                binding.tvUpdateNotes.visibility = if (newer && r!!.notes.isNotEmpty()) View.VISIBLE else View.GONE
+                binding.btnInstallUpdate.visibility = if (newer) View.VISIBLE else View.GONE
+                if (newer) binding.btnInstallUpdate.text = getString(R.string.update_install, r!!.version)
+            }
+        }
+    }
+
+    private fun installUpdate() {
+        val r = release ?: return
+        if (updating) return
+        if (!packageManager.canRequestPackageInstalls()) {
+            // Android wants the parent to allow this app to install apps, once
+            Toast.makeText(this, R.string.update_allow, Toast.LENGTH_LONG).show()
+            startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName")))
+            return
+        }
+        updating = true
+        binding.btnInstallUpdate.isEnabled = false
+        binding.btnCheckUpdate.isEnabled = false
+        binding.pbUpdate.progress = 0
+        binding.pbUpdate.visibility = View.VISIBLE
+        binding.tvUpdateStatus.text = getString(R.string.update_downloading, 0)
+        var lastPct = -1
+        updater.install(r, { f ->
+            val pct = (f * 100).toInt()
+            if (pct != lastPct) {
+                lastPct = pct
+                runOnUiThread {
+                    binding.pbUpdate.progress = pct
+                    binding.tvUpdateStatus.text = getString(R.string.update_downloading, pct)
+                }
+            }
+        }) { error ->
+            runOnUiThread {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                updating = false
+                binding.btnInstallUpdate.isEnabled = true
+                binding.btnCheckUpdate.isEnabled = true
+                binding.pbUpdate.visibility = View.GONE
+                binding.tvUpdateStatus.text = error ?: getString(R.string.update_installing)
+            }
+        }
     }
 
     private fun loadSettings() {

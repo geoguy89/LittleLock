@@ -41,26 +41,28 @@ object DiscordWebhookService {
     }
 
     /**
-     * Send a daily usage summary.
+     * Send a daily usage summary: which apps were used on [dayName], for how long and how often. [onResult] says whether Discord
+     * took it, so a summary that couldn't be delivered (no internet) can be sent again later.
      */
     fun sendDailySummary(
         context: android.content.Context,
         webhookUrl: String,
-        launchCount: Int
+        dayName: String,
+        launchCount: Int,
+        headline: String,
+        itemised: String,
+        onResult: ((Boolean) -> Unit)? = null
     ) {
         val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-        val embed = """
-            {
-                "title": "Daily Usage Summary",
-                "description": "Apps launched today: **$launchCount**",
-                "color": 3066993,
-                "footer": {
-                    "text": "LittleLock • $timestamp"
-                }
-            }
-        """.trimIndent()
+        val body = if (itemised.isEmpty()) headline else "$headline\n\n$itemised"
+        val embed = org.json.JSONObject()
+            .put("title", "Daily Usage Summary - $dayName")
+            .put("description", body.take(4000))
+            .put("color", 3066993)
+            .put("footer", org.json.JSONObject().put("text", "LittleLock • $timestamp • $launchCount opens"))
+            .toString()
 
-        sendWebhook(context, webhookUrl, "📊 Daily Summary", embed)
+        sendWebhook(context, webhookUrl, "📊 Daily Summary", embed, onResult)
     }
 
     /**
@@ -91,7 +93,8 @@ object DiscordWebhookService {
         context: android.content.Context,
         webhookUrl: String,
         username: String,
-        embedJson: String
+        embedJson: String,
+        onResult: ((Boolean) -> Unit)? = null
     ) {
         val bodyJson = """
             {
@@ -108,10 +111,13 @@ object DiscordWebhookService {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 // Silently fail - don't crash the app
+                onResult?.invoke(false)
             }
 
             override fun onResponse(call: Call, response: Response) {
+                val ok = response.isSuccessful
                 response.close()
+                onResult?.invoke(ok)
             }
         })
     }

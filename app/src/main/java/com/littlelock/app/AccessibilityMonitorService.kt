@@ -34,12 +34,15 @@ class AccessibilityMonitorService : AccessibilityService() {
 
     private companion object {
         private const val TAG = "AccessibilityMonitor"
-        // System packages to filter out from notifications
+        // Parts of the system that are not "an app the child opened" (they never count as use)
         private val SYSTEM_PACKAGES = setOf(
             "android",
             "com.android.systemui",
             "com.android.launcher",
+            "com.android.launcher3",
             "com.android.settings",
+            "com.android.permissioncontroller",
+            "com.google.android.permissioncontroller",
             "com.google.android.gms",
             "com.google.android.googlequicksearchbox",
             "com.google.android.apps.nexuslauncher",
@@ -47,13 +50,13 @@ class AccessibilityMonitorService : AccessibilityService() {
             "com.google.android.setupwizard"
         )
 
-        private fun isSystemPackage(packageName: String): Boolean {
-            return packageName.startsWith("android.") ||
-                packageName.startsWith("com.google.") ||
-                packageName.startsWith("com.android.") ||
-                SYSTEM_PACKAGES.contains(packageName)
-        }
+        private fun isSystemPackage(packageName: String): Boolean = SYSTEM_PACKAGES.contains(packageName)
     }
+
+    /** The app the child is using right now (null on the home screen, the time-up page, the notification shade...). */
+    private var appInFront: String? = null
+    private var imeCache: Set<String> = emptySet()
+    private var imeCachedAt = 0L
 
     private var lastPackageName: String? = null
     private var lastForeground: String? = null
@@ -106,6 +109,8 @@ class AccessibilityMonitorService : AccessibilityService() {
         // LittleLock itself is in front again: the cover that hid the other app can go
         if (packageName == this.packageName) {
             if (cover != null) handler.postDelayed({ hideCover() }, 450)
+            appInFront = null
+            lastPackageName = null          // the next app opened from the home screen is a new opening, even the same one again
             return
         }
 
@@ -128,24 +133,21 @@ class AccessibilityMonitorService : AccessibilityService() {
             return
         }
 
-        // Only trigger on activity resume (actual app launch, not just any state change)
-        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
-            event.source == null) return
-
-        // Filter out system packages
-        if (isSystemPackage(packageName)) {
+        // the system's own windows and keyboards are never "the app being used"
+        if (isSystemPackage(packageName) || packageName in keyboardPackages()) {
             Log.d(TAG, "Filtering system package: $packageName")
             return
         }
 
-        // Only trigger when a NEW app package is detected (not the same one repeatedly)
+        // an app popping up its own dialogs or screens is still the same use of it
+        appInFront = packageName
         if (packageName == lastPackageName) return
 
         Log.d(TAG, "New app launch detected: $packageName ($className)")
         lastPackageName = packageName
 
-        // Record app usage
-        Preferences.incrementDailyLaunchCount(this)
+        // Record the opening (with the time it stays in front, see tickTime) in the usage log - it does not depend on Discord or the internet
+        if (Preferences.isKidMode(this) && !ParentSession.isUnlocked()) Preferences.recordUsage(this, packageName, 0L, 1)
 
         // Send Discord notification if enabled
         if (Preferences.isAppLaunchNotifEnabled(this)) {
@@ -180,11 +182,17 @@ class AccessibilityMonitorService : AccessibilityService() {
     }
 
     /** Keyboards must keep working inside allowed apps. */
-    private fun keyboardPackages(): Set<String> = try {
-        getSystemService(InputMethodManager::class.java)?.enabledInputMethodList
-            ?.map { it.packageName }?.toSet() ?: emptySet()
-    } catch (e: Exception) {
-        emptySet()
+    private fun keyboardPackages(): Set<String> {
+        val now = SystemClock.elapsedRealtime()
+        if (imeCachedAt != 0L && now - imeCachedAt < 60_000L) return imeCache   // asked of Android on every window change otherwise
+        imeCache = try {
+            getSystemService(InputMethodManager::class.java)?.enabledInputMethodList
+                ?.map { it.packageName }?.toSet() ?: emptySet()
+        } catch (e: Exception) {
+            emptySet()
+        }
+        imeCachedAt = now
+        return imeCache
     }
 
     override fun onInterrupt() {
@@ -199,6 +207,22 @@ class AccessibilityMonitorService : AccessibilityService() {
         handler.removeCallbacks(timeTick)
         lastTick = 0L
         handler.post(timeTick)
+        returnHomeAfterUpdate()
+    }
+
+    /** A self-update restarts LittleLock; bring the child's home screen back instead of leaving a blank screen. */
+    private fun returnHomeAfterUpdate() {
+        val code = try {
+            packageManager.getPackageInfo(packageName, 0).longVersionCode
+        } catch (e: Exception) {
+            return
+        }
+        val seen = Preferences.getPrefs(this).getLong("seen_version_code", 0L)
+        if (seen == code) return
+        Preferences.getPrefs(this).edit().putLong("seen_version_code", code).apply()
+        if (seen != 0L && Preferences.isKidMode(this)) {
+            startActivity(Intent(this, LauncherActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        }
     }
 
     override fun onDestroy() {
@@ -222,7 +246,9 @@ class AccessibilityMonitorService : AccessibilityService() {
         val kid = Preferences.isKidMode(this)
         val parent = ParentSession.isUnlocked()
         if (lastTick != 0L && kid && !parent && isScreenOn()) {
-            Preferences.addUsedMs(this, (now - lastTick).coerceIn(0L, 15_000L), now)
+            val delta = (now - lastTick).coerceIn(0L, 15_000L)
+            Preferences.addUsedMs(this, delta, now)
+            appInFront?.let { Preferences.recordUsage(this, it, delta, 0, now) }     // how long each app is in front
         }
         lastTick = now
         if (kid && !parent && Preferences.isTimeLocked(this, now)) {
@@ -238,6 +264,7 @@ class AccessibilityMonitorService : AccessibilityService() {
         }
         sleepWhenIdle(now, kid && !parent)
         if (kid) sendUsageUpdate(now)
+        DailySummaryScheduler.maintain(this, now)
         pollRemote(now)
     }
 
@@ -261,7 +288,9 @@ class AccessibilityMonitorService : AccessibilityService() {
         }
         Preferences.setUsageSent(this, now, s.usedMs)
         val left = if (s.limitOn) " ${TimeLimit.durationText((s.limitMinutes * 60_000L - s.usedMs).coerceAtLeast(0))} left." else ""
-        val text = "Used today: ${TimeLimit.durationText(s.usedMs)}.$left Apps opened today: ${Preferences.getDailyLaunchCount(this)}."
+        val apps = Preferences.usageToday(this, now)
+        val text = "Used today: ${TimeLimit.durationText(s.usedMs)}.$left Apps opened today: ${Preferences.getDailyLaunchCount(this)}." +
+            if (apps.isEmpty()) "" else "\n$apps"
         Thread { DiscordWebhookService.sendNote(url, "📊 Usage update", text) }.start()
     }
 
@@ -335,7 +364,7 @@ class AccessibilityMonitorService : AccessibilityService() {
                         // the first look: remember where the channel stands and run nothing that is already there
                         Preferences.setDiscordLast(app, if (msgs.isEmpty()) "1" else DiscordRemote.newest(msgs))
                     } else {
-                        val o = DiscordRemote.handle(msgs, users, last, Preferences.timeSettings(app), System.currentTimeMillis(), launches = Preferences.getDailyLaunchCount(app))
+                        val o = DiscordRemote.handle(msgs, users, last, Preferences.timeSettings(app), System.currentTimeMillis(), launches = Preferences.getDailyLaunchCount(app), apps = Preferences.usageToday(app, bold = false))
                         Preferences.saveTimeSettings(app, o.settings)
                         Preferences.setDiscordLast(app, o.lastId)
                         o.replies.forEach { DiscordWebhookService.postBotMessage(token, channel, it) }

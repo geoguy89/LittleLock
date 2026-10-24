@@ -47,6 +47,10 @@ class NetworkTest {
                     if (trimmed.contains("localhost") || trimmed.contains("127.0.0.1")) {
                         continue
                     }
+                    // Allow the app's own GitHub releases (self-update, Updater.kt)
+                    if (file.name == "Updater.kt" && trimmed.contains("api.github.com/repos/geoguy89/LittleLock/")) {
+                        continue
+                    }
                     // Allow file:// resources
                     if (trimmed.contains("file://")) {
                         continue

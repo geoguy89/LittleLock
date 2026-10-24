@@ -97,10 +97,10 @@ object RemoteCommands {
     fun help(): String = "Commands: status · usage · lock · unlock · extend 30 · extend 1h · extend until 8:30pm · limit 90 · limit off · bedtime 8pm 6h · bedtime off · reset"
 
     /** Applies [c] to the screen-time [s] at time [now]; returns the new settings and the answer to send back. */
-    fun apply(s: TimeLimit.Settings, c: Command, now: Long, tz: TimeZone = TimeZone.getDefault(), launches: Int = 0): Result = when (c) {
+    fun apply(s: TimeLimit.Settings, c: Command, now: Long, tz: TimeZone = TimeZone.getDefault(), launches: Int = 0, apps: String = ""): Result = when (c) {
         Command.Help -> Result(s, help())
         Command.Status -> Result(s, status(s, now, tz))
-        Command.Usage -> Result(s, usage(s, now, tz, launches))
+        Command.Usage -> Result(s, usage(s, now, tz, launches, apps))
         Command.Lock -> {
             val n = s.copy(forceLock = true, extendedUntil = 0L)
             Result(n, "🔒 Locked now. It stays locked until you extend or unlock it.")
@@ -134,10 +134,10 @@ object RemoteCommands {
         if (!s.limitOn) "No daily limit." else "${TimeLimit.durationText(st.remainingMs)} left today."
 
     /** The usage numbers right now, on request (the scheduled update does the same on a timer). */
-    fun usage(s: TimeLimit.Settings, now: Long, tz: TimeZone = TimeZone.getDefault(), launches: Int = 0): String {
+    fun usage(s: TimeLimit.Settings, now: Long, tz: TimeZone = TimeZone.getDefault(), launches: Int = 0, apps: String = ""): String {
         val st = TimeLimit.state(s, now, tz)
         val left = if (s.limitOn) " ${TimeLimit.durationText(st.remainingMs)} left of ${TimeLimit.durationText(s.limitMinutes * 60_000L)}." else " No daily limit."
-        return "📊 Used today: ${TimeLimit.durationText(s.usedMs)}.$left Apps opened today: $launches.\n${status(s, now, tz)}"
+        return "📊 Used today: ${TimeLimit.durationText(s.usedMs)}.$left Apps opened today: $launches.\n${status(s, now, tz)}" + if (apps.isEmpty()) "" else "\n$apps"
     }
 
     fun status(s: TimeLimit.Settings, now: Long, tz: TimeZone = TimeZone.getDefault()): String {

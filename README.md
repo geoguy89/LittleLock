@@ -15,8 +15,9 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
 - **Accessibility Monitoring** — Detects when accessibility services are disabled (e.g. by a child trying to bypass the lock)
 - **Boot Receiver** — Automatically re-applies the lock after device reboot
 - **Device Admin** — Uses Android Device Admin API to prevent uninstallation
-- **Daily Summary Reports** — Sends a daily digest of activity to Discord
-- **No External Servers** — All data stays on-device; only Discord webhooks are called (outbound HTTP)
+- **Daily Summary Reports** — Sends a daily digest to Discord listing every app used, for how long and how often (kept on the tablet, so a day offline is still complete)
+- **In-app Updates** — Parent Settings → App updates checks this repo's latest GitHub release and installs it
+- **No External Servers** — All data stays on-device; the only outbound calls are your Discord webhook and GitHub (for update checks)
 - **No Ads** — Zero advertising, zero tracking
 - **No Paywall** — Completely free and open-source
 

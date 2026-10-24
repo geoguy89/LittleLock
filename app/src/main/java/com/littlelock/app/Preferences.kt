@@ -15,8 +15,6 @@ object Preferences {
     private const val KEY_NOTIF_APP_LAUNCH = "notif_app_launch"
     private const val KEY_NOTIF_DAILY_SUMMARY = "notif_daily_summary"
     private const val KEY_NOTIF_BLOCKED_APPS = "notif_blocked_apps"
-    private const val KEY_DAILY_LAUNCH_COUNT = "daily_launch_count"
-    private const val KEY_DAILY_DATE = "daily_date"
     private const val KEY_PIN_SET = "pin_set"
     private const val KEY_PIN_HASH = "pin_hash"
     private const val KEY_PIN_SALT = "pin_salt"
@@ -320,36 +318,58 @@ object Preferences {
         getPrefs(context).edit().putBoolean(KEY_NOTIF_BLOCKED_APPS, enabled).apply()
     }
 
-    fun getDailyLaunchCount(context: Context): Int {
-        val prefs = getPrefs(context)
-        val today = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date())
-        val storedDate = prefs.getString(KEY_DAILY_DATE, "")
-        return if (storedDate == today) {
-            prefs.getInt(KEY_DAILY_LAUNCH_COUNT, 0)
-        } else {
-            0
-        }
+    // ------------------------------------------------------------------ what was used, app by app (see [UsageLog])
+
+    private const val KEY_USAGE_LOG = "usage_log"
+    private const val KEY_SUMMARY_DUE = "summary_due"
+    private const val KEY_SUMMARY_PENDING = "summary_pending"
+    private const val KEY_UPDATE_SEEN = "update_seen_tag"
+
+    @Synchronized
+    fun usageData(context: Context): UsageData = UsageLog.parse(getPrefs(context).getString(KEY_USAGE_LOG, null))
+
+    /** Adds time in front and/or openings for [pkg] to today. */
+    @Synchronized
+    fun recordUsage(context: Context, pkg: String, ms: Long, opens: Int, now: Long = System.currentTimeMillis()) {
+        val before = usageData(context)
+        val after = UsageLog.add(before, UsageLog.dayKey(now), pkg, ms, opens)
+        if (after !== before) getPrefs(context).edit().putString(KEY_USAGE_LOG, UsageLog.serialize(after)).apply()
     }
 
-    fun incrementDailyLaunchCount(context: Context) {
-        val prefs = getPrefs(context)
-        val today = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date())
-        val storedDate = prefs.getString(KEY_DAILY_DATE, "")
-        val count = if (storedDate == today) {
-            prefs.getInt(KEY_DAILY_LAUNCH_COUNT, 0) + 1
-        } else {
-            1
-        }
-        prefs.edit()
-            .putInt(KEY_DAILY_LAUNCH_COUNT, count)
-            .putString(KEY_DAILY_DATE, today)
-            .apply()
+    /** How many times an app was opened today (every app counts, however it is named). */
+    fun getDailyLaunchCount(context: Context, now: Long = System.currentTimeMillis()): Int =
+        UsageLog.totalOpens(usageData(context), UsageLog.dayKey(now))
+
+    /** "• YouTube Kids - 1 h 5 min, opened 3 times" lines for today, for the Discord notes. */
+    fun usageToday(context: Context, now: Long = System.currentTimeMillis(), bold: Boolean = true): String =
+        UsageLog.itemised(usageData(context), UsageLog.dayKey(now), { appLabel(context, it) }, bold = bold)
+
+    /** The app's name as the child sees it (the package name when it has been removed). */
+    fun appLabel(context: Context, pkg: String): String = try {
+        val pm = context.packageManager
+        pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
+    } catch (e: Exception) {
+        pkg
     }
 
-    fun resetDailyCount(context: Context) {
-        getPrefs(context).edit()
-            .putInt(KEY_DAILY_LAUNCH_COUNT, 0)
-            .putString(KEY_DAILY_DATE, "")
-            .apply()
+    /** The moment the next daily summary is meant for: it reports the day that moment falls on, even when it runs late. */
+    fun getSummaryDue(context: Context): Long = getPrefs(context).getLong(KEY_SUMMARY_DUE, 0L)
+
+    fun setSummaryDue(context: Context, at: Long) {
+        getPrefs(context).edit().putLong(KEY_SUMMARY_DUE, at).apply()
+    }
+
+    /** The day of a summary that Discord hasn't accepted yet (no internet): it is built again from the log and retried. */
+    fun getPendingSummary(context: Context): String? = getPrefs(context).getString(KEY_SUMMARY_PENDING, null)
+
+    fun setPendingSummary(context: Context, text: String?) {
+        getPrefs(context).edit().apply { if (text == null) remove(KEY_SUMMARY_PENDING) else putString(KEY_SUMMARY_PENDING, text) }.apply()
+    }
+
+    /** The release tag the parent has already been told about (so the notice shows once). */
+    fun getUpdateSeen(context: Context): String = getPrefs(context).getString(KEY_UPDATE_SEEN, "") ?: ""
+
+    fun setUpdateSeen(context: Context, tag: String) {
+        getPrefs(context).edit().putString(KEY_UPDATE_SEEN, tag).apply()
     }
 }

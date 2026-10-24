@@ -26,6 +26,8 @@ object DailySummaryScheduler {
      * Schedule the daily summary alarm for the configured time (default 23:59).
      */
     fun scheduleDailySummary(context: Context) {
+        // an alarm that never arrived (the tablet was off, or Android held it back) is sent now, before the next one is set
+        maintain(context)
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val hour = prefs.getInt(KEY_DAILY_SUMMARY_HOUR, DEFAULT_HOUR)
         val minute = prefs.getInt(KEY_DAILY_SUMMARY_MINUTE, DEFAULT_MINUTE)
@@ -52,6 +54,8 @@ object DailySummaryScheduler {
                 add(java.util.Calendar.DAY_OF_YEAR, 1)
             }
         }
+
+        Preferences.setSummaryDue(context, calendar.timeInMillis)
 
         // inexact on purpose: an exact alarm needs the SCHEDULE_EXACT_ALARM permission on Android 12+ (without it
         // this throws), and a daily summary a few minutes late is fine
@@ -86,20 +90,65 @@ object DailySummaryScheduler {
         }
     }
 
+    @Volatile private var lastRetry = 0L
+
     /**
-     * Handle the daily summary alarm firing: send summary and reset count.
+     * Called from the alarm and every few seconds by the monitoring service: sends the summary whose time has come (the
+     * alarm is inexact, and may be late or lost), and tries again for one that couldn't be delivered.
      */
-    fun handleDailySummary(context: Context) {
-        val launchCount = Preferences.getDailyLaunchCount(context)
-        val webhookUrl = Preferences.getWebhookUrl(context)
-
-        if (!webhookUrl.isNullOrEmpty() && Preferences.isDailySummaryEnabled(context)) {
-            DiscordWebhookService.sendDailySummary(context, webhookUrl, launchCount)
+    fun maintain(context: Context, now: Long = System.currentTimeMillis()) {
+        val due = Preferences.getSummaryDue(context)
+        if (due in 1..now) {
+            Preferences.setSummaryDue(context, 0L)     // taken: scheduling sets the next one
+            handleDailySummary(context, due)
+            scheduleDailySummary(context)
+            return
         }
+        val pending = Preferences.getPendingSummary(context) ?: return
+        if (now - lastRetry < RETRY_MS) return
+        lastRetry = now
+        send(context, pending)
+    }
 
-        // Reset the daily count after sending
-        Preferences.resetDailyCount(context)
-        Log.d(TAG, "Daily summary sent with $launchCount launches, count reset")
+    private const val RETRY_MS = 5 * 60_000L
+
+    /** The alarm went off: send the summary it was set for, then set tomorrow's. */
+    fun onAlarm(context: Context, now: Long = System.currentTimeMillis()) {
+        val due = Preferences.getSummaryDue(context)
+        if (due == 0L) {
+            // an alarm set by an older version (it didn't note its time): it was meant for the evening just gone
+            handleDailySummary(context, now - 30 * 60_000L)
+        } else {
+            maintain(context, maxOf(now, due))
+        }
+        scheduleDailySummary(context)
+    }
+
+    /**
+     * The summary for the day that [due] falls on - the alarm is meant for 11:59 PM but often arrives after midnight, so
+     * "today" at that moment would be the wrong (empty) day. Lists every app that was used and for how long.
+     */
+    fun handleDailySummary(context: Context, due: Long = Preferences.getSummaryDue(context)) {
+        val day = UsageLog.dayKey(if (due > 0) due else System.currentTimeMillis())
+        if (!Preferences.getWebhookUrl(context).isNullOrEmpty() && Preferences.isDailySummaryEnabled(context)) {
+            send(context, day)
+        }
+        Log.d(TAG, "Daily summary for $day handled")
+    }
+
+    private fun send(context: Context, day: String) {
+        val url = Preferences.getWebhookUrl(context)
+        if (url.isNullOrEmpty() || !Preferences.isDailySummaryEnabled(context)) {
+            Preferences.setPendingSummary(context, null)
+            return
+        }
+        val data = Preferences.usageData(context)
+        val app = context.applicationContext
+        val list = UsageLog.itemised(data, day, { Preferences.appLabel(app, it) })
+        Preferences.setPendingSummary(app, day)        // until Discord accepts it
+        DiscordWebhookService.sendDailySummary(
+            app, url, UsageLog.dayName(day), UsageLog.totalOpens(data, day), UsageLog.headline(data, day), list
+        ) { ok -> if (ok && Preferences.getPendingSummary(app) == day) Preferences.setPendingSummary(app, null) }
     }
 }
 
@@ -109,8 +158,7 @@ object DailySummaryScheduler {
 class DailySummaryReceiver : android.content.BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == DailySummaryScheduler.ALARM_ACTION) {
-            DailySummaryScheduler.handleDailySummary(context)
-            DailySummaryScheduler.scheduleDailySummary(context) // and again tomorrow
+            DailySummaryScheduler.onAlarm(context)
         }
     }
 }

@@ -34,7 +34,8 @@ object DiscordRemote {
         settings: TimeLimit.Settings,
         now: Long,
         tz: TimeZone = TimeZone.getDefault(),
-        launches: Int = 0
+        launches: Int = 0,
+        apps: String = ""
     ): Outcome {
         var s = settings
         val replies = ArrayList<String>()
@@ -44,7 +45,7 @@ object DiscordRemote {
             if (m.isBot || (m.authorId !in allowed && m.authorNames.none { it in allowed })) continue
             if (now - m.timestampMs > MAX_AGE_MS) continue
             val cmd = RemoteCommands.parse(m.content) ?: continue
-            val r = RemoteCommands.apply(s, cmd, now, tz, launches)
+            val r = RemoteCommands.apply(s, cmd, now, tz, launches, apps)
             s = r.settings
             replies.add(r.reply)
         }
