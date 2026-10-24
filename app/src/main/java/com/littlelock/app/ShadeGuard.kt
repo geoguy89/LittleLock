@@ -26,9 +26,19 @@ object ShadeGuard {
         return (className != null && SHADE_CLASSES.containsMatchIn(className)) || SHADE_WORDS.containsMatchIn(text)
     }
 
-    /** Is a system window of this package that tall (a share of the screen) the shade pulled down? Bars and toasts are small. */
-    fun isShadeWindow(packageName: String?, heightPx: Int, screenHeightPx: Int, isSystemWindow: Boolean): Boolean =
-        isSystemWindow && packageName != null && packageName.contains("systemui", ignoreCase = true) && heightPx > screenHeightPx * 0.3
+    private val NOT_SHADE_WORDS = Regex("(?i)(volume|ringer|globalactions|power menu)")
+
+    /**
+     * Is a system window of this package that tall and that wide (a share of the screen) the shade pulled down?
+     * Bars and toasts are small; the volume panel is tall on a tablet but a narrow strip, so it never counts.
+     */
+    fun isShadeWindow(
+        packageName: String?, heightPx: Int, screenHeightPx: Int, isSystemWindow: Boolean,
+        widthPx: Int = Int.MAX_VALUE, screenWidthPx: Int = 0, title: String? = null
+    ): Boolean =
+        isSystemWindow && packageName != null && packageName.contains("systemui", ignoreCase = true) &&
+            heightPx > screenHeightPx * 0.3 && widthPx >= screenWidthPx * 0.6 &&
+            !(title != null && NOT_SHADE_WORDS.containsMatchIn(title))
 
     /** Height of the shield: the status bar itself - the app's content starts right below it (see [applySystemBarInsets]). */
     fun shieldHeightPx(statusBarPx: Int): Int = statusBarPx

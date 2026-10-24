@@ -57,7 +57,7 @@ object Kiosk {
         val a = admin(activity)
         try {
             d.setLockTaskPackages(a, lockTaskPackages(Preferences.getAllowedApps(activity), activity.packageName, keyboards(activity)))
-            d.setLockTaskFeatures(a, DevicePolicyManager.LOCK_TASK_FEATURE_NONE)
+            d.setLockTaskFeatures(a, DevicePolicyManager.LOCK_TASK_FEATURE_GLOBAL_ACTIONS)   // the power button's menu (power off / restart) still works
             d.setStatusBarDisabled(a, true)
             val home = IntentFilter(Intent.ACTION_MAIN).apply {
                 addCategory(Intent.CATEGORY_HOME)

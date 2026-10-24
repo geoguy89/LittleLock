@@ -34,6 +34,13 @@ class ShadeGuardTest {
     }
 
     @Test
+    fun the_volume_panel_is_never_taken_for_the_shade() {
+        assertFalse(ShadeGuard.isShadeWindow("com.android.systemui", 1200, 2000, true, 200, 1200))          // a narrow strip
+        assertFalse(ShadeGuard.isShadeWindow("com.android.systemui", 1200, 2000, true, 1200, 1200, "Volume"))
+        assertTrue(ShadeGuard.isShadeWindow("com.android.systemui", 1200, 2000, true, 1200, 1200, "Notification shade"))
+    }
+
+    @Test
     fun only_a_tall_system_ui_window_counts_as_the_shade() {
         assertTrue(ShadeGuard.isShadeWindow("com.android.systemui", 1200, 2000, true))
         assertFalse(ShadeGuard.isShadeWindow("com.android.systemui", 90, 2000, true))       // the status bar

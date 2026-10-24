@@ -430,10 +430,12 @@ class AccessibilityMonitorService : AccessibilityService() {
     /** Any system-UI window covering a good part of the screen is the shade (or quick settings) pulled down. */
     private fun shadeWindowOpen(): Boolean = try {
         val h = resources.displayMetrics.heightPixels
+        val screenW = resources.displayMetrics.widthPixels
         windows.any { w ->
             val r = Rect()
             w.getBoundsInScreen(r)
-            ShadeGuard.isShadeWindow(w.root?.packageName?.toString(), r.height(), h, w.type == AccessibilityWindowInfo.TYPE_SYSTEM)
+            ShadeGuard.isShadeWindow(w.root?.packageName?.toString(), r.height(), h, w.type == AccessibilityWindowInfo.TYPE_SYSTEM,
+                r.width(), screenW, w.title?.toString())
         }
     } catch (e: Exception) {
         false
