@@ -365,7 +365,10 @@ class AccessibilityMonitorService : AccessibilityService() {
                         Preferences.setDiscordLast(app, if (msgs.isEmpty()) "1" else DiscordRemote.newest(msgs))
                     } else {
                         val o = DiscordRemote.handle(msgs, users, last, Preferences.timeSettings(app), System.currentTimeMillis(), launches = Preferences.getDailyLaunchCount(app), apps = Preferences.usageToday(app, bold = false))
+                        val before = Preferences.timeSettings(app)
                         Preferences.saveTimeSettings(app, o.settings)
+                        if (o.settings.summaryMin != before.summaryMin) DailySummaryScheduler.scheduleDailySummary(app)
+                        if (RemoteCommands.Action.SEND_SUMMARY_NOW in o.actions) DailySummaryScheduler.sendToday(app)
                         Preferences.setDiscordLast(app, o.lastId)
                         o.replies.forEach { DiscordWebhookService.postBotMessage(token, channel, it) }
                     }

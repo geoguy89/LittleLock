@@ -103,11 +103,51 @@ class RemoteCommandsTest {
     fun ordinary_chat_and_nonsense_are_not_commands() {
         assertNull(RemoteCommands.parse("what time is dinner?"))
         assertNull(RemoteCommands.parse(""))
-        assertNull(RemoteCommands.parse("extend"))
-        assertNull(RemoteCommands.parse("extend banana"))
-        assertNull(RemoteCommands.parse("extend 5000"))
-        assertNull(RemoteCommands.parse("limit 1"))
-        assertNull(RemoteCommands.parse("extend until 25:99"))
+        assertNull(RemoteCommands.parse("dinner is at 6"))
+    }
+
+    @Test
+    fun a_command_with_something_wrong_after_it_is_answered_with_how_to_write_it() {
+        for (bad in listOf("extend", "extend banana", "extend 5000", "limit 1", "extend until 25:99", "bedtime whenever", "!dance")) {
+            val c = RemoteCommands.parse(bad)
+            assertTrue("$bad -> $c", c is RemoteCommands.Command.Invalid)
+            assertTrue(RemoteCommands.apply(TimeLimit.Settings(), c!!, now, utc).reply.startsWith("🤔"))
+        }
+    }
+
+    @Test
+    fun the_new_commands_are_understood() {
+        assertEquals(RemoteCommands.Command.Lock, RemoteCommands.parse("lock now"))
+        assertEquals(RemoteCommands.Command.ResetUsed, RemoteCommands.parse("reset time"))
+        assertEquals(RemoteCommands.Command.ShowSettings, RemoteCommands.parse("settings"))
+        assertEquals(RemoteCommands.Command.ExtendMinutes(90), RemoteCommands.parse("extend 1h 30m"))
+        assertEquals(RemoteCommands.Command.SummaryNow, RemoteCommands.parse("summary now"))
+        assertEquals(RemoteCommands.Command.SummaryAt(21 * 60), RemoteCommands.parse("summary at 9pm"))
+        assertEquals(RemoteCommands.Command.DayStart(6 * 60), RemoteCommands.parse("new day at 6am"))
+        assertEquals(RemoteCommands.Command.DayStart(0), RemoteCommands.parse("new day at midnight"))
+        assertEquals(RemoteCommands.Command.DayStart(6 * 60 + 30), RemoteCommands.parse("day starts 6:30am"))
+    }
+
+    @Test
+    fun the_summary_time_and_new_day_time_can_be_set_from_discord() {
+        val s = TimeLimit.Settings()
+        assertEquals(23 * 60 + 59, s.summaryMin)
+        assertEquals(0, s.dayStartMin)
+        val a = RemoteCommands.apply(s, RemoteCommands.parse("summary at 9pm")!!, now, utc)
+        assertEquals(21 * 60, a.settings.summaryMin)
+        assertTrue(a.reply.contains("9:00 PM"))
+        val b = RemoteCommands.apply(s, RemoteCommands.parse("new day at 6am")!!, now, utc)
+        assertEquals(6 * 60, b.settings.dayStartMin)
+        assertEquals(RemoteCommands.Action.SEND_SUMMARY_NOW, RemoteCommands.apply(s, RemoteCommands.Command.SummaryNow, now, utc).action)
+    }
+
+    @Test
+    fun help_and_settings_read_plainly() {
+        assertTrue(RemoteCommands.help().contains("bedtime 8pm to 7am"))
+        val t = RemoteCommands.settingsText(TimeLimit.Settings(limitOn = true, limitMinutes = 90))
+        assertTrue(t.contains("Daily limit: 1 h 30 min"))
+        assertTrue(t.contains("Bedtime lockdown: 8:00 PM to 7:00 AM"))
+        assertTrue(t.contains("Daily summary sent at: 11:59 PM"))
     }
 
     @Test

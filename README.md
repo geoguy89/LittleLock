@@ -16,6 +16,8 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
 - **Boot Receiver** — Automatically re-applies the lock after device reboot
 - **Device Admin** — Uses Android Device Admin API to prevent uninstallation
 - **Daily Summary Reports** — Sends a daily digest to Discord listing every app used, for how long and how often (kept on the tablet, so a day offline is still complete)
+- **Bedtime Lockdown** — Locks every night between a start time and a morning wake-up time you choose (e.g. 8 PM to 7 AM); a parent can extend playtime from the lock screen with the PIN
+- **Wrong-PIN Alerts** — Discord note when a wrong PIN is typed, saying if it happened during bedtime
 - **In-app Updates** — Parent Settings → App updates checks this repo's latest GitHub release and installs it
 - **No External Servers** — All data stays on-device; the only outbound calls are your Discord webhook and GitHub (for update checks)
 - **No Ads** — Zero advertising, zero tracking

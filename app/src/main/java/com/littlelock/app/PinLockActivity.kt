@@ -122,7 +122,7 @@ class PinLockActivity : AppCompatActivity() {
                     done()
                     return
                 }
-                Preferences.recordFailedPin(this)
+                PinAlert.send(this, Preferences.recordFailedPin(this))
                 showError(getString(R.string.pin_error_wrong))
             }
         }

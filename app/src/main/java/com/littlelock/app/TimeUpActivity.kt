@@ -1,6 +1,5 @@
 package com.littlelock.app
 
-import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
@@ -12,7 +11,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.littlelock.app.databinding.ActivityTimeUpBinding
-import java.util.Calendar
 
 /**
  * "Time's up": a colourful, full-screen, opaque page that fills the tablet when the daily limit is used up (or the parent locked
@@ -24,7 +22,7 @@ class TimeUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTimeUpBinding
 
     private val pin = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
-        if (r.resultCode == RESULT_OK) askUntilWhen()
+        if (r.resultCode == RESULT_OK) askHowLong()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,17 +102,12 @@ class TimeUpActivity : AppCompatActivity() {
             ?: GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(0xFF2B2F4A.toInt(), 0xFF1E1E24.toInt()))
     }
 
-    /** The parent picks the clock time the tablet locks again. */
-    private fun askUntilWhen() {
-        val soon = Calendar.getInstance().apply { add(Calendar.MINUTE, 30) }
-        TimePickerDialog(this, { _, h, m ->
-            val until = TimeLimit.nextOccurrence(System.currentTimeMillis(), h, m)
+    /** After the PIN the parent picks how much longer the tablet stays open (or the clock time it locks again). */
+    private fun askHowLong() {
+        ExtendDialog.show(this) { until ->
             Preferences.saveTimeSettings(this, Preferences.timeSettings(this).copy(extendedUntil = until))
             Toast.makeText(this, getString(R.string.time_extended, TimeLimit.clockText(until)), Toast.LENGTH_LONG).show()
             leave()
-        }, soon.get(Calendar.HOUR_OF_DAY), soon.get(Calendar.MINUTE), false).apply {
-            setTitle(R.string.time_extend_until_title)
-            show()
         }
     }
 

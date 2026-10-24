@@ -20,7 +20,8 @@ object UsageLog {
 
     const val KEEP_DAYS = 14
 
-    fun dayKey(now: Long): String = SimpleDateFormat("yyyyMMdd", Locale.US).format(Date(now))
+    /** The day [now] belongs to; a day starts at [startMin] minutes after midnight (0 = midnight), so 6 AM keeps the small hours with the night before. */
+    fun dayKey(now: Long, startMin: Int = 0): String = SimpleDateFormat("yyyyMMdd", Locale.US).format(Date(now - startMin * 60_000L))
 
     fun parse(text: String?): UsageData {
         val out = LinkedHashMap<String, MutableMap<String, Stat>>()

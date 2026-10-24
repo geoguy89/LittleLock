@@ -208,17 +208,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
+                <Button
+                    android:id="@+id/btnBedEnd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
                 <TextView
                     android:id="@+id/tvBedValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
                     android:textColor="@color/littlelock_text_secondary" />
-
-                <SeekBar
-                    android:id="@+id/sbBed"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:max="31" />
 
                 <Button
                     android:id="@+id/btnExtendTime"
@@ -613,6 +613,36 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_notif_blocked_apps" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/cbNotifWrongPin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_notif_wrong_pin" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/day_times_title"
+                    android:textColor="@color/littlelock_text_primary"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/day_times_explain"
+                    android:textColor="@color/littlelock_text_secondary" />
+
+                <Button
+                    android:id="@+id/btnSummaryTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btnDayStart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
                 <TextView
                     android:layout_width="wrap_content"

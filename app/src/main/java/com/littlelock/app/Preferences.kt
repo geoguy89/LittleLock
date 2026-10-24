@@ -43,7 +43,11 @@ object Preferences {
     private const val KEY_EXTENDED_UNTIL = "extended_until"
     private const val KEY_BED_ON = "bed_on"
     private const val KEY_BED_START = "bed_start_min"
-    private const val KEY_BED_MINUTES = "bed_minutes"
+    private const val KEY_BED_MINUTES = "bed_minutes"       // before 1.8: how long it lasted; now only read to carry that over
+    private const val KEY_BED_END = "bed_end_min"
+    private const val KEY_SUMMARY_MIN = "summary_min"
+    private const val KEY_DAY_START = "day_start_min"
+    private const val KEY_NOTIF_WRONG_PIN = "notif_wrong_pin"
     private const val KEY_REMOTE_ON = "remote_on"
     private const val KEY_DISCORD_TOKEN = "discord_bot_token"
     private const val KEY_DISCORD_CHANNEL = "discord_channel"
@@ -97,8 +101,8 @@ object Preferences {
     fun pinLockoutRemaining(context: Context, now: Long = System.currentTimeMillis()): Long =
         (getPrefs(context).getLong(KEY_LOCKOUT_UNTIL, 0L) - now).coerceAtLeast(0L)
 
-    /** Counts a wrong PIN; after [MAX_ATTEMPTS] in a row the PIN pad locks for [LOCKOUT_MS]. */
-    fun recordFailedPin(context: Context, now: Long = System.currentTimeMillis()) {
+    /** Counts a wrong PIN; after [MAX_ATTEMPTS] in a row the PIN pad locks for [LOCKOUT_MS]. Returns which wrong try in a row this was. */
+    fun recordFailedPin(context: Context, now: Long = System.currentTimeMillis()): Int {
         val prefs = getPrefs(context)
         val failed = prefs.getInt(KEY_FAILED_ATTEMPTS, 0) + 1
         if (failed >= MAX_ATTEMPTS) {
@@ -106,6 +110,14 @@ object Preferences {
         } else {
             prefs.edit().putInt(KEY_FAILED_ATTEMPTS, failed).apply()
         }
+        return failed
+    }
+
+    /** Tell the parent in Discord when a wrong PIN is typed. On by default. */
+    fun isWrongPinNotifEnabled(context: Context): Boolean = getPrefs(context).getBoolean(KEY_NOTIF_WRONG_PIN, true)
+
+    fun setWrongPinNotifEnabled(context: Context, on: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NOTIF_WRONG_PIN, on).apply()
     }
 
     fun resetFailedPins(context: Context) {
@@ -212,12 +224,26 @@ object Preferences {
         getPrefs(context).edit().putInt(KEY_GAP, step.coerceIn(0, Layouts.GAP_DP.lastIndex)).apply()
     }
 
-    private fun dayKey(now: Long): String = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US).format(java.util.Date(now))
+    /** When "today" starts over, as minutes after midnight (the parent can move it; midnight by default). */
+    fun getDayStart(context: Context): Int = getPrefs(context).getInt(KEY_DAY_START, 0).coerceIn(0, 24 * 60 - 1)
+
+    /** The day [now] belongs to, counting from the parent's "new day starts at" time. */
+    fun today(context: Context, now: Long = System.currentTimeMillis()): String = UsageLog.dayKey(now, getDayStart(context))
+
+    private fun dayKey(p: SharedPreferences, now: Long): String = UsageLog.dayKey(now, p.getInt(KEY_DAY_START, 0).coerceIn(0, 24 * 60 - 1))
+
+    /** Daily summary time, as minutes after midnight (from the old hour / minute settings if those were used). */
+    private fun summaryMin(p: SharedPreferences): Int =
+        if (p.contains(KEY_SUMMARY_MIN)) p.getInt(KEY_SUMMARY_MIN, TimeLimit.DEFAULT_SUMMARY)
+        else p.getInt("daily_summary_hour", 23) * 60 + p.getInt("daily_summary_minute", 59)
+
+    fun getSummaryMin(context: Context): Int = summaryMin(getPrefs(context)).coerceIn(0, 24 * 60 - 1)
 
     /** The screen-time settings; today's used time starts again at 0 each new day. */
     fun timeSettings(context: Context, now: Long = System.currentTimeMillis()): TimeLimit.Settings {
         val p = getPrefs(context)
-        val sameDay = p.getString(KEY_USED_DAY, "") == dayKey(now)
+        val sameDay = p.getString(KEY_USED_DAY, "") == dayKey(p, now)
+        val bedStart = p.getInt(KEY_BED_START, TimeLimit.DEFAULT_BED_START)
         return TimeLimit.Settings(
             limitOn = p.getBoolean(KEY_LIMIT_ON, false),
             limitMinutes = p.getInt(KEY_LIMIT_MIN, 60),
@@ -226,7 +252,11 @@ object Preferences {
             extendedUntil = p.getLong(KEY_EXTENDED_UNTIL, 0L),
             bedOn = p.getBoolean(KEY_BED_ON, true),
             bedStartMin = p.getInt(KEY_BED_START, TimeLimit.DEFAULT_BED_START),
-            bedMinutes = p.getInt(KEY_BED_MINUTES, TimeLimit.DEFAULT_BED_MINUTES)
+            bedEndMin = if (p.contains(KEY_BED_END)) p.getInt(KEY_BED_END, TimeLimit.DEFAULT_BED_END)
+                        else if (p.contains(KEY_BED_MINUTES)) (bedStart + p.getInt(KEY_BED_MINUTES, 0)) % (24 * 60)    // carried over from "lasts N hours"
+                        else TimeLimit.DEFAULT_BED_END,
+            summaryMin = summaryMin(p),
+            dayStartMin = p.getInt(KEY_DAY_START, 0)
         )
     }
 
@@ -235,12 +265,14 @@ object Preferences {
             .putBoolean(KEY_LIMIT_ON, s.limitOn)
             .putInt(KEY_LIMIT_MIN, s.limitMinutes.coerceIn(TimeLimit.MIN_LIMIT, TimeLimit.MAX_LIMIT))
             .putLong(KEY_USED_MS, s.usedMs)
-            .putString(KEY_USED_DAY, dayKey(now))
+            .putString(KEY_USED_DAY, UsageLog.dayKey(now, s.dayStartMin.coerceIn(0, 24 * 60 - 1)))
             .putBoolean(KEY_FORCE_LOCK, s.forceLock)
             .putLong(KEY_EXTENDED_UNTIL, s.extendedUntil)
             .putBoolean(KEY_BED_ON, s.bedOn)
             .putInt(KEY_BED_START, s.bedStartMin.coerceIn(0, 24 * 60 - 1))
-            .putInt(KEY_BED_MINUTES, s.bedMinutes.coerceIn(TimeLimit.MIN_BED, TimeLimit.MAX_BED))
+            .putInt(KEY_BED_END, s.bedEndMin.coerceIn(0, 24 * 60 - 1))
+            .putInt(KEY_SUMMARY_MIN, s.summaryMin.coerceIn(0, 24 * 60 - 1))
+            .putInt(KEY_DAY_START, s.dayStartMin.coerceIn(0, 24 * 60 - 1))
             .apply()
     }
 
@@ -332,17 +364,17 @@ object Preferences {
     @Synchronized
     fun recordUsage(context: Context, pkg: String, ms: Long, opens: Int, now: Long = System.currentTimeMillis()) {
         val before = usageData(context)
-        val after = UsageLog.add(before, UsageLog.dayKey(now), pkg, ms, opens)
+        val after = UsageLog.add(before, today(context, now), pkg, ms, opens)
         if (after !== before) getPrefs(context).edit().putString(KEY_USAGE_LOG, UsageLog.serialize(after)).apply()
     }
 
     /** How many times an app was opened today (every app counts, however it is named). */
     fun getDailyLaunchCount(context: Context, now: Long = System.currentTimeMillis()): Int =
-        UsageLog.totalOpens(usageData(context), UsageLog.dayKey(now))
+        UsageLog.totalOpens(usageData(context), today(context, now))
 
     /** "• YouTube Kids - 1 h 5 min, opened 3 times" lines for today, for the Discord notes. */
     fun usageToday(context: Context, now: Long = System.currentTimeMillis(), bold: Boolean = true): String =
-        UsageLog.itemised(usageData(context), UsageLog.dayKey(now), { appLabel(context, it) }, bold = bold)
+        UsageLog.itemised(usageData(context), today(context, now), { appLabel(context, it) }, bold = bold)
 
     /** The app's name as the child sees it (the package name when it has been removed). */
     fun appLabel(context: Context, pkg: String): String = try {

@@ -11,7 +11,7 @@ import java.util.TimeZone
  *
  *  - extended: until the chosen time everything is open, whatever else is set
  *  - locked now: the tablet stays locked until the parent extends or unlocks it
- *  - bedtime: every night from the start time for the chosen length everything is off (on by default: 8 PM for 6 hours)
+ *  - bedtime: every night from the start time until the morning time everything is off (on by default: 8 PM until 7 AM)
  *  - daily limit: when the minutes used today reach the limit the tablet locks (and stays locked until tomorrow or an extension)
  */
 object TimeLimit {
@@ -26,8 +26,13 @@ object TimeLimit {
         val extendedUntil: Long = 0L,
         val bedOn: Boolean = true,
         val bedStartMin: Int = DEFAULT_BED_START,            // minutes after midnight
-        val bedMinutes: Int = DEFAULT_BED_MINUTES
-    )
+        val bedEndMin: Int = DEFAULT_BED_END,                // minutes after midnight: the tablet wakes up at this time
+        val summaryMin: Int = DEFAULT_SUMMARY,               // minutes after midnight: when the daily summary goes to Discord
+        val dayStartMin: Int = 0                             // minutes after midnight: when "today" (used time, app use) starts over
+    ) {
+        /** How long the nightly lockdown lasts, from the start time to the morning time (across midnight if need be). */
+        val bedMinutes: Int get() = (bedEndMin - bedStartMin + 24 * 60) % (24 * 60)
+    }
 
     /** [bedEndsAt] is when the nightly lockdown ends while it is the reason for the lock (else 0). */
     class State(val locked: Boolean, val why: Why, val remainingMs: Long, val extendedUntil: Long, val bedEndsAt: Long = 0L)
@@ -35,9 +40,10 @@ object TimeLimit {
     const val MIN_LIMIT = 5
     const val MAX_LIMIT = 720
     const val DEFAULT_BED_START = 20 * 60
-    const val DEFAULT_BED_MINUTES = 6 * 60
+    const val DEFAULT_BED_END = 7 * 60
+    const val DEFAULT_SUMMARY = 23 * 60 + 59
     const val MIN_BED = 30
-    const val MAX_BED = 16 * 60
+    const val MAX_BED = 23 * 60
 
     /** When the nightly lockdown that covers [now] ends, or 0 when [now] is not inside one. */
     fun bedEnd(s: Settings, now: Long, tz: TimeZone = TimeZone.getDefault()): Long {

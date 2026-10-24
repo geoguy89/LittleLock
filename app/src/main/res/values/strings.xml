@@ -162,7 +162,15 @@
     <string name="settings_time">Screen time</string>
     <string name="time_limit_switch">Limit screen time each day</string>
     <string name="time_limit_value">%1$d minutes a day</string>
-    <string name="time_extend_button">Extend time…</string>
+    <string name="time_extend_button">Extend playtime…</string>
+    <string name="time_extend_title">Extend playtime by</string>
+    <string name="time_extend_option">%1$s more</string>
+    <string name="time_extend_until_option">Until a set time…</string>
+    <string name="settings_notif_wrong_pin">Notify on a wrong PIN (also during bedtime)</string>
+    <string name="day_times_title">Daily summary and new day</string>
+    <string name="day_times_explain">The summary lists every app used and for how long. \"A new day\" is when the time used and the app list start over.</string>
+    <string name="summary_time_button">Send the daily summary at %1$s - tap to change</string>
+    <string name="day_start_button">A new day starts at %1$s - tap to change</string>
     <string name="time_lock_now">Lock now</string>
     <string name="time_unlock_now">Unlock</string>
     <string name="time_reset_used">Start today\'s time over</string>
@@ -178,7 +186,7 @@
 6. Type your Discord user name (or user id) below. Only the people you list are obeyed.
 7. Turn the switch on and tap Send a test message.
 
-Then type in that channel: status, usage, lock, unlock, extend 30, extend until 8:30pm, limit 90, limit off, bedtime 8pm 8h, bedtime off, reset, help.</string>
+Then type in that channel: status, usage, settings, lock now, unlock, extend 30, extend until 8:30pm, limit 90, limit off, bedtime 8pm to 7am, bedtime off, reset time, summary now, summary at 9pm, new day at 6am, help.</string>
     <string name="remote_switch">Listen for commands in Discord</string>
     <string name="remote_token_hint">Bot token</string>
     <string name="remote_channel_hint">Channel id</string>
@@ -191,7 +199,13 @@ Then type in that channel: status, usage, lock, unlock, extend 30, extend until 
     <string name="settings_gap">Space between apps</string>
     <string name="bed_switch">Bedtime lockdown: everything is off every night</string>
     <string name="bed_start_button">Starts at %1$s - tap to change</string>
-    <string name="bed_length_value">Lasts %1$s</string>
+    <string name="bed_end_button">Tablet wakes up at %1$s - tap to change</string>
+    <string name="bed_length_value">Locked for %1$s every night</string>
+    <string name="bed_end_button_title">When does the tablet wake up?</string>
+    <string name="summary_time_title">Send the daily summary at</string>
+    <string name="day_start_title">A new day starts at</string>
+    <string name="bed_same_time">Bedtime and wake-up can\'t be the same time</string>
+    <string name="bed_too_short">Bedtime has to last at least 30 minutes</string>
     <string name="bed_title">Good night!</string>
     <string name="bed_message">The tablet is sleeping now. It wakes up at %1$s.</string>
     <string name="settings_accent">Accent colour (top bar, buttons, headings)</string>

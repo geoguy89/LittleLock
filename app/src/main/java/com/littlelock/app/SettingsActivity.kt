@@ -95,7 +95,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun showUsage() {
         val data = Preferences.usageData(this)
-        val day = UsageLog.dayKey(System.currentTimeMillis())
+        val day = Preferences.today(this)
         val list = UsageLog.itemised(data, day, { Preferences.appLabel(this, it) }, bold = false)
         binding.tvUsageToday.text = if (list.isEmpty()) getString(R.string.usage_none) else UsageLog.headline(data, day) + "\n\n" + list
     }
@@ -177,6 +177,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.cbNotifAppLaunch.isChecked = Preferences.isAppLaunchNotifEnabled(this)
         binding.cbNotifDailySummary.isChecked = Preferences.isDailySummaryEnabled(this)
         binding.cbNotifBlockedApps.isChecked = Preferences.isBlockedAppsNotifEnabled(this)
+        binding.cbNotifWrongPin.isChecked = Preferences.isWrongPinNotifEnabled(this)
         binding.cbBlockShade.isChecked = Preferences.isBlockShade(this)
         binding.etKidName.setText(Preferences.getKidName(this))
         binding.etDiscordToken.setText(Preferences.getDiscordToken(this))
@@ -399,13 +400,40 @@ class SettingsActivity : AppCompatActivity() {
         binding.tvLimitValue.text = getString(R.string.time_limit_value, t.limitMinutes)
         binding.cbBed.isChecked = t.bedOn
         binding.btnBedStart.text = getString(R.string.bed_start_button, TimeLimit.minuteOfDayText(t.bedStartMin))
-        binding.sbBed.progress = ((t.bedMinutes - TimeLimit.MIN_BED) / 30).coerceIn(0, binding.sbBed.max)
-        binding.tvBedValue.text = getString(R.string.bed_length_value, TimeLimit.durationText(t.bedMinutes * 60_000L))
+        showBedtimeTimes(t)
+        binding.btnSummaryTime.text = getString(R.string.summary_time_button, TimeLimit.minuteOfDayText(t.summaryMin))
+        binding.btnDayStart.text = getString(R.string.day_start_button, TimeLimit.minuteOfDayText(t.dayStartMin))
         timeLoading = false
         showTimeStatus()
     }
 
     private var timeLoading = false
+
+    private fun showBedtimeTimes(t: TimeLimit.Settings) {
+        binding.btnBedStart.text = getString(R.string.bed_start_button, TimeLimit.minuteOfDayText(t.bedStartMin))
+        binding.btnBedEnd.text = getString(R.string.bed_end_button, TimeLimit.minuteOfDayText(t.bedEndMin))
+        binding.tvBedValue.text = getString(R.string.bed_length_value, TimeLimit.durationText(t.bedMinutes * 60_000L))
+    }
+
+    /** A clock picker for one of the time-of-day settings; [change] makes the new settings from the picked minute. */
+    private fun pickTime(titleRes: Int, current: Int, change: (TimeLimit.Settings, Int) -> TimeLimit.Settings, after: () -> Unit = {}) {
+        TimePickerDialog(this, { _, h, m ->
+            val minute = h * 60 + m
+            val next = change(Preferences.timeSettings(this), minute)
+            if (next.bedOn && next.bedStartMin == next.bedEndMin) {
+                Toast.makeText(this, R.string.bed_same_time, Toast.LENGTH_LONG).show()
+            } else if (next.bedOn && next.bedMinutes < TimeLimit.MIN_BED) {
+                Toast.makeText(this, R.string.bed_too_short, Toast.LENGTH_LONG).show()
+            } else {
+                saveTime { change(it, minute) }
+                loadTime()
+                after()
+            }
+        }, current / 60, current % 60, false).apply {
+            setTitle(titleRes)
+            show()
+        }
+    }
 
     private fun showTimeStatus() {
         val now = System.currentTimeMillis()
@@ -511,39 +539,28 @@ class SettingsActivity : AppCompatActivity() {
         })
         binding.cbBed.setOnCheckedChangeListener { _, on -> if (!timeLoading) saveTime { it.copy(bedOn = on) } }
         binding.btnBedStart.setOnClickListener {
-            val cur = Preferences.timeSettings(this).bedStartMin
-            TimePickerDialog(this, { _, h, m ->
-                saveTime { it.copy(bedStartMin = h * 60 + m) }
-                binding.btnBedStart.text = getString(R.string.bed_start_button, TimeLimit.minuteOfDayText(h * 60 + m))
-            }, cur / 60, cur % 60, false).apply {
-                setTitle(R.string.bed_switch)
-                show()
+            pickTime(R.string.bed_switch, Preferences.timeSettings(this).bedStartMin, { t, m -> t.copy(bedStartMin = m) })
+        }
+        binding.btnBedEnd.setOnClickListener {
+            pickTime(R.string.bed_end_button_title, Preferences.timeSettings(this).bedEndMin, { t, m -> t.copy(bedEndMin = m) })
+        }
+        binding.btnSummaryTime.setOnClickListener {
+            pickTime(R.string.summary_time_title, Preferences.timeSettings(this).summaryMin, { t, m -> t.copy(summaryMin = m) }) {
+                DailySummaryScheduler.scheduleDailySummary(this)
             }
         }
-        binding.sbBed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val minutes = TimeLimit.MIN_BED + progress * 30
-                binding.tvBedValue.text = getString(R.string.bed_length_value, TimeLimit.durationText(minutes * 60_000L))
-                if (fromUser && !timeLoading) saveTime { it.copy(bedMinutes = minutes) }
-            }
-
-            override fun onStartTrackingTouch(bar: SeekBar?) {}
-            override fun onStopTrackingTouch(bar: SeekBar?) {}
-        })
+        binding.btnDayStart.setOnClickListener {
+            pickTime(R.string.day_start_title, Preferences.timeSettings(this).dayStartMin, { t, m -> t.copy(dayStartMin = m) })
+        }
         binding.btnLockNow.setOnClickListener { saveTime { it.copy(forceLock = !it.forceLock, extendedUntil = if (!it.forceLock) 0L else it.extendedUntil) } }
         binding.btnResetUsed.setOnClickListener {
             saveTime { it.copy(usedMs = 0L) }
             Toast.makeText(this, R.string.time_reset_done, Toast.LENGTH_SHORT).show()
         }
         binding.btnExtendTime.setOnClickListener {
-            val soon = java.util.Calendar.getInstance().apply { add(java.util.Calendar.MINUTE, 30) }
-            TimePickerDialog(this, { _, h, m ->
-                val until = TimeLimit.nextOccurrence(System.currentTimeMillis(), h, m)
+            ExtendDialog.show(this) { until ->
                 saveTime { it.copy(extendedUntil = until) }
                 Toast.makeText(this, getString(R.string.time_extended, TimeLimit.clockText(until)), Toast.LENGTH_LONG).show()
-            }, soon.get(java.util.Calendar.HOUR_OF_DAY), soon.get(java.util.Calendar.MINUTE), false).apply {
-                setTitle(R.string.time_extend_until_title)
-                show()
             }
         }
         binding.btnRemoteTest.setOnClickListener { testRemote() }
@@ -662,6 +679,7 @@ class SettingsActivity : AppCompatActivity() {
         Preferences.setAppLaunchNotifEnabled(this, binding.cbNotifAppLaunch.isChecked)
         Preferences.setDailySummaryEnabled(this, binding.cbNotifDailySummary.isChecked)
         Preferences.setBlockedAppsNotifEnabled(this, binding.cbNotifBlockedApps.isChecked)
+        Preferences.setWrongPinNotifEnabled(this, binding.cbNotifWrongPin.isChecked)
         Preferences.setBlockShade(this, binding.cbBlockShade.isChecked)
         Preferences.setKidName(this, binding.etKidName.text?.toString().orEmpty())
         Preferences.setDiscordRemote(this, binding.etDiscordToken.text?.toString().orEmpty(), binding.etDiscordChannel.text?.toString().orEmpty(),

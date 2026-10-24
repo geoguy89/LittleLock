@@ -8,18 +8,11 @@ import android.util.Log
 
 /**
  * Schedules a daily alarm to send a usage summary via Discord webhook.
- * Default fire time: 11:59 PM.
+ * Fire time: set by the parent (11:59 PM unless changed).
  */
 object DailySummaryScheduler {
 
     private const val TAG = "DailySummaryScheduler"
-    private const val PREFS_NAME = "littlelock_prefs"
-    private const val KEY_DAILY_SUMMARY_HOUR = "daily_summary_hour"
-    private const val KEY_DAILY_SUMMARY_MINUTE = "daily_summary_minute"
-
-    private const val DEFAULT_HOUR = 23
-    private const val DEFAULT_MINUTE = 59
-
     const val ALARM_ACTION = "com.littlelock.app.DAILY_SUMMARY_ALARM"
 
     /**
@@ -28,9 +21,9 @@ object DailySummaryScheduler {
     fun scheduleDailySummary(context: Context) {
         // an alarm that never arrived (the tablet was off, or Android held it back) is sent now, before the next one is set
         maintain(context)
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val hour = prefs.getInt(KEY_DAILY_SUMMARY_HOUR, DEFAULT_HOUR)
-        val minute = prefs.getInt(KEY_DAILY_SUMMARY_MINUTE, DEFAULT_MINUTE)
+        val at = Preferences.getSummaryMin(context)          // the parent sets it (11:59 PM unless changed)
+        val hour = at / 60
+        val minute = at % 60
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, DailySummaryReceiver::class.java).apply {
@@ -129,16 +122,20 @@ object DailySummaryScheduler {
      * "today" at that moment would be the wrong (empty) day. Lists every app that was used and for how long.
      */
     fun handleDailySummary(context: Context, due: Long = Preferences.getSummaryDue(context)) {
-        val day = UsageLog.dayKey(if (due > 0) due else System.currentTimeMillis())
+        // a minute before the due time, so a summary due exactly when the new day starts reports the day that just ended
+        val day = UsageLog.dayKey((if (due > 0) due else System.currentTimeMillis()) - 60_000L, Preferences.getDayStart(context))
         if (!Preferences.getWebhookUrl(context).isNullOrEmpty() && Preferences.isDailySummaryEnabled(context)) {
             send(context, day)
         }
         Log.d(TAG, "Daily summary for $day handled")
     }
 
-    private fun send(context: Context, day: String) {
+    /** The summary of the day so far, sent right away (the parent asked for it). */
+    fun sendToday(context: Context) = send(context, Preferences.today(context), force = true)
+
+    private fun send(context: Context, day: String, force: Boolean = false) {
         val url = Preferences.getWebhookUrl(context)
-        if (url.isNullOrEmpty() || !Preferences.isDailySummaryEnabled(context)) {
+        if (url.isNullOrEmpty() || (!force && !Preferences.isDailySummaryEnabled(context))) {
             Preferences.setPendingSummary(context, null)
             return
         }

@@ -13,7 +13,7 @@ object DiscordRemote {
     /** A message as fetched from the channel. [id] is Discord's numeric message id (later = bigger). */
     class Msg(val id: String, val authorId: String, val isBot: Boolean, val content: String, val timestampMs: Long, val authorNames: Set<String> = emptySet())
 
-    class Outcome(val settings: TimeLimit.Settings, val replies: List<String>, val lastId: String)
+    class Outcome(val settings: TimeLimit.Settings, val replies: List<String>, val lastId: String, val actions: List<RemoteCommands.Action> = emptyList())
 
     /** A command older than this is stale (the tablet was off, or a message was left lying around) and is not run. */
     const val MAX_AGE_MS = 10 * 60_000L
@@ -39,6 +39,7 @@ object DiscordRemote {
     ): Outcome {
         var s = settings
         val replies = ArrayList<String>()
+        val actions = ArrayList<RemoteCommands.Action>()
         val last = lastId.toLongOrNull() ?: 0L
         for (m in messages.sortedBy { it.id.toLongOrNull() ?: 0L }) {
             if ((m.id.toLongOrNull() ?: 0L) <= last) continue
@@ -48,7 +49,8 @@ object DiscordRemote {
             val r = RemoteCommands.apply(s, cmd, now, tz, launches, apps)
             s = r.settings
             replies.add(r.reply)
+            r.action?.let { actions.add(it) }
         }
-        return Outcome(s, replies, newest(messages, lastId))
+        return Outcome(s, replies, newest(messages, lastId), actions)
     }
 }
