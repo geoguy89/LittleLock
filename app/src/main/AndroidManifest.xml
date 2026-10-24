@@ -81,6 +81,19 @@
             android:label="@string/settings_allowed_apps"
             android:theme="@style/Theme.LittleLock.Settings" />
 
+        <!-- Parent edits one child's profile, and the order of their apps -->
+        <activity
+            android:name=".ProfileEditorActivity"
+            android:exported="false"
+            android:label="@string/profile_edit_title"
+            android:theme="@style/Theme.LittleLock.Settings" />
+
+        <activity
+            android:name=".ArrangeAppsActivity"
+            android:exported="false"
+            android:label="@string/profile_arrange"
+            android:theme="@style/Theme.LittleLock.Settings" />
+
         <!-- Accessibility Service: sends apps that aren't allowed back home (same process as the app, so it sees
              the parent's signed-in session) -->
         <service

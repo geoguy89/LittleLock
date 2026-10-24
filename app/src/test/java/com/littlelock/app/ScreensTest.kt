@@ -26,8 +26,14 @@ class ScreensTest {
         TestApps.install("com.example.drawing", "Drawing")
         TestApps.install("com.example.music", "Music")
         TestApps.parentSetUp("com.example.puzzles", "com.example.drawing", "com.example.music")
-        Preferences.setWallpaper(TestApps.context, "")
+        Profiles.update(TestApps.context, Profiles.MAIN) { it.copy(wallpaper = "") }
         Preferences.saveTimeSettings(TestApps.context, TimeLimit.Settings(bedOn = false))
+    }
+
+    private fun editor(): ProfileEditorActivity {
+        ParentSession.unlock()
+        return Robolectric.buildActivity(ProfileEditorActivity::class.java,
+            android.content.Intent().putExtra(ProfileEditorActivity.EXTRA_ID, Profiles.MAIN)).setup().get()
     }
 
     private fun settings(): SettingsActivity {
@@ -37,27 +43,27 @@ class ScreensTest {
 
     @Test
     fun tapping_a_colour_swatch_changes_the_wallpaper() {
-        val a = settings()
+        val a = editor()
         val colors = a.findViewById<LinearLayout>(R.id.llColors)
         assertEquals(Look.COLORS.size, colors.childCount)
         colors.getChildAt(2).performClick()
-        assertEquals(Look.colorValue(Look.COLORS[2].second), Preferences.getWallpaper(TestApps.context))
+        assertEquals(Look.colorValue(Look.COLORS[2].second), Profiles.get(TestApps.context, Profiles.MAIN)!!.wallpaper)
     }
 
     @Test
     fun tapping_an_animal_or_a_photo_changes_the_wallpaper() {
-        val a = settings()
+        val a = editor()
         a.findViewById<LinearLayout>(R.id.llAnimals).getChildAt(1).performClick()
-        assertEquals(Look.animalValue(Look.ANIMALS[1].first), Preferences.getWallpaper(TestApps.context))
+        assertEquals(Look.animalValue(Look.ANIMALS[1].first), Profiles.get(TestApps.context, Profiles.MAIN)!!.wallpaper)
         a.findViewById<LinearLayout>(R.id.llPhotos).getChildAt(3).performClick()
-        assertEquals(Look.photoValue(Look.PHOTOS[3].first), Preferences.getWallpaper(TestApps.context))
+        assertEquals(Look.photoValue(Look.PHOTOS[3].first), Profiles.get(TestApps.context, Profiles.MAIN)!!.wallpaper)
     }
 
     @Test
     fun the_picked_wallpaper_shows_on_the_childs_home_screen_and_every_choice_has_a_picture() {
         Look.ANIMALS.forEach { assertTrue("animal ${it.first}", Wallpapers.resOf(it.first) != 0) }
         Look.PHOTOS.forEach { assertTrue("photo ${it.first}", Wallpapers.photoRes(it.first) != 0) }
-        Preferences.setWallpaper(TestApps.context, Look.colorValue(Look.COLORS[1].second))
+        Profiles.update(TestApps.context, Profiles.MAIN) { it.copy(wallpaper = Look.colorValue(Look.COLORS[1].second)) }
         val home = Robolectric.buildActivity(LauncherActivity::class.java).setup().get()
         val bg = home.findViewById<View>(R.id.root).background
         assertTrue(bg is android.graphics.drawable.ColorDrawable)

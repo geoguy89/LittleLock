@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 
 /**
- * The colour the parent picked for the top bar, buttons and headings. The picked colour is applied as a theme overlay
+ * The colour picked for the top bar, buttons and headings (each child profile has its own). The picked colour is applied as a theme overlay
  * (Accent.<Name> in themes.xml) before an activity draws, so every screen follows it.
  */
 object Accent {
@@ -26,13 +26,14 @@ object Accent {
 
     fun choice(key: String?): Choice = ALL.firstOrNull { it.key == key } ?: ALL.first()
 
-    fun current(context: Context): Choice = choice(Preferences.getAccent(context))
+    fun current(context: Context): Choice = choice(Profiles.look(context).accent)
 
     /** Call in onCreate before the layout is inflated. */
-    fun apply(activity: Activity) {
-        activity.theme.applyStyle(current(activity).styleRes, true)
+    fun apply(activity: Activity, key: String? = null) {
+        val choice = if (key == null) current(activity) else choice(key)
+        activity.theme.applyStyle(choice.styleRes, true)
         // the system bars themselves (status bar and the navigation buttons strip), for tablets that still draw them
-        val argb = current(activity).argb
+        val argb = choice.argb
         activity.window.statusBarColor = argb
         activity.window.navigationBarColor = argb
     }

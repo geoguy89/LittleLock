@@ -54,10 +54,6 @@ class SettingsActivity : AppCompatActivity() {
         if (!isHomeApp()) explainHomeSettings()
     }
 
-    private val pickPicture = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        if (uri != null) saveWallpaper(uri)
-    }
-
     private var loadingLook = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +85,7 @@ class SettingsActivity : AppCompatActivity() {
         Kiosk.disengage(this)  // the parent is in: lift the lockdown so Android's own settings can be opened
         showStatus()
         showUsage()
+        showProfiles()
     }
 
     // ------------------------------------------------------------------ what was used today
@@ -179,7 +176,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.cbNotifBlockedApps.isChecked = Preferences.isBlockedAppsNotifEnabled(this)
         binding.cbNotifWrongPin.isChecked = Preferences.isWrongPinNotifEnabled(this)
         binding.cbBlockShade.isChecked = Preferences.isBlockShade(this)
-        binding.etKidName.setText(Preferences.getKidName(this))
         binding.etDiscordToken.setText(Preferences.getDiscordToken(this))
         binding.etDiscordChannel.setText(Preferences.getDiscordChannel(this))
         binding.etDiscordUsers.setText(Preferences.getDiscordUsers(this))
@@ -194,51 +190,85 @@ class SettingsActivity : AppCompatActivity() {
         binding.tvVersion.text = getString(R.string.settings_version, version)
     }
 
-    /** Tile-size choices, wallpaper colours. */
+    /** The tablet-wide choices: how often usage is reported, when the screen sleeps. */
     private fun setupLook() {
         loadingLook = true
-        Look.TILES.forEachIndexed { i, tile ->
-            val rb = RadioButton(this).apply {
-                id = View.generateViewId()
-                text = "${tile.name}${if (i == Look.DEFAULT_TILE) " (default)" else ""}"
-                tag = i
-            }
-            binding.rgTile.addView(rb)
-            if (i == Preferences.getTileSize(this)) binding.rgTile.check(rb.id)
-        }
-        binding.rgTile.setOnCheckedChangeListener { group, checkedId ->
-            if (loadingLook) return@setOnCheckedChangeListener
-            val index = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
-            Preferences.setTileSize(this, index)
-        }
-        Layouts.NAMES.forEachIndexed { i, name ->
-            val rb = RadioButton(this).apply {
-                id = View.generateViewId()
-                text = name
-                tag = i
-            }
-            binding.rgLayout.addView(rb)
-            if (i == Preferences.getLayoutMode(this)) binding.rgLayout.check(rb.id)
-        }
-        binding.rgLayout.setOnCheckedChangeListener { group, checkedId ->
-            if (loadingLook) return@setOnCheckedChangeListener
-            val mode = group.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
-            Preferences.setLayoutMode(this, mode)
-        }
         val usageChoices = listOf(0, 1, 2, 4, 8)
         radioChoices(binding.rgUsage, usageChoices.map { if (it == 0) "Never" else if (it == 1) "1 hour" else "$it hours" }, usageChoices.indexOf(Preferences.getUsageEvery(this)).coerceAtLeast(0)) { Preferences.setUsageEvery(this, usageChoices[it]) }
         radioChoices(binding.rgIdle, Idle.CHOICES.map { Idle.name(it) }, Idle.CHOICES.indexOf(Preferences.getIdleMinutes(this)).coerceAtLeast(0)) { Preferences.setIdleMinutes(this, Idle.CHOICES[it]) }
-        radioChoices(binding.rgAlign, Layouts.ALIGN_NAMES, Preferences.getLayoutAlign(this)) { Preferences.setLayoutAlign(this, it) }
-        radioChoices(binding.rgGap, listOf("None", "Normal (default)", "Roomy", "Wide", "Very wide", "Huge"), Preferences.getLayoutGap(this)) { Preferences.setLayoutGap(this, it) }
-        addAccentPicker()
-        addColorPicker()
-        addPhotoPicker()
-        addAnimalPicker()
+        loadingLook = false
+    }
+
+    // ------------------------------------------------------------------ the children who use the tablet
+
+    /** One row per child (picture, name, Edit), and - with more than one - what happens when a child leaves or the tablet sits idle. */
+    private fun showProfiles() {
+        val list = Profiles.all(this)
+        val defaultId = Profiles.defaultId(this)
+        val d = resources.displayMetrics.density
+        binding.llProfiles.removeAllViews()
+        list.forEach { p ->
+            val row = android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, (8 * d).toInt(), 0, (8 * d).toInt())
+            }
+            val pic = android.widget.ImageView(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams((52 * d).toInt(), (52 * d).toInt()).apply { marginEnd = (12 * d).toInt() }
+                setBackgroundColor(getColor(R.color.littlelock_background))
+                contentDescription = null
+            }
+            Avatars.show(pic, p, hideWhenNone = false)
+            val notes = listOfNotNull(
+                if (list.size > 1 && p.id == defaultId) getString(R.string.profile_is_default) else null,
+                if (p.hasPin) getString(R.string.profile_has_pin) else null
+            )
+            val text = android.widget.TextView(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                text = p.name.ifEmpty { getString(R.string.profile_unnamed) } + if (notes.isEmpty()) "" else "\n" + notes.joinToString(" - ")
+                setTextColor(getColor(R.color.littlelock_text_primary))
+                textSize = 16f
+            }
+            val edit = android.widget.Button(this).apply {
+                setText(R.string.profile_edit)
+                setOnClickListener {
+                    startActivity(Intent(this@SettingsActivity, ProfileEditorActivity::class.java).putExtra(ProfileEditorActivity.EXTRA_ID, p.id))
+                }
+            }
+            row.addView(pic)
+            row.addView(text)
+            row.addView(edit)
+            binding.llProfiles.addView(row)
+        }
+        binding.btnAddProfile.visibility = if (list.size < Profiles.MAX) View.VISIBLE else View.GONE
+        binding.llSharing.visibility = if (list.size > 1) View.VISIBLE else View.GONE
+        if (list.size <= 1) return
+
+        loadingLook = true
+        val ids = listOf("") + list.map { it.id }
+        val names = listOf(getString(R.string.profiles_no_default)) + list.map { it.name.ifEmpty { getString(R.string.profile_unnamed) } }
+        radioChoices(binding.rgDefaultProfile, names, ids.indexOf(defaultId).coerceAtLeast(0)) {
+            Profiles.setDefaultId(this, ids[it])
+            showProfiles()
+        }
+        radioChoices(binding.rgExitTo, listOf(getString(R.string.profiles_exit_default), getString(R.string.profiles_exit_picker)),
+            if (Profiles.exitToPicker(this) || defaultId.isEmpty()) 1 else 0) {
+            if (it == 0 && Profiles.defaultId(this).isEmpty()) {
+                Toast.makeText(this, R.string.profiles_pick_default_first, Toast.LENGTH_LONG).show()
+                showProfiles()
+            } else {
+                Profiles.setExitToPicker(this, it == 1)
+            }
+        }
+        radioChoices(binding.rgProfileIdle, Profiles.IDLE_CHOICES.map { Profiles.idleName(it) },
+            Profiles.IDLE_CHOICES.indexOf(Profiles.idleMinutes(this)).coerceAtLeast(0)) { Profiles.setIdleMinutes(this, Profiles.IDLE_CHOICES[it]) }
         loadingLook = false
     }
 
     /** Fill [group] with one radio button per name, checking [selected]; [onPick] gets the chosen index. */
     private fun radioChoices(group: android.widget.RadioGroup, names: List<String>, selected: Int, onPick: (Int) -> Unit) {
+        group.setOnCheckedChangeListener(null)
+        group.removeAllViews()
         names.forEachIndexed { i, name ->
             val rb = RadioButton(this).apply {
                 id = View.generateViewId()
@@ -252,142 +282,6 @@ class SettingsActivity : AppCompatActivity() {
             if (loadingLook) return@setOnCheckedChangeListener
             val index = g.findViewById<RadioButton>(checkedId)?.tag as? Int ?: return@setOnCheckedChangeListener
             onPick(index)
-        }
-    }
-
-    /** What the child's home screen will look like: the current wallpaper, shown right here as it is picked. */
-    private fun refreshWallPreview() {
-        val value = Preferences.getWallpaper(this)
-        val iv = binding.ivWallPreview
-        val color = Look.colorOf(value)
-        when {
-            color != null -> {
-                iv.setImageDrawable(null)
-                iv.setBackgroundColor(color)
-            }
-            else -> {
-                val dm = resources.displayMetrics
-                val bmp = Wallpapers.forValue(this, value, (dm.widthPixels * 0.6f).toInt(), (140 * dm.density * 1.6f).toInt())
-                iv.setBackgroundColor(getColor(R.color.littlelock_background))
-                iv.setImageBitmap(bmp)
-            }
-        }
-        markColors(value)
-    }
-
-    private fun markColors(value: String) {
-        for (i in 0 until binding.llColors.childCount) {
-            val v = binding.llColors.getChildAt(i)
-            val mine = Look.colorValue(Look.COLORS[i].second)
-            v.alpha = if (value == mine || value.isEmpty()) 1f else 0.55f
-            v.scaleX = if (value == mine) 1.15f else 1f
-            v.scaleY = v.scaleX
-        }
-    }
-
-    /** Colour swatches: tap one and the wallpaper changes, with a preview right above. */
-    /** The accent colour of the top bar, buttons and headings: a row of swatches; the picked one has a ring. The screen redraws in it. */
-    private fun addAccentPicker() {
-        val d = resources.displayMetrics.density
-        val size = (46 * d).toInt()
-        val current = Accent.current(this).key
-        Accent.ALL.forEach { choice ->
-            val v = View(this).apply {
-                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((5 * d).toInt(), 0, (5 * d).toInt(), 0) }
-                background = android.graphics.drawable.GradientDrawable().apply {
-                    shape = android.graphics.drawable.GradientDrawable.OVAL
-                    setColor(choice.argb)
-                    setStroke(((if (choice.key == current) 4 else 2) * d).toInt(), if (choice.key == current) 0xFF000000.toInt() else 0x33000000)
-                }
-                contentDescription = choice.name
-                isClickable = true
-                isFocusable = true
-                setOnClickListener {
-                    if (choice.key != Accent.current(this@SettingsActivity).key) {
-                        Preferences.setAccent(this@SettingsActivity, choice.key)
-                        recreate()
-                    }
-                }
-            }
-            binding.llAccent.addView(v)
-        }
-    }
-
-    private fun addColorPicker() {
-        val d = resources.displayMetrics.density
-        val size = (46 * d).toInt()
-        Look.COLORS.forEach { (name, argb) ->
-            val v = View(this).apply {
-                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((5 * d).toInt(), 0, (5 * d).toInt(), 0) }
-                background = android.graphics.drawable.GradientDrawable().apply {
-                    shape = android.graphics.drawable.GradientDrawable.OVAL
-                    setColor(argb)
-                    setStroke((2 * d).toInt(), 0x33000000)
-                }
-                contentDescription = name
-                isClickable = true
-                isFocusable = true
-                setOnClickListener {
-                    Preferences.setWallpaper(this@SettingsActivity, Look.colorValue(argb))
-                    refreshWallPreview()
-                    Toast.makeText(this@SettingsActivity, name, Toast.LENGTH_SHORT).show()
-                }
-            }
-            binding.llColors.addView(v)
-        }
-        refreshWallPreview()
-    }
-
-    /** A row of built-in photos (public domain); tapping one makes it the wallpaper. */
-    private fun addPhotoPicker() {
-        val d = resources.displayMetrics.density
-        val size = (92 * d).toInt()
-        Look.PHOTOS.forEach { (key, name) ->
-            val iv = android.widget.ImageView(this).apply {
-                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((4 * d).toInt(), 0, (4 * d).toInt(), 0) }
-                scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
-                setImageBitmap(thumbnail(Wallpapers.photoRes(key), (size * 1.0f).toInt()))
-                contentDescription = name
-                isClickable = true
-                isFocusable = true
-                setOnClickListener {
-                    Preferences.setWallpaper(this@SettingsActivity, Look.photoValue(key))
-                    refreshWallPreview()
-                    Toast.makeText(this@SettingsActivity, name, Toast.LENGTH_SHORT).show()
-                }
-            }
-            binding.llPhotos.addView(iv)
-        }
-    }
-
-    /** A small version of a built-in photo for the picker (the full-size JPEG is not decoded for a thumbnail). */
-    private fun thumbnail(res: Int, px: Int): Bitmap? {
-        val o = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeResource(resources, res, o)
-        var sample = 1
-        while (o.outWidth / (sample * 2) >= px) sample *= 2
-        return BitmapFactory.decodeResource(resources, res, BitmapFactory.Options().apply { inSampleSize = sample })
-    }
-
-    /** A row of the cartoon animals to choose from; tapping one makes it the wallpaper. */
-    private fun addAnimalPicker() {
-        val d = resources.displayMetrics.density
-        val size = (92 * d).toInt()
-        Look.ANIMALS.forEach { (key, name) ->
-            val iv = android.widget.ImageView(this).apply {
-                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).apply { setMargins((4 * d).toInt(), 0, (4 * d).toInt(), 0) }
-                scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
-                setImageResource(Wallpapers.resOf(key))
-                contentDescription = name
-                isClickable = true
-                isFocusable = true
-                setOnClickListener {
-                    Preferences.setWallpaper(this@SettingsActivity, Look.animalValue(key))
-                    refreshWallPreview()
-                    Toast.makeText(this@SettingsActivity, name, Toast.LENGTH_SHORT).show()
-                }
-            }
-            binding.llAnimals.addView(iv)
         }
     }
 
@@ -449,7 +343,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun showStatus() {
         val kidMode = Preferences.isKidMode(this)
-        val allowed = Preferences.getAllowedApps(this).size
+        val allowed = Profiles.allowedEverywhere(this).size
         binding.tvKidModeStatus.text = if (kidMode) {
             resources.getQuantityString(R.plurals.settings_kid_mode_on_status, allowed, allowed)
         } else {
@@ -471,9 +365,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.btnAllowedApps.setOnClickListener {
-            startActivity(Intent(this, AllowedAppsActivity::class.java))
-        }
+        binding.btnAddProfile.setOnClickListener { addProfile() }
         binding.btnSetHome.setOnClickListener { requestHome() }
         binding.btnKidMode.setOnClickListener {
             val turnOn = !Preferences.isKidMode(this)
@@ -501,13 +393,6 @@ class SettingsActivity : AppCompatActivity() {
         }
         binding.btnEnableAccessibility.setOnClickListener {
             accessibilityResult.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-        }
-        binding.btnPickWallpaper.setOnClickListener { pickPicture.launch("image/*") }
-        binding.btnClearWallpaper.setOnClickListener {
-            Preferences.setWallpaper(this, "")
-            File(filesDir, LauncherActivity.WALLPAPER_FILE).delete()
-            refreshWallPreview()
-            Toast.makeText(this, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
         }
         binding.btnCopyAdb.setOnClickListener {
             getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText("adb", Kiosk.adbCommand(packageName)))
@@ -565,6 +450,14 @@ class SettingsActivity : AppCompatActivity() {
         }
         binding.btnRemoteTest.setOnClickListener { testRemote() }
         binding.btnBack.setOnClickListener { leave() }
+    }
+
+    /** A new child: an empty profile, opened at once so the parent can name it and choose their apps. */
+    private fun addProfile() {
+        val n = Profiles.all(this).size + 1
+        val p = Profiles.add(this, getString(R.string.profile_new_name, n)) ?: return
+        showProfiles()
+        startActivity(Intent(this, ProfileEditorActivity::class.java).putExtra(ProfileEditorActivity.EXTRA_ID, p.id))
     }
 
     private fun leave() {
@@ -639,25 +532,6 @@ class SettingsActivity : AppCompatActivity() {
         false
     }
 
-    /** Copies the chosen picture into the app (scaled down to fit a phone screen) and uses it as the wallpaper. */
-    private fun saveWallpaper(uri: Uri) {
-        try {
-            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
-            var sample = 1
-            while (bounds.outWidth / sample > 2000 || bounds.outHeight / sample > 2000) sample *= 2
-            val bmp = contentResolver.openInputStream(uri)?.use {
-                BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample })
-            } ?: throw IllegalStateException("unreadable")
-            File(filesDir, LauncherActivity.WALLPAPER_FILE).outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 88, it) }
-            Preferences.setWallpaper(this, Look.IMAGE)
-            refreshWallPreview()
-            Toast.makeText(this, R.string.settings_wallpaper_done, Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, R.string.settings_wallpaper_failed, Toast.LENGTH_LONG).show()
-        }
-    }
-
     /** Saves the Discord fields and posts a hello in the channel, so the parent knows it works. */
     private fun testRemote() {
         saveSettings()
@@ -681,7 +555,6 @@ class SettingsActivity : AppCompatActivity() {
         Preferences.setBlockedAppsNotifEnabled(this, binding.cbNotifBlockedApps.isChecked)
         Preferences.setWrongPinNotifEnabled(this, binding.cbNotifWrongPin.isChecked)
         Preferences.setBlockShade(this, binding.cbBlockShade.isChecked)
-        Preferences.setKidName(this, binding.etKidName.text?.toString().orEmpty())
         Preferences.setDiscordRemote(this, binding.etDiscordToken.text?.toString().orEmpty(), binding.etDiscordChannel.text?.toString().orEmpty(),
             binding.etDiscordUsers.text?.toString().orEmpty())
         Preferences.setRemoteOn(this, binding.cbRemote.isChecked)

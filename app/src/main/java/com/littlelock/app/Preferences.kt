@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import java.util.Base64
 
 /**
- * SharedPreferences helper for the app's settings, the allowed apps and the (hashed) parent PIN.
+ * SharedPreferences helper for the app's settings and the (hashed) parent PIN. What belongs to one child (apps, look, name) is in [Profiles].
  */
 object Preferences {
 
@@ -20,21 +20,13 @@ object Preferences {
     private const val KEY_PIN_SALT = "pin_salt"
     private const val KEY_FAILED_ATTEMPTS = "pin_failed_attempts"
     private const val KEY_LOCKOUT_UNTIL = "pin_lockout_until"
-    private const val KEY_ALLOWED_APPS = "allowed_apps"
     private const val KEY_KID_MODE = "kid_mode"
-    private const val KEY_KID_NAME = "kid_name"
-    private const val KEY_TILE_SIZE = "tile_size"
-    private const val KEY_WALLPAPER = "wallpaper"
     private const val KEY_BLOCK_SHADE = "block_shade"
     private const val KEY_KIOSK = "kiosk"
-    private const val KEY_LAYOUT = "layout_mode"
     private const val KEY_USAGE_EVERY = "usage_every_h"
     private const val KEY_USAGE_LAST = "usage_last_sent"
     private const val KEY_USAGE_LAST_USED = "usage_last_used"
     private const val KEY_IDLE = "idle_minutes"
-    private const val KEY_ACCENT = "accent"
-    private const val KEY_ALIGN = "layout_align"
-    private const val KEY_GAP = "layout_gap"
     private const val KEY_LIMIT_ON = "limit_on"
     private const val KEY_LIMIT_MIN = "limit_minutes"
     private const val KEY_USED_MS = "used_ms"
@@ -124,40 +116,11 @@ object Preferences {
         getPrefs(context).edit().putInt(KEY_FAILED_ATTEMPTS, 0).putLong(KEY_LOCKOUT_UNTIL, 0L).apply()
     }
 
-    /** Package names of the apps the parent allowed. Empty until the parent picks some. */
-    fun getAllowedApps(context: Context): Set<String> =
-        getPrefs(context).getStringSet(KEY_ALLOWED_APPS, emptySet())?.toSet() ?: emptySet()
-
-    fun setAllowedApps(context: Context, packages: Set<String>) {
-        getPrefs(context).edit().putStringSet(KEY_ALLOWED_APPS, HashSet(packages)).apply()
-    }
-
     /** Kid mode on: only allowed apps are shown and other apps are sent back home. On by default. */
     fun isKidMode(context: Context): Boolean = getPrefs(context).getBoolean(KEY_KID_MODE, true)
 
     fun setKidMode(context: Context, on: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_KID_MODE, on).apply()
-    }
-
-    /** The child's name for the greeting on the home screen ("" = none). */
-    fun getKidName(context: Context): String = getPrefs(context).getString(KEY_KID_NAME, "") ?: ""
-
-    fun setKidName(context: Context, name: String) {
-        getPrefs(context).edit().putString(KEY_KID_NAME, name.trim().take(24)).apply()
-    }
-
-    /** Index into [Look.TILES]: how big the app tiles are on the home screen. */
-    fun getTileSize(context: Context): Int = getPrefs(context).getInt(KEY_TILE_SIZE, Look.DEFAULT_TILE)
-
-    fun setTileSize(context: Context, index: Int) {
-        getPrefs(context).edit().putInt(KEY_TILE_SIZE, index.coerceIn(0, Look.TILES.lastIndex)).apply()
-    }
-
-    /** "" (the plain background), a colour ("color:ffd9d0ff") or [Look.IMAGE] (a picture the parent chose). */
-    fun getWallpaper(context: Context): String = getPrefs(context).getString(KEY_WALLPAPER, "") ?: ""
-
-    fun setWallpaper(context: Context, value: String) {
-        getPrefs(context).edit().putString(KEY_WALLPAPER, value).apply()
     }
 
     /** Keep the child out of the notification shade and quick settings while kid mode is on. On by default. */
@@ -172,13 +135,6 @@ object Preferences {
 
     fun setKioskOn(context: Context, on: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_KIOSK, on).apply()
-    }
-
-    /** [Layouts.GRID] (the picked size, centred) or [Layouts.AUTO] (the biggest tiles that fit, centred). */
-    fun getLayoutMode(context: Context): Int = getPrefs(context).getInt(KEY_LAYOUT, Layouts.GRID)
-
-    fun setLayoutMode(context: Context, mode: Int) {
-        getPrefs(context).edit().putInt(KEY_LAYOUT, if (mode == Layouts.AUTO) Layouts.AUTO else Layouts.GRID).apply()
     }
 
     /** Hours between usage updates posted to the Discord channel (0 = none). */
@@ -201,27 +157,6 @@ object Preferences {
 
     fun setIdleMinutes(context: Context, minutes: Int) {
         getPrefs(context).edit().putInt(KEY_IDLE, if (minutes in Idle.CHOICES) minutes else Idle.DEFAULT_MINUTES).apply()
-    }
-
-    /** The key of the accent colour the parent picked (see [Accent]). */
-    fun getAccent(context: Context): String = getPrefs(context).getString(KEY_ACCENT, Accent.DEFAULT) ?: Accent.DEFAULT
-
-    fun setAccent(context: Context, key: String) {
-        getPrefs(context).edit().putString(KEY_ACCENT, Accent.choice(key).key).apply()
-    }
-
-    /** [Layouts.TOP], [Layouts.MIDDLE] or [Layouts.BOTTOM]: where the block of apps sits down the screen. */
-    fun getLayoutAlign(context: Context): Int = getPrefs(context).getInt(KEY_ALIGN, Layouts.MIDDLE).coerceIn(Layouts.TOP, Layouts.BOTTOM)
-
-    fun setLayoutAlign(context: Context, align: Int) {
-        getPrefs(context).edit().putInt(KEY_ALIGN, align.coerceIn(Layouts.TOP, Layouts.BOTTOM)).apply()
-    }
-
-    /** Index into [Layouts.GAP_DP]: the space between the app tiles. */
-    fun getLayoutGap(context: Context): Int = getPrefs(context).getInt(KEY_GAP, Layouts.DEFAULT_GAP).coerceIn(0, Layouts.GAP_DP.lastIndex)
-
-    fun setLayoutGap(context: Context, step: Int) {
-        getPrefs(context).edit().putInt(KEY_GAP, step.coerceIn(0, Layouts.GAP_DP.lastIndex)).apply()
     }
 
     /** When "today" starts over, as minutes after midnight (the parent can move it; midnight by default). */

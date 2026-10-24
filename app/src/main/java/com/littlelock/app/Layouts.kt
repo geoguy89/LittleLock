@@ -84,7 +84,59 @@ object Layouts {
         return arrange(count, availW, availH, baseW, baseH, gap, 1f, align)
     }
 
-    fun forMode(mode: Int, count: Int, availW: Int, availH: Int, baseW: Int, baseH: Int, gap: Int, align: Int = MIDDLE): Result =
-        if (mode == AUTO) autoFit(count, availW, availH, baseW, baseH, gap, align = align)
+    /**
+     * Positions when the parent set the rows: [segments] is how many apps each chosen row holds. Each row is centred; a row that
+     * is too wide for the screen is split into even lines, like [arrange] does.
+     */
+    fun arrangeRows(segments: List<Int>, availW: Int, availH: Int, cellW: Int, cellH: Int, gap: Int, scale: Float = 1f, align: Int = MIDDLE): Result {
+        val total = segments.sum()
+        if (total <= 0 || cellW <= 0 || cellH <= 0) return Result(0, 0, cellW, cellH, emptyList(), 0, 0, scale)
+        val maxCols = max(1, (availW + gap) / (cellW + gap))
+        val lines = ArrayList<Int>()
+        for (n in segments) {
+            if (n <= 0) continue
+            val inSegment = ceil(n / maxCols.toDouble()).toInt()
+            val cols = ceil(n / inSegment.toDouble()).toInt()
+            var left = n
+            while (left > 0) {
+                lines.add(min(cols, left))
+                left -= cols
+            }
+        }
+        val rows = lines.size
+        val widest = lines.maxOrNull() ?: 0
+        val contentH = rows * cellH + (rows - 1) * gap
+        val contentW = widest * cellW + (widest - 1) * gap
+        val spare = availH - contentH
+        val top = if (spare <= 0) 0 else when (align) {
+            TOP -> 0
+            BOTTOM -> spare
+            else -> spare / 2
+        }
+        val cells = ArrayList<Cell>(total)
+        lines.forEachIndexed { r, inRow ->
+            val rowW = inRow * cellW + (inRow - 1) * gap
+            val left = max(0, (availW - rowW) / 2)
+            for (c in 0 until inRow) cells.add(Cell(left + c * (cellW + gap), top + r * (cellH + gap)))
+        }
+        return Result(widest, rows, cellW, cellH, cells, contentW, contentH, scale)
+    }
+
+    fun autoFitRows(segments: List<Int>, availW: Int, availH: Int, baseW: Int, baseH: Int, gap: Int, maxScale: Float = 2.4f, align: Int = MIDDLE): Result {
+        var s = maxScale
+        while (s > 1.0f) {
+            val r = arrangeRows(segments, availW, availH, (baseW * s).toInt(), (baseH * s).toInt(), gap, s, align)
+            if (r.contentH <= availH && r.contentW <= availW) return r
+            s -= 0.1f
+        }
+        return arrangeRows(segments, availW, availH, baseW, baseH, gap, 1f, align)
+    }
+
+    /** [segments]: the rows the parent chose (how many apps in each), or null to fill the screen row by row. */
+    fun forMode(mode: Int, count: Int, availW: Int, availH: Int, baseW: Int, baseH: Int, gap: Int, align: Int = MIDDLE, segments: List<Int>? = null): Result =
+        if (segments != null && segments.sum() == count) {
+            if (mode == AUTO) autoFitRows(segments, availW, availH, baseW, baseH, gap, align = align)
+            else arrangeRows(segments, availW, availH, baseW, baseH, gap, 1f, align)
+        } else if (mode == AUTO) autoFit(count, availW, availH, baseW, baseH, gap, align = align)
         else arrange(count, availW, availH, baseW, baseH, gap, 1f, align)
 }

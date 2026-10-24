@@ -36,7 +36,7 @@ class HomeScreenReviewTest {
     @Test
     fun the_grid_picks_up_changes_to_the_allowed_list() {
         val controller = Robolectric.buildActivity(LauncherActivity::class.java).setup()
-        Preferences.setAllowedApps(TestApps.context, setOf("com.example.drawing"))
+        Profiles.update(TestApps.context, Profiles.MAIN) { it.copy(allowed = setOf("com.example.drawing")) }
         controller.pause().resume()
         val grid = controller.get().findViewById<AppGrid>(R.id.gridApps)
         assertEquals(1, grid.childCount)

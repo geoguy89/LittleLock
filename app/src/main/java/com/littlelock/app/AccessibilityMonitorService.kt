@@ -127,7 +127,7 @@ class AccessibilityMonitorService : AccessibilityService() {
             return
         }
 
-        if (Enforcer.shouldSendHome(packageName, this.packageName, Preferences.getAllowedApps(this),
+        if (Enforcer.shouldSendHome(packageName, this.packageName, Profiles.allowedNow(this),
                 keyboardPackages(), Preferences.isKidMode(this), ParentSession.isUnlocked())) {
             sendHome(packageName, event)
             return
@@ -207,7 +207,20 @@ class AccessibilityMonitorService : AccessibilityService() {
         handler.removeCallbacks(timeTick)
         lastTick = 0L
         handler.post(timeTick)
+        try {
+            androidx.core.content.ContextCompat.registerReceiver(this, screenOff, android.content.IntentFilter(Intent.ACTION_SCREEN_OFF),
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED)
+        } catch (e: Exception) {
+            Log.w(TAG, "screen-off receiver: ${e.message}")
+        }
         returnHomeAfterUpdate()
+    }
+
+    /** The screen going off starts the idle count for the profiles - the tablet may sleep too deeply to tick while it is off. */
+    private val screenOff = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            Profiles.markIdle(this@AccessibilityMonitorService)
+        }
     }
 
     /** A self-update restarts LittleLock; bring the child's home screen back instead of leaving a blank screen. */
@@ -230,6 +243,7 @@ class AccessibilityMonitorService : AccessibilityService() {
         handler.removeCallbacks(timeTick)
         hideCover()
         removeShield()
+        try { unregisterReceiver(screenOff) } catch (_: IllegalArgumentException) {}
         remoteWorker.shutdown()
         super.onDestroy()
     }
@@ -263,6 +277,11 @@ class AccessibilityMonitorService : AccessibilityService() {
             killedForLock = false
         }
         sleepWhenIdle(now, kid && !parent)
+        if (kid && !parent && Profiles.tickIdle(this, isScreenOn() && appInFront != null, now)) {
+            // nothing was happening for the parent's idle time: the tablet goes back to the default profile (or the picker)
+            startActivity(Intent(this, LauncherActivity::class.java).addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+        }
         if (kid) sendUsageUpdate(now)
         DailySummaryScheduler.maintain(this, now)
         pollRemote(now)
@@ -335,7 +354,7 @@ class AccessibilityMonitorService : AccessibilityService() {
         killedForLock = true
         handler.postDelayed({
             val am = getSystemService(ActivityManager::class.java)
-            Preferences.getAllowedApps(this).forEach { pkg ->
+            Profiles.allowedEverywhere(this).forEach { pkg ->
                 try {
                     am?.killBackgroundProcesses(pkg)
                 } catch (e: Exception) {

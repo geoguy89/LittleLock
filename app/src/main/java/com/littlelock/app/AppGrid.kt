@@ -85,6 +85,9 @@ class AppGrid @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
     var align: Int = Layouts.MIDDLE
     var gapDp: Int = Layouts.gapDp(Layouts.DEFAULT_GAP)
     var tile: Look.Tile = Look.tile(Look.DEFAULT_TILE)
+
+    /** When the parent set the rows: how many apps each row holds (null = fill the screen row by row). */
+    var segments: List<Int>? = null
     private var result: Layouts.Result? = null
 
     private val density get() = resources.displayMetrics.density
@@ -112,7 +115,7 @@ class AppGrid @JvmOverloads constructor(context: Context, attrs: AttributeSet? =
         val availW = max(0, w - paddingLeft - paddingRight)
         val availH = if (hMode == MeasureSpec.UNSPECIFIED) resources.displayMetrics.heightPixels / 2 else max(0, hSize - paddingTop - paddingBottom)
         val gap = (gapDp * density).toInt()
-        val r = Layouts.forMode(mode, childCount, availW, availH, baseW(), baseH(), gap, align)
+        val r = Layouts.forMode(mode, childCount, availW, availH, baseW(), baseH(), gap, align, segments)
         result = r
         for (i in 0 until childCount) {
             val c = getChildAt(i) as AppTile

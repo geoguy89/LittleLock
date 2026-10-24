@@ -105,7 +105,7 @@ object Wallpapers {
      * The picture for a stored wallpaper value - an animal, a built-in photo, or the parent's own picture - fitted to a
      * [width] x [height] screen; null for a colour, no wallpaper, or something that can't be read.
      */
-    fun forValue(context: Context, value: String, width: Int, height: Int): Bitmap? {
+    fun forValue(context: Context, value: String, width: Int, height: Int, profileId: String = Profiles.MAIN): Bitmap? {
         Look.animalOf(value)?.let { return render(context, it, width, height) }
         Look.photoOf(value)?.let { key ->
             val res = photoRes(key)
@@ -115,7 +115,7 @@ object Wallpapers {
             return cover(bmp, width, height)
         }
         if (value == Look.IMAGE) {
-            val file = File(context.filesDir, LauncherActivity.WALLPAPER_FILE)
+            val file = Profiles.wallpaperFile(context, profileId)
             val bmp = if (file.isFile) BitmapFactory.decodeFile(file.path) else null
             return bmp?.let { cover(it, width, height) }
         }

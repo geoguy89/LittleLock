@@ -83,8 +83,9 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
 ### First run: PIN, allowed apps, home screen
 
 1. Install LittleLock and open it. It asks a parent to **set a 4-digit PIN** (typed twice).
-2. Parent settings open. Tap **Choose allowed apps** and tick the apps your child may use. Only those show on the
-   home screen - nothing else, not Settings or the Play Store (they're marked if you do tick them).
+2. Parent settings open. Under **Children on this tablet** tap **Edit**, then **Choose allowed apps**, and tick the apps
+   your child may use. Only those show on the home screen - nothing else, not Settings or the Play Store (they're marked
+   if you do tick them). The same screen sets their name, picture, colours and wallpaper.
 3. Tap **Make LittleLock the home screen** and pick LittleLock, so the Home button always comes back here.
 4. Tap **Turn on blocking (Accessibility)** and switch LittleLock on: then any app that isn't allowed (opened from a
    notification, for example) goes straight back to the home screen.
@@ -246,3 +247,20 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 - Step-by-step Discord bot instructions in Settings (Developer Portal > OAuth2 > URL Generator, tick "bot", View Channels / Send Messages / Read Message History).
 - The Discord webhook, the notification choices and the remote-control bot now sit together in Settings.
 - New Discord command `usage` (also `stats`): today's used time, time left, apps opened and the lock state, whenever you ask.
+
+## 1.9.0 - several children on one tablet (profiles)
+
+- **Profiles**: Settings > Children on this tablet > **Add a child**. Each child has their own name, picture, apps, colours,
+  wallpaper, app size/layout and (optionally) their own 4-digit PIN. With one child nothing changes; with more, the home screen
+  asks **Who's using the tablet?** (a picture and name for each child).
+- **A child's PIN is never the parent's** (and never another child's). A profile with no PIN opens with a tap. A child inside
+  their own profile has an **Exit** button and **no way into parent settings** - the parent button only shows on the default
+  profile and on the picker.
+- **Default profile**: the one the tablet goes back to. **Exit** (and the idle return) lead either to the default profile or to the
+  picker - the parent chooses. The default profile can be left without a PIN.
+- **Idle return**: when nothing has been in use for 30 minutes (home screen, or the screen asleep - choices 10 min to 2 hours, or
+  never) the tablet goes back by itself. Watching a show or playing a game is "in use" and is never cut off.
+- **Profile pictures**: sixteen cartoon faces (drawn by `tools/gen_avatars.py`) or the parent's own picture, shown beside the name.
+- **Order and rows**: Edit > Order and rows moves the apps with arrows and starts a new row where you tick "New row".
+- The app blocker follows the child in front: only their apps open; the lockdown (kiosk) lets through everyone's.
+- The old single-child settings are carried over as the first profile.

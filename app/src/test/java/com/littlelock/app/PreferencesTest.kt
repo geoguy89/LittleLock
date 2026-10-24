@@ -45,11 +45,11 @@ class PreferencesTest {
 
     @Test
     fun allowed_apps_and_kid_mode_are_remembered() {
-        assertTrue(Preferences.getAllowedApps(context).isEmpty())
+        assertTrue(Profiles.allowedNow(context).isEmpty())
         assertTrue("kid mode is on by default", Preferences.isKidMode(context))
-        Preferences.setAllowedApps(context, setOf("a.b", "c.d"))
+        Profiles.update(context, Profiles.MAIN) { it.copy(allowed = setOf("a.b", "c.d")) }
         Preferences.setKidMode(context, false)
-        assertEquals(setOf("a.b", "c.d"), Preferences.getAllowedApps(context))
+        assertEquals(setOf("a.b", "c.d"), Profiles.allowedNow(context))
         assertFalse(Preferences.isKidMode(context))
     }
 

@@ -242,7 +242,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Make it theirs -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -259,36 +258,46 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_look"
+                    android:text="@string/profiles_title"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_marginTop="8dp"
+                    android:text="@string/profiles_explain"
+                    android:textColor="@color/littlelock_text_secondary" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etKidName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/settings_kid_name_hint"
-                        android:inputType="textPersonName|textCapWords"
-                        android:maxLength="24" />
-                </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:id="@+id/llProfiles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <Button
+                    android:id="@+id/btnAddProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/profiles_add" />
+
+                <LinearLayout
+                    android:id="@+id/llSharing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/settings_tile_size"
+                    android:text="@string/profiles_default"
                     android:textColor="@color/littlelock_text_primary"
                     android:textStyle="bold" />
 
                 <RadioGroup
-                    android:id="@+id/rgTile"
+                    android:id="@+id/rgDefaultProfile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
@@ -297,33 +306,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/settings_accent"
-                    android:textColor="@color/littlelock_text_primary"
-                    android:textStyle="bold" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/llAccent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="6dp" />
-                </HorizontalScrollView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/settings_layout"
+                    android:text="@string/profiles_exit"
                     android:textColor="@color/littlelock_text_primary"
                     android:textStyle="bold" />
 
                 <RadioGroup
-                    android:id="@+id/rgLayout"
+                    android:id="@+id/rgExitTo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
@@ -332,6 +320,44 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:text="@string/profiles_idle"
+                    android:textColor="@color/littlelock_text_primary"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/rgProfileIdle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_tablet"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="@string/settings_idle"
                     android:textColor="@color/littlelock_text_primary"
                     android:textStyle="bold" />
@@ -342,124 +368,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/settings_align"
-                    android:textColor="@color/littlelock_text_primary"
-                    android:textStyle="bold" />
-
-                <RadioGroup
-                    android:id="@+id/rgAlign"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/settings_gap"
-                    android:textColor="@color/littlelock_text_primary"
-                    android:textStyle="bold" />
-
-                <RadioGroup
-                    android:id="@+id/rgGap"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/settings_wallpaper"
-                    android:textColor="@color/littlelock_text_primary"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:id="@+id/ivWallPreview"
-                    android:layout_width="match_parent"
-                    android:layout_height="140dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@color/littlelock_background"
-                    android:contentDescription="@null"
-                    android:scaleType="centerCrop" />
-
-                <Button
-                    android:id="@+id/btnPickWallpaper"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_wallpaper_pick" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/settings_wallpaper_color"
-                    android:textColor="@color/littlelock_text_secondary" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/llColors"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="6dp" />
-                </HorizontalScrollView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/settings_animals"
-                    android:textColor="@color/littlelock_text_secondary" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/llAnimals"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="4dp" />
-                </HorizontalScrollView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/settings_photos"
-                    android:textColor="@color/littlelock_text_secondary" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:id="@+id/llPhotos"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="4dp" />
-                </HorizontalScrollView>
-
-                <Button
-                    android:id="@+id/btnClearWallpaper"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:text="@string/settings_wallpaper_clear" />
-
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/cbBlockShade"
                     android:layout_width="match_parent"
@@ -468,6 +376,7 @@
                     android:text="@string/settings_block_shade" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
 
           <!-- Parental controls -->
         <com.google.android.material.card.MaterialCardView
@@ -497,13 +406,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textColor="@color/littlelock_text_secondary" />
-
-                <Button
-                    android:id="@+id/btnAllowedApps"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/settings_allowed_apps" />
 
                 <Button
                     android:id="@+id/btnSetHome"
