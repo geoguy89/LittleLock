@@ -264,3 +264,9 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 - **Order and rows**: Edit > Order and rows moves the apps with arrows and starts a new row where you tick "New row".
 - The app blocker follows the child in front: only their apps open; the lockdown (kiosk) lets through everyone's.
 - The old single-child settings are carried over as the first profile.
+- **Parent override of a PIN**: the parent can set, change or clear any child's PIN in Edit, and the parent's own PIN also opens any
+  child's profile (so a forgotten child PIN never locks them out).
+- **Screen-time limits**: with several children, Settings > Screen time asks whether limits apply to **the whole tablet** or to
+  **each child separately**. Per child, each has their own daily limit, bedtime, lock and extension, and time is counted for the child
+  signed in (the picker is never locked; a child's lock shows when they open their profile). The daily-summary time and when the
+  day starts stay one setting. Discord commands change the child using the tablet (or the default profile) and say whose.

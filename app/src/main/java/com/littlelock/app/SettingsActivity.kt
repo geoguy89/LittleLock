@@ -287,7 +287,8 @@ class SettingsActivity : AppCompatActivity() {
 
     /** The screen-time controls, from what is saved. */
     private fun loadTime() {
-        val t = Preferences.timeSettings(this)
+        showLimitScope()
+        val t = timeNow()
         timeLoading = true
         binding.cbLimit.isChecked = t.limitOn
         binding.sbLimit.progress = ((t.limitMinutes - TimeLimit.MIN_LIMIT) / 5).coerceIn(0, binding.sbLimit.max)
@@ -303,6 +304,40 @@ class SettingsActivity : AppCompatActivity() {
 
     private var timeLoading = false
 
+    /** Whose screen time the controls change: a child's own when limits are per child, otherwise the tablet's. */
+    private var timeChild: String? = null
+
+    private fun timeNow(now: Long = System.currentTimeMillis()): TimeLimit.Settings = Preferences.timeSettings(this, now, timeChild)
+
+    /** Limits for the whole tablet or for each child, and (per child) whose limits are on show. */
+    private fun showLimitScope() {
+        val list = Profiles.all(this)
+        binding.llLimitScope.visibility = if (list.size > 1) View.VISIBLE else View.GONE
+        if (list.size <= 1) {
+            timeChild = null
+            return
+        }
+        val perChild = Profiles.limitsPerChild(this)
+        if (!perChild) timeChild = null
+        else if (list.none { it.id == timeChild }) timeChild = Profiles.timeTarget(this).id
+        val wasLoading = loadingLook
+        loadingLook = true
+        radioChoices(binding.rgLimitScope, listOf(getString(R.string.limits_scope_device), getString(R.string.limits_scope_child)), if (perChild) 1 else 0) {
+            Profiles.setLimitsPerChild(this, it == 1)
+            showLimitScope()
+            loadTime()
+        }
+        binding.tvLimitChildTitle.visibility = if (perChild) View.VISIBLE else View.GONE
+        binding.rgLimitChild.visibility = if (perChild) View.VISIBLE else View.GONE
+        if (perChild) {
+            radioChoices(binding.rgLimitChild, list.map { it.name.ifEmpty { getString(R.string.profile_unnamed) } }, list.indexOfFirst { it.id == timeChild }.coerceAtLeast(0)) {
+                timeChild = list[it].id
+                loadTime()
+            }
+        }
+        loadingLook = wasLoading
+    }
+
     private fun showBedtimeTimes(t: TimeLimit.Settings) {
         binding.btnBedStart.text = getString(R.string.bed_start_button, TimeLimit.minuteOfDayText(t.bedStartMin))
         binding.btnBedEnd.text = getString(R.string.bed_end_button, TimeLimit.minuteOfDayText(t.bedEndMin))
@@ -313,7 +348,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun pickTime(titleRes: Int, current: Int, change: (TimeLimit.Settings, Int) -> TimeLimit.Settings, after: () -> Unit = {}) {
         TimePickerDialog(this, { _, h, m ->
             val minute = h * 60 + m
-            val next = change(Preferences.timeSettings(this), minute)
+            val next = change(timeNow(), minute)
             if (next.bedOn && next.bedStartMin == next.bedEndMin) {
                 Toast.makeText(this, R.string.bed_same_time, Toast.LENGTH_LONG).show()
             } else if (next.bedOn && next.bedMinutes < TimeLimit.MIN_BED) {
@@ -331,13 +366,15 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun showTimeStatus() {
         val now = System.currentTimeMillis()
-        val t = Preferences.timeSettings(this, now)
-        binding.tvTimeStatus.text = RemoteCommands.status(t, now)
+        val t = timeNow(now)
+        val status = RemoteCommands.status(t, now)
+        val who = timeChild?.let { Profiles.get(this, it) }
+        binding.tvTimeStatus.text = if (who == null) status else getString(R.string.limits_status_child, who.name.ifEmpty { getString(R.string.profile_unnamed) }, status)
         binding.btnLockNow.setText(if (t.forceLock) R.string.time_unlock_now else R.string.time_lock_now)
     }
 
     private fun saveTime(change: (TimeLimit.Settings) -> TimeLimit.Settings) {
-        Preferences.saveTimeSettings(this, change(Preferences.timeSettings(this)))
+        Preferences.saveTimeSettings(this, change(timeNow()), forId = timeChild)
         showTimeStatus()
     }
 
@@ -424,18 +461,18 @@ class SettingsActivity : AppCompatActivity() {
         })
         binding.cbBed.setOnCheckedChangeListener { _, on -> if (!timeLoading) saveTime { it.copy(bedOn = on) } }
         binding.btnBedStart.setOnClickListener {
-            pickTime(R.string.bed_switch, Preferences.timeSettings(this).bedStartMin, { t, m -> t.copy(bedStartMin = m) })
+            pickTime(R.string.bed_switch, timeNow().bedStartMin, { t, m -> t.copy(bedStartMin = m) })
         }
         binding.btnBedEnd.setOnClickListener {
-            pickTime(R.string.bed_end_button_title, Preferences.timeSettings(this).bedEndMin, { t, m -> t.copy(bedEndMin = m) })
+            pickTime(R.string.bed_end_button_title, timeNow().bedEndMin, { t, m -> t.copy(bedEndMin = m) })
         }
         binding.btnSummaryTime.setOnClickListener {
-            pickTime(R.string.summary_time_title, Preferences.timeSettings(this).summaryMin, { t, m -> t.copy(summaryMin = m) }) {
+            pickTime(R.string.summary_time_title, timeNow().summaryMin, { t, m -> t.copy(summaryMin = m) }) {
                 DailySummaryScheduler.scheduleDailySummary(this)
             }
         }
         binding.btnDayStart.setOnClickListener {
-            pickTime(R.string.day_start_title, Preferences.timeSettings(this).dayStartMin, { t, m -> t.copy(dayStartMin = m) })
+            pickTime(R.string.day_start_title, timeNow().dayStartMin, { t, m -> t.copy(dayStartMin = m) })
         }
         binding.btnLockNow.setOnClickListener { saveTime { it.copy(forceLock = !it.forceLock, extendedUntil = if (!it.forceLock) 0L else it.extendedUntil) } }
         binding.btnResetUsed.setOnClickListener {

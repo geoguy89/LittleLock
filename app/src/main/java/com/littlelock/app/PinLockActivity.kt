@@ -153,7 +153,8 @@ class PinLockActivity : AppCompatActivity() {
             else -> {
                 val child = profile
                 if (child != null) {
-                    if (Profiles.verifyPin(this, child.id, pin)) {
+                    // the parent's own PIN opens any child's profile too (a forgotten PIN never locks a child out)
+                    if (Profiles.verifyPin(this, child.id, pin) || (Preferences.isPinSet(this) && Preferences.verifyPin(this, pin))) {
                         Preferences.resetFailedPins(this)
                         Profiles.signIn(this, child.id)
                         setResult(RESULT_OK)

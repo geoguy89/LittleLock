@@ -262,4 +262,9 @@ Then type in that channel: status, usage, settings, lock now, unlock, extend 30,
     <string name="arrange_reset">Fill the screen automatically (A to Z)</string>
     <string name="arrange_row">Row %d</string>
     <string name="arrange_new_row">New row</string>
+    <string name="limits_scope_title">Screen-time limits apply to</string>
+    <string name="limits_scope_device">The whole tablet (one limit for everyone)</string>
+    <string name="limits_scope_child">Each child separately</string>
+    <string name="limits_child_title">Changing screen time for</string>
+    <string name="limits_status_child">%1$s: %2$s</string>
 </resources>

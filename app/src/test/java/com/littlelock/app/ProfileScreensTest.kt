@@ -168,7 +168,7 @@ class ProfileScreensTest {
             .putExtra(PinLockActivity.EXTRA_NEXT, PinLockActivity.NEXT_RESULT)
             .putExtra(PinLockActivity.EXTRA_PROFILE, ben)
         val pad = Robolectric.buildActivity(PinLockActivity::class.java, intent).setup().get()
-        "1234".forEach { pad.enterDigit(it.toString()) }                          // the PARENT's pin
+        "9999".forEach { pad.enterDigit(it.toString()) }                          // a wrong pin
         assertNull(Profiles.current(ctx))
         "2468".forEach { pad.enterDigit(it.toString()) }
         assertEquals(ben, Profiles.current(ctx)!!.id)

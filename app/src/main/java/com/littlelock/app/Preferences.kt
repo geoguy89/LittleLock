@@ -174,8 +174,37 @@ object Preferences {
 
     fun getSummaryMin(context: Context): Int = summaryMin(getPrefs(context)).coerceIn(0, 24 * 60 - 1)
 
-    /** The screen-time settings; today's used time starts again at 0 each new day. */
-    fun timeSettings(context: Context, now: Long = System.currentTimeMillis()): TimeLimit.Settings {
+    /**
+     * The screen-time settings; today's used time starts again at 0 each new day. With limits per child ([Profiles.limitsPerChild]) the
+     * limit, bedtime, lock and extension are the child's own - [forId] names one, otherwise it is [Profiles.timeTarget]; the time the
+     * daily summary goes out and when the day starts stay one setting for the tablet.
+     */
+    fun timeSettings(context: Context, now: Long = System.currentTimeMillis(), forId: String? = null): TimeLimit.Settings {
+        val base = deviceTime(context, now)
+        if (!Profiles.limitsPerChild(context)) return base
+        val child = forId?.let { Profiles.get(context, it) } ?: Profiles.timeTarget(context)
+        val t = child.time
+        return base.copy(
+            limitOn = t.limitOn, limitMinutes = t.limitMinutes,
+            usedMs = if (child.usedDay == today(context, now)) t.usedMs else 0L,
+            forceLock = t.forceLock, extendedUntil = t.extendedUntil,
+            bedOn = t.bedOn, bedStartMin = t.bedStartMin, bedEndMin = t.bedEndMin
+        )
+    }
+
+    fun saveTimeSettings(context: Context, s: TimeLimit.Settings, now: Long = System.currentTimeMillis(), forId: String? = null) {
+        if (!Profiles.limitsPerChild(context)) {
+            saveDeviceTime(context, s, now)
+            return
+        }
+        val child = forId?.let { Profiles.get(context, it) } ?: Profiles.timeTarget(context)
+        saveDeviceTime(context, s, now, sharedOnly = true)
+        Profiles.save(context, child.copy(usedDay = UsageLog.dayKey(now, s.dayStartMin.coerceIn(0, 24 * 60 - 1)),
+            time = s.copy(summaryMin = TimeLimit.DEFAULT_SUMMARY, dayStartMin = 0)))
+    }
+
+    /** The tablet-wide screen-time settings (the only ones unless limits are per child). */
+    fun deviceTime(context: Context, now: Long = System.currentTimeMillis()): TimeLimit.Settings {
         val p = getPrefs(context)
         val sameDay = p.getString(KEY_USED_DAY, "") == dayKey(p, now)
         val bedStart = p.getInt(KEY_BED_START, TimeLimit.DEFAULT_BED_START)
@@ -195,7 +224,14 @@ object Preferences {
         )
     }
 
-    fun saveTimeSettings(context: Context, s: TimeLimit.Settings, now: Long = System.currentTimeMillis()) {
+    private fun saveDeviceTime(context: Context, s: TimeLimit.Settings, now: Long, sharedOnly: Boolean = false) {
+        if (sharedOnly) {
+            getPrefs(context).edit()
+                .putInt(KEY_SUMMARY_MIN, s.summaryMin.coerceIn(0, 24 * 60 - 1))
+                .putInt(KEY_DAY_START, s.dayStartMin.coerceIn(0, 24 * 60 - 1))
+                .apply()
+            return
+        }
         getPrefs(context).edit()
             .putBoolean(KEY_LIMIT_ON, s.limitOn)
             .putInt(KEY_LIMIT_MIN, s.limitMinutes.coerceIn(TimeLimit.MIN_LIMIT, TimeLimit.MAX_LIMIT))
@@ -213,14 +249,17 @@ object Preferences {
 
     /** Counts [deltaMs] of screen time for today (only while a limit is set and the tablet is open). */
     fun addUsedMs(context: Context, deltaMs: Long, now: Long = System.currentTimeMillis()): TimeLimit.Settings {
+        if (Profiles.limitsPerChild(context) && Profiles.current(context) == null) return timeSettings(context, now)     // on the picker nobody is using time
         val s = TimeLimit.addUsage(timeSettings(context, now), deltaMs, now)
         saveTimeSettings(context, s, now)
         return s
     }
 
     /** Is the tablet locked by screen time right now? */
-    fun isTimeLocked(context: Context, now: Long = System.currentTimeMillis()): Boolean =
-        TimeLimit.state(timeSettings(context, now), now).locked
+    fun isTimeLocked(context: Context, now: Long = System.currentTimeMillis()): Boolean {
+        if (Profiles.limitsPerChild(context) && Profiles.current(context) == null) return false     // the picker stays open: each child's lock shows when they sign in
+        return TimeLimit.state(timeSettings(context, now), now).locked
+    }
 
     fun isRemoteOn(context: Context): Boolean = getPrefs(context).getBoolean(KEY_REMOTE_ON, false)
 

@@ -389,7 +389,9 @@ class AccessibilityMonitorService : AccessibilityService() {
                         if (o.settings.summaryMin != before.summaryMin) DailySummaryScheduler.scheduleDailySummary(app)
                         if (RemoteCommands.Action.SEND_SUMMARY_NOW in o.actions) DailySummaryScheduler.sendToday(app)
                         Preferences.setDiscordLast(app, o.lastId)
-                        o.replies.forEach { DiscordWebhookService.postBotMessage(token, channel, it) }
+                        // with limits per child the commands changed one child's time: say whose
+                        val who = if (Profiles.limitsPerChild(app)) Profiles.timeTarget(app).name else ""
+                        o.replies.forEach { DiscordWebhookService.postBotMessage(token, channel, if (who.isEmpty()) it else "($who) $it") }
                     }
                 }
             } catch (e: Exception) {

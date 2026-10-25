@@ -23,7 +23,11 @@ data class Profile(
     /** The apps this child may use. */
     val allowed: Set<String> = emptySet(),
     /** The order they are shown in: package names, with [Profiles.ROW_BREAK] where a new row starts. Apps missing from it follow, by name. */
-    val order: List<String> = emptyList()
+    val order: List<String> = emptyList(),
+    /** This child's own screen time (limit, bedtime, lock, extension), used when the parent chose limits per child. */
+    val time: TimeLimit.Settings = TimeLimit.Settings(),
+    /** The day [TimeLimit.Settings.usedMs] was counted for (see [Preferences.today]); a new day starts it again at 0. */
+    val usedDay: String = ""
 ) {
     val hasPin: Boolean get() = pinHash.isNotEmpty() && pinSalt.isNotEmpty()
 }
@@ -53,6 +57,8 @@ object Profiles {
     private const val KEY_EXIT_PICKER = "profile_exit_picker"
     private const val KEY_IDLE_MIN = "profile_idle_min"
     private const val KEY_IDLE_SINCE = "profile_idle_since"
+    private const val KEY_LIMITS_PER_CHILD = "limits_per_child"
+    private const val KEY_LIMITS_SEEDED = "limits_seeded"
 
     // ------------------------------------------------------------------ the rules (no Android in them)
 
@@ -252,6 +258,26 @@ object Profiles {
     fun look(context: Context): Profile =
         current(context) ?: all(context).let { l -> l.firstOrNull { it.id == defaultId(context) } ?: l.first() }
 
+    /** Screen time for each child separately (true) or one limit for the whole tablet (false). Only means anything with several children. */
+    fun limitsPerChild(context: Context): Boolean = isShared(context) && prefs(context).getBoolean(KEY_LIMITS_PER_CHILD, false)
+
+    /** Switching to per-child limits: every child starts from the tablet's current limit and bedtime (once), then each can be changed. */
+    fun setLimitsPerChild(context: Context, on: Boolean) {
+        val p = prefs(context)
+        if (on && !p.getBoolean(KEY_LIMITS_SEEDED, false)) {
+            val d = Preferences.deviceTime(context)
+            all(context).forEach { c ->
+                save(context, c.copy(time = c.time.copy(limitOn = d.limitOn, limitMinutes = d.limitMinutes, bedOn = d.bedOn,
+                    bedStartMin = d.bedStartMin, bedEndMin = d.bedEndMin)))
+            }
+            p.edit().putBoolean(KEY_LIMITS_SEEDED, true).apply()
+        }
+        p.edit().putBoolean(KEY_LIMITS_PER_CHILD, on).apply()
+    }
+
+    /** Whose screen time is meant when nobody is named: the signed-in child, else the default profile's (or the first). */
+    fun timeTarget(context: Context): Profile = look(context)
+
     /** The apps allowed right now: the signed-in child's. On the picker, none (nothing should be open there). */
     fun allowedNow(context: Context): Set<String> = current(context)?.allowed ?: emptySet()
 
@@ -341,7 +367,12 @@ object Profiles {
                 .put("accent", p.accent).put("wallpaper", p.wallpaper)
                 .put("tile", p.tileSize).put("layout", p.layoutMode).put("align", p.align).put("gap", p.gap)
                 .put("allowed", JSONArray(p.allowed.sorted()))
-                .put("order", JSONArray(p.order)))
+                .put("order", JSONArray(p.order))
+                .put("usedDay", p.usedDay)
+                .put("time", JSONObject()
+                    .put("limitOn", p.time.limitOn).put("limitMin", p.time.limitMinutes).put("usedMs", p.time.usedMs)
+                    .put("force", p.time.forceLock).put("extUntil", p.time.extendedUntil)
+                    .put("bedOn", p.time.bedOn).put("bedStart", p.time.bedStartMin).put("bedEnd", p.time.bedEndMin)))
         }
         return arr.toString()
     }
@@ -365,7 +396,20 @@ object Profiles {
                 align = o.optInt("align", Layouts.MIDDLE).coerceIn(Layouts.TOP, Layouts.BOTTOM),
                 gap = o.optInt("gap", Layouts.DEFAULT_GAP).coerceIn(0, Layouts.GAP_DP.lastIndex),
                 allowed = strings(o.optJSONArray("allowed")).toSet(),
-                order = strings(o.optJSONArray("order"))
+                order = strings(o.optJSONArray("order")),
+                usedDay = o.optString("usedDay"),
+                time = o.optJSONObject("time")?.let { t ->
+                    TimeLimit.Settings(
+                        limitOn = t.optBoolean("limitOn", false),
+                        limitMinutes = t.optInt("limitMin", 60).coerceIn(TimeLimit.MIN_LIMIT, TimeLimit.MAX_LIMIT),
+                        usedMs = t.optLong("usedMs", 0L).coerceAtLeast(0L),
+                        forceLock = t.optBoolean("force", false),
+                        extendedUntil = t.optLong("extUntil", 0L),
+                        bedOn = t.optBoolean("bedOn", true),
+                        bedStartMin = t.optInt("bedStart", TimeLimit.DEFAULT_BED_START).coerceIn(0, 24 * 60 - 1),
+                        bedEndMin = t.optInt("bedEnd", TimeLimit.DEFAULT_BED_END).coerceIn(0, 24 * 60 - 1)
+                    )
+                } ?: TimeLimit.Settings()
             )
         }
     } catch (e: Exception) {
