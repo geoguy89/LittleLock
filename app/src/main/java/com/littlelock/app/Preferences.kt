@@ -375,6 +375,13 @@ object Preferences {
     /** The release tag the parent has already been told about (so the notice shows once). */
     fun getUpdateSeen(context: Context): String = getPrefs(context).getString(KEY_UPDATE_SEEN, "") ?: ""
 
+    /** Why the last self-update didn't install (shown in parent settings so it can be put right); "" when it did or none was tried. */
+    fun getUpdateError(context: Context): String = getPrefs(context).getString("update_error", "") ?: ""
+
+    fun setUpdateError(context: Context, why: String) {
+        getPrefs(context).edit().putString("update_error", why).apply()
+    }
+
     fun setUpdateSeen(context: Context, tag: String) {
         getPrefs(context).edit().putString(KEY_UPDATE_SEEN, tag).apply()
     }

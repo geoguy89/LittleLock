@@ -123,7 +123,7 @@ class SettingsActivity : AppCompatActivity() {
                     r == null -> why ?: getString(R.string.update_check)
                     newer -> getString(R.string.update_available, r.version, updater.installedVersion)
                     else -> getString(R.string.update_current, updater.installedVersion)
-                }
+                } + Preferences.getUpdateError(this).let { if (it.isEmpty()) "" else "\n" + getString(R.string.update_last_failed, it) }
                 binding.tvUpdateNotes.text = if (newer) r!!.notes else ""
                 binding.tvUpdateNotes.visibility = if (newer && r!!.notes.isNotEmpty()) View.VISIBLE else View.GONE
                 binding.btnInstallUpdate.visibility = if (newer) View.VISIBLE else View.GONE
@@ -142,6 +142,7 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         updating = true
+        Preferences.setUpdateError(this, "")
         binding.btnInstallUpdate.isEnabled = false
         binding.btnCheckUpdate.isEnabled = false
         binding.pbUpdate.progress = 0

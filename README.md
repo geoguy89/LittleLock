@@ -248,6 +248,12 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 - The Discord webhook, the notification choices and the remote-control bot now sit together in Settings.
 - New Discord command `usage` (also `stats`): today's used time, time left, apps opened and the lock state, whenever you ask.
 
+## 1.9.1
+
+- The lock screen (daily limit, bedtime, locked) now offers **Open parent settings** or **Give more time** after the parent PIN,
+  so settings never need an extension first.
+- An update that fails to install now says why in Settings > Updates (instead of a toast that disappears).
+
 ## 1.9.0 - several children on one tablet (profiles)
 
 - **Profiles**: Settings > Children on this tablet > **Add a child**. Each child has their own name, picture, apps, colours,

@@ -29,8 +29,8 @@ android {
         applicationId = "com.littlelock.app"
         minSdk = 29
         targetSdk = 36
-        versionCode = 17
-        versionName = "1.9.0"
+        versionCode = 18
+        versionName = "1.9.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

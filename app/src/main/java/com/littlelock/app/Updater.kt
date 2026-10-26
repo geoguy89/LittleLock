@@ -140,6 +140,7 @@ class AndroidUpdater(private val context: Context) {
                 done(null)
             } catch (e: Exception) {
                 Log.w("AndroidUpdater", "Update failed", e)
+                Preferences.setUpdateError(context, e.message ?: "unknown")
                 done(e.message ?: "The update couldn't be installed.")
             }
         }
@@ -153,12 +154,18 @@ class InstallStatusReceiver : BroadcastReceiver() {
             PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                 @Suppress("DEPRECATION")
                 val confirm = intent.getParcelableExtra<Intent>(Intent.EXTRA_INTENT) ?: return
-                context.startActivity(confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                ParentSession.unlock()                          // Android's confirm screen is another app: the blocker must let it be
+                try {
+                    context.startActivity(confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                } catch (e: Exception) {
+                    Preferences.setUpdateError(context, "Android's install screen couldn't open (${e.message})")
+                }
             }
             PackageInstaller.STATUS_SUCCESS -> Unit // the installer restarts LittleLock; the service brings the home screen back
             else -> {
                 val why = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE) ?: "unknown reason"
                 Log.w("AndroidUpdater", "Install status: $why")
+                Preferences.setUpdateError(context, why)
                 Toast.makeText(context, "The update didn't install: $why", Toast.LENGTH_LONG).show()
             }
         }

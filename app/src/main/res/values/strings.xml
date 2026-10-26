@@ -267,4 +267,8 @@ Then type in that channel: status, usage, settings, lock now, unlock, extend 30,
     <string name="limits_scope_child">Each child separately</string>
     <string name="limits_child_title">Changing screen time for</string>
     <string name="limits_status_child">%1$s: %2$s</string>
+    <string name="time_up_parent_title">Parent</string>
+    <string name="time_up_open_settings">Open parent settings</string>
+    <string name="time_up_give_time">Give more time</string>
+    <string name="update_last_failed">The last update didn\'t install: %1$s</string>
 </resources>

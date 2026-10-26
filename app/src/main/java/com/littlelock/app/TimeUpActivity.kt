@@ -22,7 +22,7 @@ class TimeUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTimeUpBinding
 
     private val pin = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
-        if (r.resultCode == RESULT_OK) askHowLong()
+        if (r.resultCode == RESULT_OK) askWhat()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +100,22 @@ class TimeUpActivity : AppCompatActivity() {
         val bmp = Wallpapers.render(this, "owl", dm.widthPixels, dm.heightPixels)
         binding.root.background = bmp?.let { BitmapDrawable(resources, it).apply { gravity = Gravity.FILL } }
             ?: GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(0xFF2B2F4A.toInt(), 0xFF1E1E24.toInt()))
+    }
+
+    /** After the PIN: parent settings (the lock stays), or more time. Settings must be reachable even when time is up. */
+    private fun askWhat() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle(R.string.time_up_parent_title)
+            .setItems(arrayOf(getString(R.string.time_up_open_settings), getString(R.string.time_up_give_time))) { _, which ->
+                if (which == 0) {
+                    ParentSession.unlock()
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                } else {
+                    askHowLong()
+                }
+            }
+            .setNegativeButton(R.string.setup_cancel, null)
+            .show()
     }
 
     /** After the PIN the parent picks how much longer the tablet stays open (or the clock time it locks again). */
