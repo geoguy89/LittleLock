@@ -33,13 +33,6 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
 
-    private val deviceAdminResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        Toast.makeText(this, R.string.device_admin_updated, Toast.LENGTH_SHORT).show()
-        showStatus()
-    }
-
     private val accessibilityResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -177,6 +170,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.cbNotifBlockedApps.isChecked = Preferences.isBlockedAppsNotifEnabled(this)
         binding.cbNotifWrongPin.isChecked = Preferences.isWrongPinNotifEnabled(this)
         binding.cbBlockShade.isChecked = Preferences.isBlockShade(this)
+        binding.cbStopMedia.isChecked = Preferences.isStopMedia(this)
+        binding.cbStopMedia.setOnCheckedChangeListener { _, on -> Preferences.setStopMedia(this, on) }
         binding.etDiscordToken.setText(Preferences.getDiscordToken(this))
         binding.etDiscordChannel.setText(Preferences.getDiscordChannel(this))
         binding.etDiscordUsers.setText(Preferences.getDiscordUsers(this))
@@ -393,7 +388,6 @@ class SettingsActivity : AppCompatActivity() {
         )
         binding.tvSetupHome.setText(if (isHomeApp()) R.string.setup_home_yes else R.string.setup_home_no)
         binding.tvSetupAccess.setText(if (isBlockingServiceOn()) R.string.setup_access_yes else R.string.setup_access_no)
-        binding.tvSetupAdmin.setText(if (isAdminOn()) R.string.setup_admin_yes else R.string.setup_admin_no)
         val owner = Kiosk.isOwner(this)
         binding.tvKioskStatus.setText(if (owner) R.string.kiosk_on_status else R.string.kiosk_off_status)
         binding.llKioskHelp.visibility = if (owner) View.GONE else View.VISIBLE
@@ -425,9 +419,6 @@ class SettingsActivity : AppCompatActivity() {
         binding.btnSaveWebhook.setOnClickListener {
             saveSettings()
             Toast.makeText(this, R.string.settings_saved, Toast.LENGTH_SHORT).show()
-        }
-        binding.btnEnableDeviceAdmin.setOnClickListener {
-            deviceAdminResult.launch(Intent(DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLE))
         }
         binding.btnEnableAccessibility.setOnClickListener {
             accessibilityResult.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -561,13 +552,6 @@ class SettingsActivity : AppCompatActivity() {
         val enabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES) ?: return false
         val me = ComponentName(this, AccessibilityMonitorService::class.java)
         return enabled.split(':').any { ComponentName.unflattenFromString(it) == me }
-    }
-
-    private fun isAdminOn(): Boolean = try {
-        getSystemService(DevicePolicyManager::class.java)
-            ?.isAdminActive(ComponentName(this, DeviceAdminReceiver::class.java)) == true
-    } catch (e: Exception) {
-        false
     }
 
     /** Saves the Discord fields and posts a hello in the channel, so the parent knows it works. */

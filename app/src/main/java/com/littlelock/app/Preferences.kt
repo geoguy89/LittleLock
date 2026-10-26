@@ -130,6 +130,13 @@ object Preferences {
         getPrefs(context).edit().putBoolean(KEY_BLOCK_SHADE, on).apply()
     }
 
+    /** Stop playing sound and video when the screen goes off (kid mode). On by default. */
+    fun isStopMedia(context: Context): Boolean = getPrefs(context).getBoolean("stop_media", true)
+
+    fun setStopMedia(context: Context, on: Boolean) {
+        getPrefs(context).edit().putBoolean("stop_media", on).apply()
+    }
+
     /** Kiosk lockdown (needs the device-owner step, see [Kiosk]). On by default: if the parent set it up, they want it. */
     fun isKioskOn(context: Context): Boolean = getPrefs(context).getBoolean(KEY_KIOSK, true)
 

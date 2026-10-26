@@ -38,10 +38,6 @@
     <string name="settings_notif_app_launch">Notify on app launch</string>
     <string name="settings_notif_daily_summary">Daily usage summary</string>
     <string name="settings_notif_blocked_apps">Notify on blocked app attempts</string>
-    <string name="settings_device_admin">Device Admin</string>
-    <string name="settings_device_admin_enable">Enable Device Admin</string>
-    <string name="settings_device_admin_enabled">Device Admin Enabled</string>
-    <string name="settings_device_admin_disabled">Device Admin Disabled</string>
     <string name="settings_accessibility">Block other apps</string>
     <string name="settings_accessibility_enable">Turn on blocking (Accessibility)</string>
     <string name="settings_accessibility_explain">Off: an app that isn\'t allowed could still be opened another way (for example from a notification). Turn on LittleLock under Accessibility so any app that isn\'t allowed goes straight back to the home screen.</string>
@@ -115,7 +111,6 @@
     <string name="usage_time_spent">Time spent: %s</string>
 
     <!-- Settings messages -->
-    <string name="device_admin_updated">Device Admin status updated</string>
     <string name="accessibility_updated">Accessibility Service status updated</string>
     <string name="settings_saved">Settings saved!</string>
     <string name="settings_look">Make it theirs</string>
@@ -133,8 +128,6 @@
     <string name="setup_home_no">⬜ 1. Make LittleLock the home screen - tap the button below, then choose LittleLock and "Always"</string>
     <string name="setup_access_yes">✅ Accessibility is on (blocks other apps and the notification shade)</string>
     <string name="setup_access_no">⬜ 2. Turn on Accessibility for LittleLock - it blocks other apps and the notification shade</string>
-    <string name="setup_admin_yes">✅ Device admin is on (makes it harder to uninstall)</string>
-    <string name="setup_admin_no">⬜ 3. Turn on Device admin - makes it harder to uninstall</string>
     <string name="setup_home_help_title">One more step</string>
     <string name="setup_home_help">Your phone didn\'t switch the home screen by itself. In the next screen choose "Home app" (or "Default home app") and pick LittleLock.</string>
     <string name="setup_open_settings">Open settings</string>
@@ -271,4 +264,5 @@ Then type in that channel: status, usage, settings, lock now, unlock, extend 30,
     <string name="time_up_open_settings">Open parent settings</string>
     <string name="time_up_give_time">Give more time</string>
     <string name="update_last_failed">The last update didn\'t install: %1$s</string>
+    <string name="settings_stop_media">Stop sound and video when the screen goes off</string>
 </resources>

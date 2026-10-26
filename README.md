@@ -14,7 +14,6 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
 - **PIN Protection** — A 4-digit PIN locks the settings screen, preventing kids from changing the configuration
 - **Accessibility Monitoring** — Detects when accessibility services are disabled (e.g. by a child trying to bypass the lock)
 - **Boot Receiver** — Automatically re-applies the lock after device reboot
-- **Device Admin** — Uses Android Device Admin API to prevent uninstallation
 - **Daily Summary Reports** — Sends a daily digest to Discord listing every app used, for how long and how often (kept on the tablet, so a day offline is still complete)
 - **Bedtime Lockdown** — Locks every night between a start time and a morning wake-up time you choose (e.g. 8 PM to 7 AM); a parent can extend playtime from the lock screen with the PIN
 - **Wrong-PIN Alerts** — Discord note when a wrong PIN is typed, saying if it happened during bedtime
@@ -60,8 +59,7 @@ LittleLock is an Android launcher that replaces the default home screen on a chi
 3. **Install** by tapping the APK file
 
 4. **Grant Required Permissions**:
-   - **Device Admin** — Prevents uninstallation
-   - **Accessibility** — Monitors for bypass attempts
+      - **Accessibility** — Monitors for bypass attempts
    - **Draw over other apps** — Shows the lock overlay
    - **Boot completed** — Re-applies lock after reboot
 
@@ -247,6 +245,12 @@ mode, an opaque rainbow cover hides it at once, so pressing Home repeatedly neve
 - Step-by-step Discord bot instructions in Settings (Developer Portal > OAuth2 > URL Generator, tick "bot", View Channels / Send Messages / Read Message History).
 - The Discord webhook, the notification choices and the remote-control bot now sit together in Settings.
 - New Discord command `usage` (also `stats`): today's used time, time left, apps opened and the lock state, whenever you ask.
+
+## 1.9.2
+
+- **Screen off stops the media**: when the screen goes off in kid mode, anything playing (YouTube Kids, a video app...) is told to
+  stop. A checkbox in Settings > Tablet turns it off. Waking a tablet whose idle time has run out shows the picker / default profile at once.
+- The **Device admin** option is gone (the app never needed it). Lockdown (device owner, set up from a computer) is unchanged.
 
 ## 1.9.1
 

@@ -208,7 +208,7 @@ class AccessibilityMonitorService : AccessibilityService() {
         lastTick = 0L
         handler.post(timeTick)
         try {
-            androidx.core.content.ContextCompat.registerReceiver(this, screenOff, android.content.IntentFilter(Intent.ACTION_SCREEN_OFF),
+            androidx.core.content.ContextCompat.registerReceiver(this, screenOff, android.content.IntentFilter(Intent.ACTION_SCREEN_OFF).apply { addAction(Intent.ACTION_SCREEN_ON) },
                 androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED)
         } catch (e: Exception) {
             Log.w(TAG, "screen-off receiver: ${e.message}")
@@ -219,7 +219,17 @@ class AccessibilityMonitorService : AccessibilityService() {
     /** The screen going off starts the idle count for the profiles - the tablet may sleep too deeply to tick while it is off. */
     private val screenOff = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: android.content.Context?, intent: Intent?) {
-            Profiles.markIdle(this@AccessibilityMonitorService)
+            val svc = this@AccessibilityMonitorService
+            if (intent?.action == Intent.ACTION_SCREEN_ON) {
+                // woken after the idle time ran out: the next child sees the picker / default profile at once
+                if (Preferences.isKidMode(svc) && !ParentSession.isUnlocked() && Profiles.tickIdle(svc, false)) {
+                    startActivity(Intent(svc, LauncherActivity::class.java).addFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+                }
+                return
+            }
+            Profiles.markIdle(svc)
+            if (Preferences.isKidMode(svc) && !ParentSession.isUnlocked() && Preferences.isStopMedia(svc)) MediaStop.stopPlaying(svc)
         }
     }
 

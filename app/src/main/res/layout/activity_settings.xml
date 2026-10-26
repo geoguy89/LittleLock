@@ -55,13 +55,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textColor="@color/littlelock_text_primary" />
-
-                <TextView
-                    android:id="@+id/tvSetupAdmin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:textColor="@color/littlelock_text_primary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -409,6 +402,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/settings_block_shade" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/cbStopMedia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_stop_media" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -681,38 +680,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/remote_test" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Device Admin Section -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_device_admin"
-                    android:textColor="?attr/colorPrimary"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnEnableDeviceAdmin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/settings_device_admin_enable" />
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
